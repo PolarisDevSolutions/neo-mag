@@ -1,7 +1,7 @@
-import { Phone, DollarSign } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { AboutContent } from "@site/lib/cms/homePageTypes";
-import { useSiteSettings, useGlobalPhone } from "@/hooks/useSiteSettings";
+import { useGlobalPhone } from "@site/contexts/SiteSettingsContext";
 
 interface AboutSectionProps {
   content?: AboutContent;
@@ -50,123 +50,97 @@ export default function AboutSection({ content }: AboutSectionProps) {
   const data = content || defaultContent;
   const features = data.features || defaultContent.features;
   const stats = data.stats || defaultContent.stats;
-const { phoneAvailability: phoneLabel, phoneDisplay } = useGlobalPhone();
+  const { phoneLabel, phoneDisplay } = useGlobalPhone();
 
   return (
-    <div className="bg-white pt-[30px] md:pt-[54px]">
-      {/* Main Content Section */}
-      <div className="max-w-[2560px] mx-auto w-[95%] md:w-[90%] pt-[20px] md:pt-[27px]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-[5.5%]">
-          {/* Left Column - About Text and CTAs */}
-          <div className="md:w-full">
-            {/* About Us Label */}
-            <div className="text-[rgb(107,141,12)] font-outfit text-[18px] md:text-[24px] leading-tight md:leading-[36px] mb-[10px]">
+    <section className="bg-white py-14 md:py-20">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+
+        {/* ── Three-column layout ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+
+          {/* Left: Text + CTAs */}
+          <div>
+            <p className="font-outfit text-neo-blue font-semibold text-sm uppercase tracking-widest mb-3">
               {data.sectionLabel}
-            </div>
+            </p>
+            <h2 className="font-playfair text-[clamp(1.8rem,3.5vw,2.8rem)] leading-tight text-gray-900 mb-4">
+              {data.heading}
+            </h2>
+            <p className="font-outfit text-base text-gray-600 leading-relaxed mb-8">
+              {data.description}
+            </p>
 
-            {/* Heading */}
-            <div className="mb-[20px] md:mb-[9.27%]">
-              <h2 className="font-playfair text-[32px] md:text-[48px] lg:text-[54px] leading-tight md:leading-[54px] text-black pb-[10px]">
-                {data.heading}
-              </h2>
-              <p className="font-outfit text-[16px] md:text-[20px] leading-[24px] md:leading-[30px] text-black">
-                {data.description}
-              </p>
-            </div>
-
-            {/* Call Us 24/7 Box */}
-            <div className="bg-law-accent p-[8px] w-full max-w-[400px] mb-[9.27%] cursor-pointer transition-all duration-300 hover:bg-law-accent-dark group">
-              <div className="flex items-start gap-4">
-                <div className="bg-white p-[15px] mt-1 flex items-center justify-center group-hover:bg-black transition-colors duration-300">
-                  <Phone
-                    className="w-8 h-8 [&>*]:fill-none [&>*]:stroke-black group-hover:[&>*]:stroke-white transition-colors duration-300"
-                    strokeWidth={1.5}
-                  />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-outfit text-[16px] md:text-[18px] leading-tight text-black pb-[10px] group-hover:text-white transition-colors duration-300">
-                    {phoneLabel}
-                  </h4>
-                  <p className="font-outfit text-[28px] md:text-[40px] text-black leading-none group-hover:text-white transition-colors duration-300">
-                    {phoneDisplay}
-                  </p>
-                </div>
+            {/* Phone CTA */}
+            <a
+              href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+              className="flex items-center gap-3 bg-neo-blue-light border border-neo-blue/20 px-5 py-4 rounded-lg hover:bg-neo-blue hover:text-white group transition-all duration-300 mb-4 max-w-xs"
+            >
+              <div className="bg-neo-blue group-hover:bg-white p-2.5 rounded-lg transition-colors duration-300 flex-shrink-0">
+                <Phone className="w-5 h-5 text-white group-hover:text-neo-blue transition-colors duration-300" strokeWidth={1.5} />
               </div>
-            </div>
-
-            {/* Contact Us Box */}
-            <div className="bg-law-accent p-[8px] w-full max-w-[400px] cursor-pointer transition-all duration-300 hover:bg-law-accent-dark group">
-              <div className="flex items-start gap-4">
-                <div className="bg-white p-[15px] mt-1 flex items-center justify-center group-hover:bg-black transition-colors duration-300">
-                  <DollarSign
-                    className="w-8 h-8 [&>*]:fill-none [&>*]:stroke-black group-hover:[&>*]:stroke-white transition-colors duration-300"
-                    strokeWidth={1.5}
-                  />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-outfit text-[16px] md:text-[18px] leading-tight text-black pb-[10px] group-hover:text-white transition-colors duration-300">
-                    {data.contactLabel}
-                  </h4>
-                  <p className="font-outfit text-[18px] md:text-[24px] text-black leading-none group-hover:text-white transition-colors duration-300">
-                    {data.contactText}
-                  </p>
-                </div>
+              <div>
+                <p className="font-outfit text-xs text-gray-500 group-hover:text-white/80 transition-colors">{phoneLabel}</p>
+                <p className="font-outfit text-lg font-bold text-gray-900 group-hover:text-white transition-colors">{phoneDisplay}</p>
               </div>
-            </div>
+            </a>
+
+            {/* Contact CTA */}
+            <Link
+              to="/contact"
+              className="flex items-center gap-3 bg-gray-50 border border-gray-200 px-5 py-4 rounded-lg hover:border-neo-blue group transition-all duration-300 max-w-xs"
+            >
+              <div className="bg-gray-200 group-hover:bg-neo-blue p-2.5 rounded-lg transition-colors duration-300 flex-shrink-0">
+                <Mail className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors duration-300" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="font-outfit text-xs text-gray-500">{data.contactLabel}</p>
+                <p className="font-outfit text-base font-semibold text-gray-800 group-hover:text-neo-blue transition-colors">{data.contactText}</p>
+              </div>
+            </Link>
           </div>
 
-          {/* Middle Column - Image */}
-          <div className="md:w-full flex justify-center md:justify-start">
+          {/* Middle: Attorney Image */}
+          <div className="flex justify-center items-start">
             <img
               src={data.attorneyImage}
               alt={data.attorneyImageAlt}
-              className="max-w-full w-auto h-auto object-contain"
+              className="max-w-full w-auto h-auto object-contain rounded-lg"
               width={462}
               height={631}
               loading="lazy"
             />
           </div>
 
-          {/* Right Column - Features */}
-          <div className="md:w-full space-y-[20px] md:space-y-[30px]">
+          {/* Right: Features */}
+          <div className="space-y-6">
             {features.map((feature, index) => (
-              <div key={index}>
-                <div className="mb-[20px] md:mb-[30px]">
-                  <h3 className="font-outfit text-[22px] md:text-[28px] leading-tight md:leading-[28px] text-black pb-[10px]">
-                    {feature.number}. {feature.title}
-                  </h3>
-                  <p className="font-outfit text-[16px] md:text-[20px] leading-[24px] md:leading-[30px] text-black">
-                    {feature.description}
-                  </p>
-                </div>
-                {index < features.length - 1 && (
-                  <div className="h-[23px]">
-                    <div className="inline-block w-full"></div>
-                  </div>
-                )}
+              <div key={index} className="border-l-2 border-neo-blue pl-5">
+                <h3 className="font-outfit font-bold text-lg text-gray-900 mb-1.5">
+                  {feature.number}. {feature.title}
+                </h3>
+                <p className="font-outfit text-sm text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Stats Section */}
-      <div className="max-w-[2560px] mx-auto w-[95%] md:w-[90%] py-[20px] md:py-[27px]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-[3%]">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="max-w-[550px] mx-auto">
-                <h4 className="font-[Crimson_Pro,Georgia,Times_New_Roman,serif] text-[40px] md:text-[60px] leading-tight md:leading-[60px] text-black pb-[10px]">
+        {/* ── Stats row ── */}
+        {stats.length > 0 && (
+          <div className="mt-14 pt-10 border-t border-gray-200 grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            {stats.map((stat, index) => (
+              <div key={index}>
+                <p className="font-playfair text-[clamp(2rem,4vw,3rem)] font-bold text-neo-blue mb-1">
                   {stat.value}
-                </h4>
-                <div className="font-outfit text-[16px] md:text-[20px] font-light text-black text-center">
-                  {stat.label}
-                </div>
+                </p>
+                <p className="font-outfit text-sm text-gray-500">{stat.label}</p>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }

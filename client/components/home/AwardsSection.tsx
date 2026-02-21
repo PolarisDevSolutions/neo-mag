@@ -1,4 +1,4 @@
-import type { AwardsContent } from "@/lib/homePageTypes";
+import type { AwardsContent } from "@site/lib/cms/homePageTypes";
 
 interface AwardsSectionProps {
   content?: AwardsContent;
@@ -26,87 +26,45 @@ export default function AwardsSection({ content }: AwardsSectionProps) {
   const logos = data.logos || defaultContent.logos;
 
   return (
-    <div
-      className="relative pt-[30px] md:pt-[54px]"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgb(6, 29, 27) 54%, rgb(255, 255, 255) 54%)",
-      }}
-    >
-      <div className="max-w-[1640px] mx-auto w-[95%] md:w-[85%] lg:w-[80%] flex flex-col lg:flex-row relative">
-        {/* Left Side - Text Content */}
-        <div className="lg:w-1/3 lg:min-w-[40%] bg-[rgb(239,239,239)] p-[30px] md:p-[40px] relative z-[2]">
-          <div className="mb-[10px]">
-            <p
-              className="font-outfit text-[18px] md:text-[24px] leading-tight md:leading-[36px]"
-              style={{ color: "#6b8d0c" }}
-            >
+    <section className="bg-gray-50 py-14 md:py-20 border-y border-gray-200">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
+
+          {/* Left: Text */}
+          <div className="lg:w-1/3">
+            <p className="font-outfit text-neo-blue font-semibold text-sm uppercase tracking-widest mb-3">
               {data.sectionLabel}
             </p>
-          </div>
-          <div>
-            <h2 className="font-playfair text-[32px] md:text-[48px] lg:text-[54px] leading-tight md:leading-[54px] text-black pb-[10px]">
+            <h2 className="font-playfair text-[clamp(1.8rem,3vw,2.5rem)] leading-tight text-gray-900 mb-4">
               {data.heading}
             </h2>
-            <p className="font-outfit text-[20px] leading-[30px] text-black">
+            <p className="font-outfit text-base text-gray-600 leading-relaxed">
               {data.description}
             </p>
           </div>
-        </div>
 
-        {/* Right Side - Logo Grid */}
-        <div className="lg:w-2/3 bg-[rgb(239,239,239)] relative z-[2]">
-          {/* First Row */}
-          <div className="flex p-[50px] px-[30px] w-full">
-            {logos.slice(0, 4).map((logo, index) => (
-              <div
-                key={index}
-                className="bg-white flex-shrink-0"
-                style={{
-                  width: "21.574%",
-                  marginRight: index < 3 ? "4.569%" : "0",
-                }}
-              >
-                <div className="text-center">
+          {/* Right: Logo Grid */}
+          <div className="lg:w-2/3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {logos.map((logo, index) => (
+                <div
+                  key={index}
+                  className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-center hover:border-neo-blue transition-colors duration-300"
+                >
                   <img
                     src={logo.src}
                     alt={logo.alt}
-                    width={240}
-                    height={155}
+                    width={160}
+                    height={100}
                     loading="lazy"
-                    className="max-w-full inline-block"
+                    className="max-w-full h-auto object-contain max-h-[80px]"
                   />
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Second Row */}
-          <div className="flex p-[50px] px-[30px] w-full">
-            {logos.slice(4, 8).map((logo, index) => (
-              <div
-                key={index}
-                className="bg-white flex-shrink-0"
-                style={{
-                  width: "21.574%",
-                  marginRight: index < 3 ? "4.569%" : "0",
-                }}
-              >
-                <div className="text-center">
-                  <img
-                    src={logo.src}
-                    alt={logo.alt}
-                    width={240}
-                    height={155}
-                    loading="lazy"
-                    className="max-w-full inline-block"
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

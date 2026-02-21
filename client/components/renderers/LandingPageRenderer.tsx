@@ -35,10 +35,10 @@ export default function LandingPageRenderer({ page }: Props) {
 
 function EmptyState({ title }: { title: string }) {
   return (
-    <div className="min-h-[60vh] flex items-center justify-center bg-law-dark">
+    <div className="min-h-[60vh] flex items-center justify-center bg-gray-50">
       <div className="text-center max-w-lg mx-auto px-6">
-        <h1 className="font-playfair text-4xl text-white font-light mb-4">{title}</h1>
-        <p className="font-outfit text-white/60">Sadržaj stranice je u pripremi.</p>
+        <h1 className="font-playfair text-4xl text-gray-900 font-light mb-4">{title}</h1>
+        <p className="font-outfit text-gray-400">Sadržaj stranice je u pripremi.</p>
       </div>
     </div>
   );

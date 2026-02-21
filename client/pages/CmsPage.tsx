@@ -24,8 +24,8 @@ export default function CmsPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-[60vh] flex items-center justify-center bg-law-dark">
-          <Loader2 className="h-8 w-8 text-law-accent animate-spin" />
+        <div className="min-h-[60vh] flex items-center justify-center bg-gray-50">
+          <Loader2 className="h-8 w-8 text-neo-blue animate-spin" />
         </div>
       </Layout>
     );
@@ -36,18 +36,18 @@ export default function CmsPage() {
     return (
       <Layout>
         <Seo title="Stranica nije pronađena" description="" noindex={true} />
-        <div className="min-h-[60vh] flex items-center justify-center bg-law-dark">
+        <div className="min-h-[60vh] flex items-center justify-center bg-gray-50">
           <div className="text-center max-w-lg mx-auto px-6">
-            <p className="font-playfair text-[6rem] text-law-accent font-light leading-none mb-4">404</p>
-            <h1 className="font-playfair text-3xl text-white font-light mb-3">
+            <p className="font-playfair text-[6rem] text-neo-blue font-light leading-none mb-4">404</p>
+            <h1 className="font-playfair text-3xl text-gray-900 font-light mb-3">
               Stranica nije pronađena
             </h1>
-            <p className="font-outfit text-white/60 mb-8">
+            <p className="font-outfit text-gray-500 mb-8">
               Stranica koju tražite ne postoji ili još nije objavljena.
             </p>
             <Link
               to="/"
-              className="inline-block bg-law-accent text-black font-outfit px-8 py-3 hover:bg-law-accent/80 transition-colors"
+              className="inline-block bg-neo-blue text-white font-outfit px-8 py-3 rounded-lg hover:bg-neo-blue-dark transition-colors"
             >
               Povratak na početnu
             </Link>

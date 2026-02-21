@@ -1,8 +1,10 @@
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Scale } from "lucide-react";
-import type { ContactContent } from "@/lib/homePageTypes";
+import { useState } from "react";
+import { Input } from "@site/components/ui/input";
+import { Textarea } from "@site/components/ui/textarea";
+import { Button } from "@site/components/ui/button";
+import { Phone, MapPin } from "lucide-react";
+import type { ContactContent } from "@site/lib/cms/homePageTypes";
+import { useGlobalPhone } from "@site/contexts/SiteSettingsContext";
 
 interface ContactUsSectionProps {
   content?: ContactContent;
@@ -21,184 +23,114 @@ const defaultContent: ContactContent = {
 
 export default function ContactUsSection({ content }: ContactUsSectionProps) {
   const data = content || defaultContent;
+  const { phoneDisplay, phoneLabel } = useGlobalPhone();
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitted(true);
+  }
+
   return (
-    <div className="bg-white pt-[30px] md:pt-[54px] relative">
-      <div className="max-w-[1600px] mx-auto w-[95%] md:w-[85%] lg:w-[80%] relative flex flex-col lg:flex-row gap-8 lg:gap-[3%]">
-        {/* Left Side */}
-        <div className="lg:w-[65.667%] relative">
-          {/* Top Heading Section */}
-          <div className="py-[4.2415%] relative w-full">
-            <div className="relative w-full">
-              <div className="mb-[10px]">
-                <p className="font-outfit text-[18px] md:text-[24px] leading-tight md:leading-[36px] text-[#6b8d0c]">
-                  {data.sectionLabel}
-                </p>
+    <section className="bg-gray-50 border-t border-gray-200 py-14 md:py-20">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
+
+          {/* ── Left: Info ── */}
+          <div className="lg:w-[45%]">
+            <p className="font-outfit text-neo-blue font-semibold text-sm uppercase tracking-widest mb-3">
+              {data.sectionLabel}
+            </p>
+            <h2 className="font-playfair text-[clamp(1.8rem,3.5vw,2.8rem)] leading-tight text-gray-900 mb-4">
+              {data.heading}
+            </h2>
+            <p className="font-outfit text-base text-gray-600 leading-relaxed mb-8">
+              {data.description}
+            </p>
+
+            {/* Phone */}
+            <a
+              href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+              className="flex items-center gap-3 mb-4 group"
+            >
+              <div className="bg-neo-blue-light group-hover:bg-neo-blue p-3 rounded-lg transition-colors duration-300">
+                <Phone className="w-5 h-5 text-neo-blue group-hover:text-white transition-colors duration-300" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="font-playfair text-[32px] md:text-[48px] lg:text-[54px] leading-tight md:leading-[54px] text-black pb-[10px]">
-                  {data.heading}
-                </h2>
-                <p className="font-outfit text-[16px] md:text-[24px] leading-[24px] md:leading-[36px] text-black">
-                  {data.description}
-                </p>
+                <p className="font-outfit text-xs text-gray-500">{phoneLabel}</p>
+                <p className="font-outfit font-bold text-gray-900 text-lg group-hover:text-neo-blue transition-colors">{phoneDisplay}</p>
               </div>
-            </div>
+            </a>
+
+            {/* Address */}
+            {data.address && (
+              <div className="flex items-start gap-3">
+                <div className="bg-neo-blue-light p-3 rounded-lg flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-neo-blue" strokeWidth={1.5} />
+                </div>
+                <p className="font-outfit text-gray-600 text-sm leading-relaxed pt-1">{data.address}</p>
+              </div>
+            )}
           </div>
 
-          {/* Background Image Section with Two Parts */}
-          <div
-            className="relative w-full flex flex-col sm:flex-row pr-0 sm:pr-[20px]"
-            style={{
-              backgroundImage: "url(/images/backgrounds/contact-us-bg.jpg)",
-              backgroundPosition: "50% 50%",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-            }}
-          >
-            {/* Left Image */}
-            <div className="sm:w-[45.758%] sm:mr-[8.483%] relative -mt-[30px] ml-auto text-right">
-              <img
-                src="/images/team/attorney-2.png"
-                alt="Contact Us"
-                width={338}
-                height={462}
-                loading="lazy"
-                className="inline-block max-w-full w-[338px]"
-              />
-            </div>
+          {/* ── Right: Form ── */}
+          <div className="lg:w-[55%]">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 shadow-sm">
+              <h3 className="font-outfit font-bold text-lg text-gray-900 mb-6">{data.formHeading}</h3>
 
-            {/* Right Overlay Box */}
-            <div
-              className="sm:w-[45.758%] relative p-[30px] ml-auto"
-              style={{
-                backgroundColor: "rgba(29, 73, 70, 0.54)",
-              }}
-            >
-              <div className="relative mb-[10px]">
-                <div className="table w-full mx-auto max-w-full">
-                  <div className="table-cell w-[32px] leading-[0] mb-[30px]">
-                    <span className="m-auto">
-                      <span
-                        className="inline-block opacity-0 bg-[#baea0] p-[20px_30px] text-[30px] leading-[30px] font-black"
-                        style={{ fontFamily: "FontAwesome" }}
-                      ></span>
-                    </span>
-                  </div>
-                  <div className="table-cell align-top pl-[15px]"></div>
+              {submitted ? (
+                <div className="bg-neo-blue-light border border-neo-blue/30 rounded-xl p-8 text-center">
+                  <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Thank you!</p>
+                  <p className="font-outfit text-gray-700 text-sm">We'll be in touch shortly.</p>
                 </div>
-              </div>
-
-              <div className="relative">
-                <div className="mx-auto max-w-full w-full text-center">
-                  <div className="text-left">
-                    <h4 className="font-playfair text-[22px] md:text-[28px] leading-tight md:leading-[36.4px] text-white pb-[10px]">
-                      {data.formHeading}
-                    </h4>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <p className="font-outfit text-[16px] md:text-[20px] leading-[24px] md:leading-[28px] text-white font-light">
-                        Our intake team is available 24 hours a day, seven days
-                        a week
-                      </p>
+                      <Input
+                        type="text"
+                        placeholder="First Name *"
+                        required
+                        className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
+                      />
                     </div>
-                    <div className="mt-[20px] md:mt-[30px] flex justify-start">
-                      <div className="bg-law-accent p-[15px] inline-block">
-                        <Scale
-                          className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] text-black"
-                          strokeWidth={1.5}
-                        />
-                      </div>
+                    <div>
+                      <Input
+                        type="text"
+                        placeholder="Last Name *"
+                        required
+                        className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
+                      />
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Form */}
-        <div className="lg:w-[31.3333%] relative p-[30px] pt-[30px] shadow-[0px_7px_29px_0px_rgba(100,100,111,0.2)]">
-          <div className="relative">
-            <form className="p-[5px] mx-auto">
-              <div className="space-y-[25px]">
-                {/* First Name */}
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder="First Name *"
-                    required
-                    className="w-full h-[50px] bg-[#f7f7f7] border-[0.8px] border-[#c4c4c4] text-[#6b6b6b] text-[16px] px-[12px] py-[12px] rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                </div>
-
-                {/* Last Name */}
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder="Last Name *"
-                    required
-                    className="w-full h-[50px] bg-[#f7f7f7] border-[0.8px] border-[#c4c4c4] text-[#6b6b6b] text-[16px] px-[12px] py-[12px] rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                </div>
-
-                {/* Email */}
-                <div className="relative">
                   <Input
                     type="email"
-                    name="email"
                     placeholder="Email Address *"
                     required
-                    className="w-full h-[50px] bg-[#f7f7f7] border-[0.8px] border-[#c4c4c4] text-[#6b6b6b] text-[16px] px-[12px] py-[12px] rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
-                </div>
-
-                {/* Phone */}
-                <div className="relative">
                   <Input
                     type="tel"
-                    name="phone"
                     placeholder="Phone Number"
-                    className="w-full h-[50px] bg-[#f7f7f7] border-[0.8px] border-[#c4c4c4] text-[#6b6b6b] text-[16px] px-[12px] py-[12px] rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
-                </div>
-
-                {/* Message */}
-                <div className="relative">
                   <Textarea
                     placeholder="Message *"
                     required
-                    className="w-full h-[200px] bg-[#f7f7f7] border-[0.8px] border-[#c4c4c4] text-[#6b6b6b] text-[16px] px-[12px] py-[12px] rounded-none resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px] text-sm placeholder:text-gray-400 resize-none focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
-                </div>
-
-                {/* Submit Button */}
-                <div className="relative">
                   <Button
                     type="submit"
-                    className="w-full bg-law-accent-dark text-law-accent border-law-accent font-outfit text-[22px] h-[50px] hover:bg-law-accent-dark/90 transition-all duration-500 rounded-none"
+                    className="w-full bg-neo-blue hover:bg-neo-blue-dark text-white font-outfit font-semibold h-11 text-sm transition-colors duration-300 rounded-lg"
                   >
-                    SUBMIT
+                    Submit
                   </Button>
-                </div>
-              </div>
-
-              {/* Honeypot Field */}
-              <div className="absolute invisible" aria-hidden="true">
-                <label htmlFor="honeypot-field">
-                  If you are a human seeing this field, please leave it empty.
-                  <Input
-                    type="text"
-                    id="honeypot-field"
-                    name="honeypot"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    className="bg-white border-[0.8px] border-[#bbbbbb] text-[#4e4e4e] text-[13.3333px] p-[2px] invisible"
-                  />
-                </label>
-              </div>
-            </form>
+                </form>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

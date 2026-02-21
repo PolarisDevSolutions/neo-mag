@@ -2,7 +2,6 @@ import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import Seo from '@site/components/Seo';
 import Layout from '@site/components/layout/Layout';
-import { Button } from '@site/components/ui/button';
 
 const NotFound = () => {
   const location = useLocation();
@@ -22,21 +21,22 @@ const NotFound = () => {
         noindex={true}
       />
       
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-[60vh] flex items-center justify-center bg-gray-50">
         <div className="text-center max-w-2xl mx-auto px-4">
-          <h1 className="font-playfair text-[clamp(4rem,10vw,120px)] font-light text-law-accent mb-4">
+          <p className="font-playfair text-[clamp(4rem,10vw,120px)] font-light text-neo-blue mb-4 leading-none">
             404
-          </h1>
-          <p className="font-outfit text-[28px] text-white mb-4">
-            Oops! Page not found
           </p>
-          <p className="font-outfit text-[18px] text-white/70 mb-8">
+          <h1 className="font-outfit text-2xl font-semibold text-gray-900 mb-3">
+            Page not found
+          </h1>
+          <p className="font-outfit text-base text-gray-500 mb-8">
             The page you are looking for doesn't exist or has been moved.
           </p>
-          <Link to="/">
-            <Button className="bg-law-accent text-black font-outfit text-[20px] px-8 py-6 h-auto hover:bg-law-accent/90">
-              Return to Home
-            </Button>
+          <Link
+            to="/"
+            className="inline-block bg-neo-blue text-white font-outfit font-semibold px-8 py-3 rounded-lg hover:bg-neo-blue-dark transition-colors"
+          >
+            Return to Home
           </Link>
         </div>
       </div>

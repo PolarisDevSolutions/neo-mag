@@ -1,21 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, Phone, Activity, FileText, Waves, Layers, Stethoscope, Heart, MapPin, Scan, type LucideIcon } from "lucide-react";
+import {
+  Star, Phone, Activity, FileText, Waves, Layers,
+  Stethoscope, Heart, MapPin, Scan, type LucideIcon,
+} from "lucide-react";
 import type { ContentBlock } from "@site/lib/blocks";
+import ReviewsSlider from "@site/components/ReviewsSlider";
 
-// ── Icon map (expandable) ──────────────────────────────────────────────────
+// ── Icon map ───────────────────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
-  Activity,
-  FileText,
-  Waves,
-  Layers,
-  Stethoscope,
-  Heart,
-  MapPin,
-  Phone,
-  Scan,
+  Activity, FileText, Waves, Layers, Stethoscope, Heart, MapPin, Phone, Scan,
 };
-
 function getIcon(name?: string): LucideIcon {
   return (name && iconMap[name]) || FileText;
 }
@@ -46,21 +41,22 @@ export default function BlockRenderer({ content, isPreview = false }: BlockRende
 
 function RenderBlock({ block, isPreview }: { block: ContentBlock; isPreview: boolean }) {
   switch (block.type) {
-    case "hero":            return <HeroBlock block={block} isPreview={isPreview} />;
-    case "heading":         return <HeadingBlock block={block} />;
-    case "paragraph":       return <ParagraphBlock block={block} />;
-    case "bullets":         return <BulletsBlock block={block} />;
-    case "cta":             return <CTABlock block={block} />;
-    case "image":           return <ImageBlock block={block} />;
-    case "map":             return <MapBlock block={block} />;
-    case "two-column":      return <TwoColumnBlock block={block} isPreview={isPreview} />;
-    case "services-grid":   return <ServicesGridBlock block={block} />;
-    case "testimonials":    return <TestimonialsBlock block={block} />;
-    case "contact-form":    return <ContactFormBlock block={block} />;
+    case "hero":                return <HeroBlock block={block} isPreview={isPreview} />;
+    case "heading":             return <HeadingBlock block={block} />;
+    case "paragraph":           return <ParagraphBlock block={block} />;
+    case "bullets":             return <BulletsBlock block={block} />;
+    case "cta":                 return <CTABlock block={block} />;
+    case "image":               return <ImageBlock block={block} />;
+    case "map":                 return <MapBlock block={block} />;
+    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} />;
+    case "services-grid":       return <ServicesGridBlock block={block} />;
+    case "testimonials":        return <TestimonialsBlock block={block} />;
+    case "contact-form":        return <ContactFormBlock block={block} />;
     case "practice-areas-grid": return <PracticeAreasGridBlock block={block} />;
-    case "google-reviews":  return <GoogleReviewsBlock block={block} />;
-    case "attorney-bio":    return <AttorneyBioBlock block={block} />;
-    case "stats":           return <StatsBlock block={block} />;
+    case "google-reviews":      return <GoogleReviewsBlock block={block} />;
+    case "attorney-bio":        return <AttorneyBioBlock block={block} />;
+    case "stats":               return <StatsBlock block={block} />;
+    case "reviews-slider":      return <ReviewsSlider />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -70,26 +66,34 @@ function RenderBlock({ block, isPreview }: { block: ContentBlock; isPreview: boo
 }
 
 // ── Hero ───────────────────────────────────────────────────────────────────
-function HeroBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean }) {
+function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean }) {
   return (
     <section
-      className="relative bg-law-dark py-20 px-6 text-center"
-      style={block.backgroundImage ? { backgroundImage: `url(${block.backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+      className="relative bg-neo-blue py-20 px-6 text-center overflow-hidden"
+      style={
+        block.backgroundImage
+          ? { backgroundImage: `url(${block.backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" }
+          : undefined
+      }
     >
-      {block.backgroundImage && <div className="absolute inset-0 bg-law-dark/70" />}
+      {block.backgroundImage && <div className="absolute inset-0 bg-neo-blue/80" />}
+      {/* Subtle decorative circles */}
+      <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5 pointer-events-none" />
+      <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
+
       <div className="relative max-w-4xl mx-auto">
-        <h1 className="font-playfair text-[clamp(2rem,5vw,3.5rem)] font-light text-white leading-tight mb-4">
+        <h1 className="font-outfit font-bold text-[clamp(2rem,5vw,3.2rem)] text-white leading-tight mb-4">
           {block.title}
         </h1>
         {block.subtitle && (
-          <p className="font-outfit text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+          <p className="font-outfit text-base md:text-lg text-white/85 mb-8 max-w-2xl mx-auto leading-relaxed">
             {block.subtitle}
           </p>
         )}
         {block.showCTA && (
           <a
             href={`tel:${(block.ctaPhone || "018520640").replace(/\D/g, "")}`}
-            className="inline-flex items-center gap-2 bg-law-accent text-black font-outfit font-semibold px-8 py-4 hover:bg-law-accent/80 transition-colors text-lg"
+            className="inline-flex items-center gap-2 bg-white text-neo-blue font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-gray-100 transition-colors text-base"
           >
             <Phone className="h-5 w-5" />
             {block.ctaText || "Zakažite pregled"}
@@ -103,12 +107,15 @@ function HeroBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: 
 // ── Heading ────────────────────────────────────────────────────────────────
 function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading" }> }) {
   const Tag = `h${block.level}` as "h1" | "h2" | "h3";
-  const sizes = { 1: "text-4xl md:text-5xl", 2: "text-3xl md:text-4xl", 3: "text-xl md:text-2xl" };
+  const cls = {
+    1: "text-3xl md:text-4xl font-bold text-gray-900",
+    2: "text-2xl md:text-3xl font-bold text-gray-900",
+    3: "text-lg md:text-xl font-semibold text-gray-800",
+  }[block.level];
+
   return (
-    <div className="max-w-[1200px] mx-auto w-[90%] py-4">
-      <Tag className={`font-playfair font-light ${sizes[block.level]} text-white`}>
-        {block.text}
-      </Tag>
+    <div className="max-w-[1200px] mx-auto w-[90%] pt-8 pb-2">
+      <Tag className={`font-outfit ${cls} leading-snug`}>{block.text}</Tag>
     </div>
   );
 }
@@ -118,7 +125,7 @@ function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "parag
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-2">
       <div
-        className="font-outfit text-base md:text-lg text-white/85 leading-relaxed [&_strong]:text-white [&_strong]:font-semibold"
+        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold"
         dangerouslySetInnerHTML={{ __html: block.content }}
       />
     </div>
@@ -129,10 +136,10 @@ function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "parag
 function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets" }> }) {
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-2">
-      <ul className="space-y-2">
+      <ul className="space-y-2.5">
         {block.items.map((item, i) => (
-          <li key={i} className="flex items-start gap-3 font-outfit text-base md:text-lg text-white/85">
-            <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-law-accent" />
+          <li key={i} className="flex items-start gap-3 font-outfit text-base md:text-lg text-gray-700">
+            <span className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-neo-blue" />
             {item}
           </li>
         ))}
@@ -145,17 +152,17 @@ function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets
 function CTABlock({ block }: { block: Extract<ContentBlock, { type: "cta" }> }) {
   const isOutline = block.variant === "outline";
   return (
-    <div className="max-w-[1200px] mx-auto w-[90%] py-4">
+    <div className="max-w-[1200px] mx-auto w-[90%] py-6">
       <a
         href={`tel:${block.phone.replace(/\D/g, "")}`}
-        className={`inline-flex items-center gap-2 px-8 py-4 font-outfit font-semibold text-lg transition-colors ${
+        className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold text-base transition-colors ${
           isOutline
-            ? "border-2 border-law-accent text-law-accent hover:bg-law-accent hover:text-black"
-            : "bg-law-accent text-black hover:bg-law-accent/80"
+            ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
+            : "bg-neo-blue text-white hover:bg-neo-blue-dark"
         }`}
       >
         <Phone className="h-5 w-5" />
-        {block.text} — {block.phone}
+        {block.text} · {block.phone}
       </a>
     </div>
   );
@@ -165,7 +172,7 @@ function CTABlock({ block }: { block: Extract<ContentBlock, { type: "cta" }> }) 
 function ImageBlock({ block }: { block: Extract<ContentBlock, { type: "image" }> }) {
   return (
     <figure className="max-w-[1200px] mx-auto w-[90%] py-4">
-      <img src={block.src} alt={block.alt || ""} className="w-full h-auto" loading="lazy" />
+      <img src={block.src} alt={block.alt || ""} className="w-full h-auto rounded-lg" loading="lazy" />
     </figure>
   );
 }
@@ -189,14 +196,14 @@ function MapBlock({ block }: { block: Extract<ContentBlock, { type: "map" }> }) 
     );
   }
   return (
-    <div className="bg-law-card border border-law-border py-10 text-center">
-      <MapPin className="h-10 w-10 text-law-accent mx-auto mb-3" />
-      <p className="font-outfit text-white mb-4">{block.address}</p>
+    <div className="bg-gray-50 border border-gray-200 py-10 text-center rounded-lg mx-auto max-w-[1200px] w-[90%] my-4">
+      <MapPin className="h-10 w-10 text-neo-blue mx-auto mb-3" />
+      <p className="font-outfit text-gray-800 mb-4">{block.address}</p>
       <a
         href={mapsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block bg-law-accent text-black font-outfit px-6 py-3 hover:bg-law-accent/80 transition-colors"
+        className="inline-block bg-neo-blue text-white font-outfit font-semibold px-6 py-3 rounded-lg hover:bg-neo-blue-dark transition-colors"
       >
         Otvori na Google Mapama
       </a>
@@ -207,15 +214,11 @@ function MapBlock({ block }: { block: Extract<ContentBlock, { type: "map" }> }) 
 // ── Two-column ─────────────────────────────────────────────────────────────
 function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean }) {
   return (
-    <div className="bg-law-dark py-12">
+    <div className="bg-gray-50 border-y border-gray-200 py-12 my-4">
       <div className="max-w-[1200px] mx-auto w-[90%]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <div>
-            <BlockRenderer content={block.left} isPreview={isPreview} />
-          </div>
-          <div>
-            <BlockRenderer content={block.right} isPreview={isPreview} />
-          </div>
+          <div><BlockRenderer content={block.left} isPreview={isPreview} /></div>
+          <div><BlockRenderer content={block.right} isPreview={isPreview} /></div>
         </div>
       </div>
     </div>
@@ -225,10 +228,10 @@ function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { t
 // ── Services grid ──────────────────────────────────────────────────────────
 function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "services-grid" }> }) {
   return (
-    <section className="bg-law-dark py-12">
+    <section className="py-12 bg-white">
       {block.heading && (
         <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
-          <h2 className="font-playfair text-3xl md:text-4xl font-light text-white">{block.heading}</h2>
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
         </div>
       )}
       <div className="max-w-[1200px] mx-auto w-[90%]">
@@ -236,18 +239,18 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
           {block.services.map((service, i) => {
             const Icon = getIcon(service.icon);
             const inner = (
-              <div className="bg-law-card border border-law-border p-6 h-full group hover:border-law-accent transition-colors duration-300">
-                <div className="bg-law-dark inline-flex p-3 mb-4 group-hover:bg-law-accent transition-colors duration-300">
-                  <Icon className="h-8 w-8 text-law-accent group-hover:text-black transition-colors duration-300" strokeWidth={1.5} />
+              <div className="bg-white border border-gray-200 rounded-xl p-6 h-full group hover:border-neo-blue hover:shadow-md transition-all duration-300">
+                <div className="bg-neo-blue-light inline-flex p-3 rounded-lg mb-4 group-hover:bg-neo-blue transition-colors duration-300">
+                  <Icon className="h-7 w-7 text-neo-blue group-hover:text-white transition-colors duration-300" strokeWidth={1.5} />
                 </div>
-                <h3 className="font-playfair text-xl text-white mb-2">{service.title}</h3>
-                <p className="font-outfit text-sm md:text-base text-white/70 leading-relaxed">{service.description}</p>
+                <h3 className="font-outfit font-bold text-lg text-gray-900 mb-2">{service.title}</h3>
+                {service.description && (
+                  <p className="font-outfit text-sm text-gray-600 leading-relaxed">{service.description}</p>
+                )}
               </div>
             );
             return service.link ? (
-              <Link key={i} to={service.link} className="block">
-                {inner}
-              </Link>
+              <Link key={i} to={service.link} className="block">{inner}</Link>
             ) : (
               <div key={i}>{inner}</div>
             );
@@ -261,28 +264,28 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
 // ── Testimonials ───────────────────────────────────────────────────────────
 function TestimonialsBlock({ block }: { block: Extract<ContentBlock, { type: "testimonials" }> }) {
   return (
-    <section className="bg-law-dark py-12">
+    <section className="bg-gray-50 py-12 border-y border-gray-200">
       {block.heading && (
         <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
-          <h2 className="font-playfair text-3xl md:text-4xl font-light text-white">{block.heading}</h2>
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
         </div>
       )}
       <div className="max-w-[1200px] mx-auto w-[90%]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {block.testimonials.map((t, i) => (
-            <div key={i} className="bg-law-card border border-law-border p-6">
+            <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-law-accent text-black font-playfair font-bold flex items-center justify-center text-lg">
+                <div className="w-11 h-11 rounded-full bg-neo-blue text-white font-outfit font-bold flex items-center justify-center text-sm">
                   {t.initials}
                 </div>
                 <div className="flex gap-0.5">
                   {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-law-accent text-law-accent" />
+                    <Star key={j} className="h-4 w-4 fill-neo-blue text-neo-blue" />
                   ))}
                 </div>
               </div>
-              <p className="font-outfit text-white/80 italic mb-3">"{t.text}"</p>
-              {t.author && <p className="font-outfit text-white font-semibold text-sm">— {t.author}</p>}
+              <p className="font-outfit text-gray-700 italic text-sm mb-3">"{t.text}"</p>
+              {t.author && <p className="font-outfit text-gray-900 font-semibold text-sm">— {t.author}</p>}
             </div>
           ))}
         </div>
@@ -310,72 +313,63 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: wire to a backend endpoint or email service
     setSubmitted(true);
   }
 
   return (
-    <section className="bg-law-card border-t border-law-border py-12">
+    <section className="bg-gray-50 border-y border-gray-200 py-12">
       <div className="max-w-[700px] mx-auto w-[90%]">
-        <h2 className="font-playfair text-2xl md:text-3xl text-white mb-6">{block.heading}</h2>
+        <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">{block.heading}</h2>
         {submitted ? (
-          <div className="bg-law-dark border border-law-accent p-8 text-center">
-            <p className="font-outfit text-law-accent text-xl mb-2">Hvala!</p>
-            <p className="font-outfit text-white/80">Vaš zahtev je primljen. Kontaktiraćemo Vas u najkraćem roku.</p>
+          <div className="bg-neo-blue-light border border-neo-blue/30 rounded-xl p-8 text-center">
+            <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Hvala!</p>
+            <p className="font-outfit text-gray-700">Vaš zahtev je primljen. Kontaktiraćemo Vas u najkraćem roku.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {[
+              { label: "Ime i prezime *", name: "name", type: "text", placeholder: "Vaše ime", required: true },
+              { label: "Telefon *", name: "phone", type: "tel", placeholder: "npr. 060 1234567", required: true },
+            ].map(({ label, name, type, placeholder, required }) => (
+              <div key={name}>
+                <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">{label}</label>
+                <input
+                  required={required}
+                  name={name}
+                  type={type}
+                  value={formData[name as keyof typeof formData]}
+                  onChange={handleChange}
+                  placeholder={placeholder}
+                  className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue focus:border-transparent placeholder:text-gray-400"
+                />
+              </div>
+            ))}
             <div>
-              <label className="block font-outfit text-sm text-white/70 mb-1">Ime i prezime *</label>
-              <input
-                required
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Vaše ime"
-                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent placeholder:text-white/30"
-              />
-            </div>
-            <div>
-              <label className="block font-outfit text-sm text-white/70 mb-1">Telefon *</label>
-              <input
-                required
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="npr. 060 1234567"
-                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent placeholder:text-white/30"
-              />
-            </div>
-            <div>
-              <label className="block font-outfit text-sm text-white/70 mb-1">Vrsta pregleda</label>
+              <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">Vrsta pregleda</label>
               <select
                 name="service"
                 value={formData.service}
                 onChange={handleChange}
-                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent"
+                className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue"
               >
                 <option value="">— Izaberite pregled —</option>
-                {services.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
+                {services.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label className="block font-outfit text-sm text-white/70 mb-1">Napomena</label>
+              <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">Napomena</label>
               <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 rows={3}
                 placeholder="Dodatne napomene..."
-                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent placeholder:text-white/30 resize-none"
+                className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue resize-none placeholder:text-gray-400"
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-law-accent text-black font-outfit font-semibold py-4 hover:bg-law-accent/80 transition-colors"
+              className="w-full bg-neo-blue text-white font-outfit font-bold py-3.5 rounded-lg hover:bg-neo-blue-dark transition-colors"
             >
               Pošalji zahtev
             </button>
@@ -397,14 +391,12 @@ function PracticeAreasGridBlock({ block }: { block: Extract<ContentBlock, { type
           <a
             key={i}
             href={area.link || "#"}
-            className="relative min-h-[350px] overflow-hidden group"
+            className="relative min-h-[300px] overflow-hidden group"
             style={area.image ? { backgroundImage: `url(${area.image})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70 group-hover:to-law-accent-dark/80 transition-all duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60 group-hover:to-neo-blue/80 transition-all duration-500" />
             <div className="relative h-full flex items-end p-5">
-              <h3 className="font-playfair text-3xl text-white font-light group-hover:text-law-accent transition-colors duration-300">
-                {area.title}
-              </h3>
+              <h3 className="font-outfit font-bold text-2xl text-white">{area.title}</h3>
             </div>
           </a>
         ))}
@@ -413,16 +405,18 @@ function PracticeAreasGridBlock({ block }: { block: Extract<ContentBlock, { type
   }
 
   return (
-    <section className="bg-law-dark py-12">
+    <section className="bg-white py-12">
       <div className="max-w-[1200px] mx-auto w-[90%]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {block.areas.map((area, i) => {
             const Icon = getIcon(area.icon);
             return (
-              <a key={i} href={area.link || "#"} className="block bg-law-card border border-law-border p-6 hover:border-law-accent transition-colors group">
-                <Icon className="h-10 w-10 text-law-accent mb-3" strokeWidth={1.5} />
-                <h3 className="font-playfair text-xl text-white mb-2">{area.title}</h3>
-                {area.description && <p className="font-outfit text-sm text-white/70">{area.description}</p>}
+              <a key={i} href={area.link || "#"} className="block bg-white border border-gray-200 rounded-xl p-6 hover:border-neo-blue hover:shadow-md transition-all group">
+                <div className="bg-neo-blue-light inline-flex p-3 rounded-lg mb-4 group-hover:bg-neo-blue transition-colors duration-300">
+                  <Icon className="h-7 w-7 text-neo-blue group-hover:text-white transition-colors duration-300" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-outfit font-bold text-lg text-gray-900 mb-2">{area.title}</h3>
+                {area.description && <p className="font-outfit text-sm text-gray-600">{area.description}</p>}
               </a>
             );
           })}
@@ -435,23 +429,23 @@ function PracticeAreasGridBlock({ block }: { block: Extract<ContentBlock, { type
 // ── Google reviews ─────────────────────────────────────────────────────────
 function GoogleReviewsBlock({ block }: { block: Extract<ContentBlock, { type: "google-reviews" }> }) {
   return (
-    <section className="bg-law-dark py-12">
+    <section className="bg-gray-50 border-y border-gray-200 py-12">
       {block.heading && (
         <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
-          <h2 className="font-playfair text-3xl md:text-4xl font-light text-white">{block.heading}</h2>
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
         </div>
       )}
       <div className="max-w-[1200px] mx-auto w-[90%]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {block.reviews.map((r, i) => (
-            <div key={i} className="bg-law-card border border-law-border p-5">
+            <div key={i} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
               <div className="flex gap-0.5 mb-3">
                 {Array.from({ length: r.rating }).map((_, j) => (
-                  <Star key={j} className="h-4 w-4 fill-law-accent text-law-accent" />
+                  <Star key={j} className="h-4 w-4 fill-neo-blue text-neo-blue" />
                 ))}
               </div>
-              <p className="font-outfit text-white/80 text-base mb-4">"{r.text}"</p>
-              <strong className="font-outfit text-white text-sm">{r.author}</strong>
+              <p className="font-outfit text-gray-700 text-sm mb-4 italic">"{r.text}"</p>
+              <strong className="font-outfit text-gray-900 text-sm">{r.author}</strong>
             </div>
           ))}
         </div>
@@ -466,13 +460,13 @@ function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "att
     <div className="max-w-[1200px] mx-auto w-[90%] py-10">
       <div className="flex flex-col md:flex-row gap-8">
         <div className="md:w-1/3">
-          <img src={block.image} alt={block.name} className="w-full h-auto object-cover" loading="lazy" />
+          <img src={block.image} alt={block.name} className="w-full h-auto rounded-xl object-cover" loading="lazy" />
         </div>
         <div className="md:w-2/3">
-          <h3 className="font-playfair text-2xl text-white mb-1">{block.name}</h3>
-          <p className="font-outfit text-law-accent mb-4">{block.title}</p>
-          <p className="font-outfit text-white/80 mb-4 leading-relaxed">{block.bio}</p>
-          <a href={`tel:${block.phone.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 text-law-accent font-outfit hover:underline">
+          <h3 className="font-outfit font-bold text-2xl text-gray-900 mb-1">{block.name}</h3>
+          <p className="font-outfit text-neo-blue font-semibold mb-4">{block.title}</p>
+          <p className="font-outfit text-gray-700 mb-4 leading-relaxed">{block.bio}</p>
+          <a href={`tel:${block.phone.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 text-neo-blue font-outfit font-semibold hover:underline">
             <Phone className="h-4 w-4" />
             {block.phone}
           </a>
@@ -485,13 +479,13 @@ function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "att
 // ── Stats ──────────────────────────────────────────────────────────────────
 function StatsBlock({ block }: { block: Extract<ContentBlock, { type: "stats" }> }) {
   return (
-    <section className="bg-law-accent py-10">
+    <section className="bg-neo-blue py-10">
       <div className="max-w-[1200px] mx-auto w-[90%]">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {block.stats.map((stat, i) => (
             <div key={i}>
-              <p className="font-playfair text-4xl md:text-5xl font-light text-black mb-1">{stat.value}</p>
-              <p className="font-outfit text-sm md:text-base text-black/70 uppercase tracking-wide">{stat.label}</p>
+              <p className="font-outfit font-bold text-4xl md:text-5xl text-white mb-1">{stat.value}</p>
+              <p className="font-outfit text-sm md:text-base text-white/70 uppercase tracking-wide">{stat.label}</p>
             </div>
           ))}
         </div>

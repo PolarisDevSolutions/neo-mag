@@ -23,6 +23,11 @@ export default {
         outfit: ["Outfit", "Helvetica", "Arial", "Lucida", "sans-serif"],
       },
       colors: {
+        // ── New design system ──────────────────────────────
+        "neo-blue":       "#025bfa",
+        "neo-blue-dark":  "#0147c8",
+        "neo-blue-light": "#e8f0ff",
+        // ── Legacy tokens kept for admin panel compatibility ─
         "law-dark": "rgb(6, 29, 27)",
         "law-card": "rgb(20, 41, 40)",
         "law-border": "rgb(97, 111, 111)",

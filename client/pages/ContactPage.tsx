@@ -13,7 +13,6 @@ import {
 import { useContactContent } from "@site/hooks/useContactContent";
 import { useGlobalPhone } from "@site/contexts/SiteSettingsContext";
 
-// Icon mapping for contact methods
 const iconMap: Record<string, LucideIcon> = {
   Phone,
   Mail,
@@ -25,7 +24,6 @@ export default function ContactPage() {
   const { content } = useContactContent();
   const { phoneDisplay, phoneLabel } = useGlobalPhone();
 
-  // Map contact methods from CMS content with icon components
   const contactMethods = content.contactMethods.methods.map((method) => ({
     icon: iconMap[method.icon] || Phone,
     title: method.title,
@@ -33,10 +31,7 @@ export default function ContactPage() {
     subdDetail: method.subDetail,
   }));
 
-  // Map office hours from CMS content
   const officeHours = content.officeHours.items;
-
-  // Map process steps from CMS content
   const whatToExpect = content.process.steps;
 
   return (
@@ -47,59 +42,51 @@ export default function ContactPage() {
       />
 
       {/* Hero Section */}
-      <div className="bg-law-dark pt-[30px] md:pt-[54px] pb-[30px] md:pb-[54px]">
-        <div className="max-w-[2560px] mx-auto w-[95%] md:w-[90%]">
-          <div className="text-center max-w-[900px] mx-auto">
-            {/* H1 Title - Section Label */}
-            <h1 className="font-outfit text-[18px] md:text-[24px] leading-tight md:leading-[36px] text-law-accent mb-[10px]">
-              {content.hero.sectionLabel}
-            </h1>
-            {/* Tagline - styled as large text but not H1 */}
-            <p className="font-playfair text-[clamp(2.5rem,7vw,68.8px)] font-light leading-[1.2] text-white mb-[20px] md:mb-[30px]">
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: content.hero.tagline.replace(
-                    /(Talk)/g,
-                    '<span class="text-law-accent">$1</span>',
-                  ),
-                }}
-              />
-            </p>
-            <p className="font-outfit text-[16px] md:text-[20px] leading-[24px] md:leading-[30px] text-white/90">
-              {content.hero.description}
-            </p>
-          </div>
+      <div className="bg-neo-blue py-14 md:py-20">
+        <div className="max-w-[1200px] mx-auto w-[90%] text-center max-w-[900px]">
+          <h1 className="font-outfit text-sm font-semibold uppercase tracking-widest text-white/70 mb-3">
+            {content.hero.sectionLabel}
+          </h1>
+          <p className="font-playfair text-[clamp(2rem,5vw,3.5rem)] font-light leading-tight text-white mb-4">
+            <span
+              dangerouslySetInnerHTML={{
+                __html: content.hero.tagline.replace(
+                  /(Talk)/g,
+                  '<span class="font-semibold">$1</span>',
+                ),
+              }}
+            />
+          </p>
+          <p className="font-outfit text-base text-white/80 max-w-2xl mx-auto">
+            {content.hero.description}
+          </p>
         </div>
       </div>
 
       {/* Contact Methods Section */}
-      <div className="bg-white py-[40px] md:py-[60px]">
-        <div className="max-w-[2560px] mx-auto w-[95%] md:w-[90%] lg:w-[85%]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+      <div className="bg-white py-12 md:py-16">
+        <div className="max-w-[1200px] mx-auto w-[90%]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {contactMethods.map((method, index) => {
               const Icon = method.icon;
               return (
                 <div
                   key={index}
-                  className="bg-law-card border border-law-border p-[30px] md:p-[40px] text-center group hover:border-law-accent transition-all duration-300"
+                  className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 text-center group hover:border-neo-blue hover:shadow-md transition-all duration-300"
                 >
-                  <div className="flex justify-center mb-[20px]">
-                    <div className="bg-law-accent p-[20px] inline-block transition-all duration-300 group-hover:bg-white group-hover:scale-110">
+                  <div className="flex justify-center mb-5">
+                    <div className="bg-neo-blue-light group-hover:bg-neo-blue p-5 rounded-xl inline-block transition-all duration-300">
                       <Icon
-                        className="w-[35px] h-[35px] md:w-[40px] md:h-[40px] text-black"
+                        className="w-8 h-8 text-neo-blue group-hover:text-white transition-colors duration-300"
                         strokeWidth={1.5}
                       />
                     </div>
                   </div>
-                  <h3 className="font-playfair text-[24px] md:text-[28px] leading-tight text-law-accent mb-[15px]">
+                  <h3 className="font-outfit font-bold text-lg text-gray-900 mb-3">
                     {method.title}
                   </h3>
-                  <p className="font-outfit text-[18px] md:text-[20px] text-white mb-[8px]">
-                    {method.detail}
-                  </p>
-                  <p className="font-outfit text-[14px] md:text-[16px] text-white/70">
-                    {method.subdDetail}
-                  </p>
+                  <p className="font-outfit text-gray-700 mb-1">{method.detail}</p>
+                  <p className="font-outfit text-sm text-gray-500">{method.subdDetail}</p>
                 </div>
               );
             })}
@@ -108,65 +95,56 @@ export default function ContactPage() {
       </div>
 
       {/* Contact Form & Office Hours Section */}
-      <div className="bg-law-dark py-[40px] md:py-[60px]">
-        <div className="max-w-[2560px] mx-auto w-[95%] md:w-[90%] lg:w-[85%]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-[8%]">
-            {/* Left Side - Contact Form */}
+      <div className="bg-gray-50 border-y border-gray-200 py-12 md:py-16">
+        <div className="max-w-[1200px] mx-auto w-[90%]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+            {/* Left: Form */}
             <div>
-              <div className="mb-[20px] md:mb-[30px]">
-                <h2 className="font-playfair text-[32px] md:text-[40px] leading-tight text-white pb-[10px]">
-                  {content.form.heading}
-                </h2>
-                {content.form.subtext && (
-                  <p className="font-outfit text-[16px] md:text-[18px] leading-[24px] md:leading-[28px] text-white/80">
-                    {content.form.subtext}
-                  </p>
-                )}
-              </div>
+              <h2 className="font-playfair text-[clamp(1.8rem,3vw,2.5rem)] leading-tight text-gray-900 mb-3">
+                {content.form.heading}
+              </h2>
+              {content.form.subtext && (
+                <p className="font-outfit text-base text-gray-600 mb-6">
+                  {content.form.subtext}
+                </p>
+              )}
               <ContactForm />
             </div>
 
-            {/* Right Side - Office Hours & Additional Info */}
-            <div className="space-y-[30px] md:space-y-[40px]">
+            {/* Right: Office Hours + CTA */}
+            <div className="space-y-6">
               {/* Office Hours */}
-              <div className="bg-law-card border border-law-border p-[30px] md:p-[40px]">
-                <div className="flex items-center gap-3 mb-[20px]">
-                  <div className="bg-law-accent p-[15px]">
-                    <Clock
-                      className="w-[30px] h-[30px] text-black"
-                      strokeWidth={1.5}
-                    />
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="bg-neo-blue-light p-3 rounded-lg">
+                    <Clock className="w-5 h-5 text-neo-blue" strokeWidth={1.5} />
                   </div>
-                  <h3 className="font-playfair text-[24px] md:text-[28px] leading-tight text-white">
+                  <h3 className="font-outfit font-bold text-lg text-gray-900">
                     {content.officeHours.heading}
                   </h3>
                 </div>
-                <div className="space-y-[15px]">
+                <div className="space-y-3">
                   {officeHours.map((item, index) => (
                     <div
                       key={index}
-                      className="flex justify-between items-center pb-[15px] border-b border-law-border/50 last:border-0 last:pb-0"
+                      className="flex justify-between items-center pb-3 border-b border-gray-100 last:border-0 last:pb-0"
                     >
-                      <span className="font-outfit text-[16px] md:text-[18px] text-white/80">
-                        {item.day}
-                      </span>
-                      <span className="font-outfit text-[16px] md:text-[18px] text-law-accent font-medium">
-                        {item.hours}
-                      </span>
+                      <span className="font-outfit text-sm text-gray-600">{item.day}</span>
+                      <span className="font-outfit text-sm font-semibold text-neo-blue">{item.hours}</span>
                     </div>
                   ))}
                 </div>
                 {content.officeHours.note && (
-                  <div className="mt-[25px] pt-[25px] border-t border-law-border/50">
-                    <p className="font-outfit text-[14px] md:text-[16px] text-white/70 leading-[22px] md:leading-[24px]">
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="font-outfit text-xs text-gray-500 leading-relaxed">
                       {content.officeHours.note}
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Call to Action Boxes */}
-              <div className="space-y-[20px]">
+              {/* CTAs */}
+              <div className="space-y-3">
                 <CallBox
                   icon={Phone}
                   title={phoneLabel}
@@ -186,40 +164,32 @@ export default function ContactPage() {
       </div>
 
       {/* What to Expect Section */}
-      <div className="bg-white py-[40px] md:py-[60px]">
-        <div className="max-w-[2560px] mx-auto w-[95%] md:w-[90%] lg:w-[80%]">
-          <div className="text-center mb-[30px] md:mb-[50px]">
-            <div className="mb-[10px]">
-              <p className="font-outfit text-[18px] md:text-[24px] leading-tight md:leading-[36px] text-[rgb(107,141,12)]">
-                {content.process.sectionLabel}
-              </p>
-            </div>
-            <h2 className="font-playfair text-[32px] md:text-[48px] lg:text-[54px] leading-tight md:leading-[54px] text-black">
+      <div className="bg-white py-12 md:py-16">
+        <div className="max-w-[1200px] mx-auto w-[90%]">
+          <div className="text-center mb-10">
+            <p className="font-outfit text-neo-blue font-semibold text-sm uppercase tracking-widest mb-3">
+              {content.process.sectionLabel}
+            </p>
+            <h2 className="font-playfair text-[clamp(1.8rem,3.5vw,2.8rem)] leading-tight text-gray-900">
               {content.process.heading}
             </h2>
             {content.process.subtitle && (
-              <p className="font-outfit text-[16px] md:text-[18px] leading-[24px] md:leading-[28px] text-black/80 mt-[15px]">
+              <p className="font-outfit text-base text-gray-600 mt-3 max-w-2xl mx-auto">
                 {content.process.subtitle}
               </p>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {whatToExpect.map((item, index) => (
               <div key={index} className="text-center">
-                <div className="mb-[20px] flex justify-center">
-                  <div className="w-[60px] h-[60px] md:w-[70px] md:h-[70px] bg-law-accent flex items-center justify-center">
-                    <span className="font-playfair text-[32px] md:text-[40px] text-black font-bold">
-                      {item.number}
-                    </span>
+                <div className="mb-5 flex justify-center">
+                  <div className="w-14 h-14 bg-neo-blue rounded-full flex items-center justify-center">
+                    <span className="font-outfit font-bold text-xl text-white">{item.number}</span>
                   </div>
                 </div>
-                <h3 className="font-playfair text-[22px] md:text-[26px] leading-tight text-black pb-[12px]">
-                  {item.title}
-                </h3>
-                <p className="font-outfit text-[14px] md:text-[16px] leading-[22px] md:leading-[24px] text-black/80">
-                  {item.description}
-                </p>
+                <h3 className="font-outfit font-bold text-base text-gray-900 mb-2">{item.title}</h3>
+                <p className="font-outfit text-sm text-gray-600 leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
@@ -227,33 +197,34 @@ export default function ContactPage() {
       </div>
 
       {/* Map Section */}
-      <div className="bg-law-dark py-[40px] md:py-[60px]">
-        <div className="max-w-[2560px] mx-auto w-[95%] md:w-[90%]">
-          <div className="text-center mb-[30px] md:mb-[40px]">
-            <h2 className="font-playfair text-[32px] md:text-[48px] leading-tight text-white pb-[10px]">
-              {content.visitOffice.heading}
-            </h2>
-            {content.visitOffice.subtext && (
-              <p className="font-outfit text-[16px] md:text-[18px] leading-[24px] md:leading-[28px] text-white/80">
-                {content.visitOffice.subtext}
-              </p>
-            )}
-          </div>
-
-          <div className="bg-law-card border border-law-border p-[20px] md:p-[30px]">
-            <iframe
-              src={content.visitOffice.mapEmbedUrl}
-              width="100%"
-              height="450"
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full h-[350px] md:h-[450px]"
-              title="Office Location"
-            ></iframe>
+      {content.visitOffice.mapEmbedUrl && (
+        <div className="bg-gray-50 border-t border-gray-200 py-12 md:py-16">
+          <div className="max-w-[1200px] mx-auto w-[90%]">
+            <div className="text-center mb-8">
+              <h2 className="font-playfair text-[clamp(1.8rem,3vw,2.5rem)] leading-tight text-gray-900">
+                {content.visitOffice.heading}
+              </h2>
+              {content.visitOffice.subtext && (
+                <p className="font-outfit text-base text-gray-600 mt-3">
+                  {content.visitOffice.subtext}
+                </p>
+              )}
+            </div>
+            <div className="rounded-xl overflow-hidden border border-gray-200">
+              <iframe
+                src={content.visitOffice.mapEmbedUrl}
+                width="100%"
+                height="400"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-[350px] md:h-[400px]"
+                title="Office Location"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Layout>
   );
 }

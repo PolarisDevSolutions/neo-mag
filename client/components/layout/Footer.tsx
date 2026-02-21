@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Facebook,
   Instagram,
@@ -10,7 +9,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
-
 
 const SOCIAL_ICON_MAP: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
   facebook: Facebook,
@@ -31,218 +29,174 @@ const SOCIAL_LABEL_MAP: Record<string, string> = {
 export default function Footer() {
   const { settings } = useSiteSettings();
 
-const logoUrl = settings.logoUrl?.trim() || "";
-const logoAlt = settings.logoAlt?.trim() || settings.siteName?.trim() || "Logo";
-
-const phoneDisplay = settings.phoneDisplay?.trim() || "";
-const phoneLabel = settings.phoneAvailability?.trim() || "";
-
-const copyrightText = settings.copyrightText?.trim() || "";
-const mapEmbedUrl = settings.mapEmbedUrl?.trim() || "";
-
-const resourceLinks = settings.footerAboutLinks ?? [];
-const practiceLinks = settings.footerPracticeLinks ?? [];
-const footerTaglineHtml = settings.footerTaglineHtml || "";
-
-const enabledSocialLinks = (settings.socialLinks ?? []).filter((s) => s.enabled);
-
+  const logoUrl = settings.logoUrl?.trim() || "";
+  const logoAlt = settings.logoAlt?.trim() || settings.siteName?.trim() || "Logo";
+  const phoneDisplay = settings.phoneDisplay?.trim() || "";
+  const phoneLabel = settings.phoneAvailability?.trim() || "";
+  const copyrightText = settings.copyrightText?.trim() || "";
+  const mapEmbedUrl = settings.mapEmbedUrl?.trim() || "";
+  const resourceLinks = settings.footerAboutLinks ?? [];
+  const practiceLinks = settings.footerPracticeLinks ?? [];
+  const footerTaglineHtml = settings.footerTaglineHtml || "";
+  const enabledSocialLinks = (settings.socialLinks ?? []).filter((s) => s.enabled);
 
   return (
-    <footer className="bg-law-dark relative">
-      {/* Top Section: Tagline and Call Box */}
-      <div className="max-w-[2560px] mx-auto w-[95%] py-[20px] md:py-[27px] flex flex-col lg:flex-row lg:items-center gap-8">
-        {/* Left: Tagline */}
-        <div className="lg:w-[75%]">
-          <div>
-{footerTaglineHtml ? (
-  <div
-    className="font-playfair text-[clamp(2rem,6vw,59.136px)] leading-tight md:leading-[70.9632px] font-light text-white"
-    dangerouslySetInnerHTML={{ __html: footerTaglineHtml }}
-  />
-) : (
-  <p className="font-playfair text-[clamp(2rem,6vw,59.136px)] leading-tight md:leading-[70.9632px] font-light text-white">
-    <span className="text-law-accent">Your rights. Our mission.</span>
-    <br />
-    Backed by integrity and relentless representation.
-  </p>
-)}
+    <footer className="bg-gray-900 text-white">
 
+      {/* ── Top strip: tagline + phone ── */}
+      <div className="border-b border-gray-700">
+        <div className="max-w-[1200px] mx-auto w-[90%] py-10 flex flex-col lg:flex-row lg:items-center gap-8">
+
+          {/* Tagline */}
+          <div className="lg:flex-1">
+            {footerTaglineHtml ? (
+              <div
+                className="font-playfair text-[clamp(1.8rem,4vw,3rem)] leading-tight font-light text-white"
+                dangerouslySetInnerHTML={{ __html: footerTaglineHtml }}
+              />
+            ) : (
+              <p className="font-playfair text-[clamp(1.8rem,4vw,3rem)] leading-tight font-light text-white">
+                <span className="text-neo-blue font-semibold">Your rights. Our mission.</span>
+                <br />
+                Backed by integrity and relentless representation.
+              </p>
+            )}
           </div>
-        </div>
 
-        {/* Right: Call Us Box */}
-        <div className="lg:w-[25%]">
-          <div className="bg-law-accent p-[8px] w-full ml-auto cursor-pointer transition-all duration-300 hover:bg-law-accent-dark group">
-            <div className="table w-full mx-auto max-w-full flex-row-reverse">
-              <div className="table-cell w-[32px] leading-[0] mb-[30px]">
-                <span className="m-auto">
-                  <span className="inline-block bg-white p-[15px] text-black group-hover:bg-black transition-colors duration-300">
-                    <Phone
-                      className="w-[31px] h-[31px] [&>*]:fill-none [&>*]:stroke-black group-hover:[&>*]:stroke-white transition-colors duration-300"
-                      strokeWidth={1.5}
-                    />
-                  </span>
-                </span>
-              </div>
-              <div className="table-cell align-top pl-[15px]">
-                <h4 className="font-outfit text-[16px] md:text-[18px] leading-tight text-black pb-[10px] group-hover:text-white transition-colors duration-300">
-                  {phoneLabel}
-                </h4>
+          {/* Phone CTA */}
+          {phoneDisplay && (
+            <div className="lg:flex-shrink-0">
+              <a
+                href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+                className="inline-flex items-start gap-4 bg-neo-blue hover:bg-neo-blue-dark transition-colors duration-300 p-4 group"
+              >
+                <div className="bg-white p-3 flex-shrink-0">
+                  <Phone className="w-6 h-6 text-neo-blue" strokeWidth={1.5} />
+                </div>
                 <div>
-                  <p className="font-outfit text-[28px] md:text-[40px] leading-tight md:leading-[44px] text-black group-hover:text-white transition-colors duration-300 whitespace-nowrap">
+                  <p className="font-outfit text-sm text-white/80 mb-1">{phoneLabel}</p>
+                  <p className="font-outfit text-[clamp(1.25rem,2.5vw,1.75rem)] text-white leading-tight font-semibold whitespace-nowrap">
                     {phoneDisplay}
                   </p>
                 </div>
-              </div>
+              </a>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Footer Links Section */}
-      <div className="border-t border-b border-[#838383] max-w-[2560px] mx-auto w-[95%] py-[20px] md:py-[27px] flex flex-col lg:flex-row gap-6 md:gap-8 lg:gap-[3%]">
-        {/* Logo Column */}
-        <div className="lg:w-[20%] lg:mr-[3%]">
-          <Link to="/" className="block">
+      {/* ── Main footer links ── */}
+      <div className="max-w-[1200px] mx-auto w-[90%] py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        {/* Logo column */}
+        <div>
+          <Link to="/" className="block mb-5">
             {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt={logoAlt}
-                className="w-[200px] max-w-full"
-                width={200}
-                height={33}
-              />
+              <img src={logoUrl} alt={logoAlt} className="h-10 w-auto" width={160} height={40} />
             ) : (
-              <span className="font-outfit text-white text-[24px] leading-none">
+              <span className="font-outfit text-white text-xl font-bold">
                 {settings.siteName || " "}
               </span>
             )}
           </Link>
-
         </div>
 
-        {/* Resources Column */}
-        <div className="lg:w-[20%] lg:mr-[3%]">
-          <div className="font-outfit text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] text-white">
-            <h3 className="font-outfit text-[28px] md:text-[36px] leading-tight md:leading-[36px] text-white pb-[10px]">
-              Brze veze
+        {/* Quick links */}
+        {resourceLinks.length > 0 && (
+          <div>
+            <h3 className="font-outfit text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
+              Quick Links
             </h3>
-              {resourceLinks.length > 0 ? (
-                <ul className="text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] space-y-1">
-                  {resourceLinks.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        to={link.href || "#"}
-                        className="hover:text-law-accent transition-colors"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-
+            <ul className="space-y-2">
+              {resourceLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.href || "#"}
+                    className="font-outfit text-gray-300 hover:text-white transition-colors text-sm"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
+        )}
 
-        {/* Practice Areas Column */}
-        <div className="lg:w-[20%] lg:mr-[3%]">
-          <div className="font-outfit text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] text-white">
-            <h3 className="font-outfit text-[28px] md:text-[36px] leading-tight md:leading-[36px] text-white pb-[10px]">
-              Dijagnostika
+        {/* Practice/service links */}
+        {practiceLinks.length > 0 && (
+          <div>
+            <h3 className="font-outfit text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
+              Services
             </h3>
-              {practiceLinks.length > 0 ? (
-                <ul className="text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] space-y-1">
-                  {practiceLinks.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        to={link.href || "/practice-areas"}
-                        className="hover:text-law-accent transition-colors"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+            <ul className="space-y-2">
+              {practiceLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.href || "#"}
+                    className="font-outfit text-gray-300 hover:text-white transition-colors text-sm"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
+        )}
 
-        {/* Map Column */}
-        <div className="lg:w-[40%] max-w-[900px]">
-          <div className="relative">
-            {mapEmbedUrl ? (
-              <iframe
-                src={mapEmbedUrl}
-                width="100%"
-                height="250"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-[250px]"
-                title="Office Location"
-              />
-            ) : null}
+        {/* Map */}
+        {mapEmbedUrl && (
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h3 className="font-outfit text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
+              Location
+            </h3>
+            <iframe
+              src={mapEmbedUrl}
+              width="100%"
+              height="200"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-[200px] border-0"
+              title="Office Location"
+            />
           </div>
-        </div>
-</div>
-      {/* Social Media Section */}
-      <SocialLinksSection />
-
-
-      {/* Copyright Section */}
-      <div className="border-t border-[#838383] max-w-[2560px] mx-auto w-full py-[10px] px-[30px]">
-        <div className="w-full mx-auto my-auto">
-          <div className="font-outfit text-[18px] font-light leading-[27px] text-white text-center">
-            {copyrightText ? <p>{copyrightText}</p> : null}
-          </div>
-        </div>
+        )}
       </div>
-    </footer>
-  );
-}
 
-/** Renders the social icon row; falls back to default set if CMS provides none */
-function SocialLinksSection() {
-  const { settings } = useSiteSettings();
-
-  const socialLinks =
-    settings.socialLinks?.filter((s) => s.enabled) ?? [];
-
-  if (socialLinks.length === 0) return null;
-
-  return (
-    <div className="max-w-[1080px] mx-auto w-[80%] py-[20px]">
-      <div className="w-full">
-        <ul className="text-center leading-[26px]">
-          {socialLinks.map((social, idx) => {
-            const Icon = SOCIAL_ICON_MAP[social.platform];
-            const label =
-              SOCIAL_LABEL_MAP[social.platform] || social.platform;
-
-            if (!Icon) return null;
-
-            const isLast = idx === socialLinks.length - 1;
-
-            return (
-              <li key={social.platform} className="inline-block mb-[8px]">
+      {/* ── Social links ── */}
+      {enabledSocialLinks.length > 0 && (
+        <div className="border-t border-gray-700">
+          <div className="max-w-[1200px] mx-auto w-[90%] py-5 flex items-center justify-center gap-3">
+            {enabledSocialLinks.map((social) => {
+              const Icon = SOCIAL_ICON_MAP[social.platform];
+              const label = SOCIAL_LABEL_MAP[social.platform] || social.platform;
+              if (!Icon) return null;
+              return (
                 <a
+                  key={social.platform}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-block w-[52px] h-[52px] bg-[#142928] border border-[#616f6f] ${
-                    isLast ? "" : "mr-[8px]"
-                  } align-middle transition-all duration-300 hover:bg-law-accent hover:border-law-accent group flex items-center justify-center`}
                   title={`Follow on ${label}`}
+                  className="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-neo-blue border border-gray-600 hover:border-neo-blue transition-all duration-300 group"
                 >
-                  <Icon className="w-6 h-6 text-white group-hover:text-black transition-colors duration-300" />
+                  <Icon className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" />
                   <span className="sr-only">Follow on {label}</span>
                 </a>
-              </li>
-            );
-          })}
-        </ul>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Copyright ── */}
+      <div className="border-t border-gray-700">
+        <div className="max-w-[1200px] mx-auto w-[90%] py-4">
+          <p className="font-outfit text-sm text-gray-400 text-center">
+            {copyrightText || `Copyright © ${new Date().getFullYear()} | All Rights Reserved`}
+          </p>
+        </div>
       </div>
-    </div>
+    </footer>
   );
 }

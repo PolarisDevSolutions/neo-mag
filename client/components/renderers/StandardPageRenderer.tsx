@@ -10,7 +10,7 @@ interface Props {
 
 /**
  * Renders a CMS page with page_type="standard".
- * Includes a dark hero header with the page title and breadcrumb.
+ * Includes a neo-blue hero header with the page title and breadcrumb.
  */
 export default function StandardPageRenderer({ page }: Props) {
   const hasContent = Array.isArray(page.content) && page.content.length > 0;
@@ -26,7 +26,7 @@ export default function StandardPageRenderer({ page }: Props) {
       />
 
       {/* Page hero header */}
-      <div className="bg-law-dark pt-10 pb-10 border-b border-law-border">
+      <div className="bg-neo-blue pt-10 pb-10">
         <div className="max-w-[1200px] mx-auto w-[90%]">
           <Breadcrumb urlPath={page.url_path} title={page.title} />
           <h1 className="font-playfair text-[clamp(2rem,5vw,3.2rem)] font-light text-white mt-3 leading-tight">
@@ -59,16 +59,16 @@ function Breadcrumb({ urlPath, title }: { urlPath: string; title: string }) {
 
   return (
     <nav aria-label="breadcrumb">
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm font-outfit text-white/50">
+      <ol className="flex flex-wrap items-center gap-1.5 text-sm font-outfit text-white/60">
         {crumbs.map((crumb, i) => (
           <li key={i} className="flex items-center gap-1.5">
-            <Link to={crumb.href} className="hover:text-law-accent transition-colors">
+            <Link to={crumb.href} className="hover:text-white transition-colors">
               {crumb.label}
             </Link>
             <span>/</span>
           </li>
         ))}
-        <li className="text-white/80">{title}</li>
+        <li className="text-white">{title}</li>
       </ol>
     </nav>
   );
@@ -82,8 +82,8 @@ function formatSegment(segment: string): string {
 
 function EmptyState() {
   return (
-    <div className="bg-law-dark min-h-[40vh] flex items-center justify-center">
-      <p className="font-outfit text-white/50">Sadržaj stranice je u pripremi.</p>
+    <div className="min-h-[40vh] flex items-center justify-center bg-gray-50">
+      <p className="font-outfit text-gray-400">Sadržaj stranice je u pripremi.</p>
     </div>
   );
 }

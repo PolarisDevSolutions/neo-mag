@@ -1,162 +1,132 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Menu, ArrowRight, ChevronDown } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, Phone, ChevronDown, X } from "lucide-react";
 import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
 import { NAV_ITEMS, type NavItem } from "@site/config/navigation";
 
 export default function Header() {
   const { settings } = useSiteSettings();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const logoUrl = settings.logoUrl?.trim() || "";
   const logoAlt = settings.logoAlt?.trim() || settings.siteName?.trim() || "Logo";
-  const ctaText = settings.headerCtaText?.trim() || "";
+  const ctaText = settings.headerCtaText?.trim() || "Zakažite pregled";
   const ctaUrl = settings.headerCtaUrl?.trim() || "/kontakt/";
+  const phoneDisplay = settings.phoneDisplay?.trim() || "";
 
   return (
-    <>
-      {/* Top padding background that scrolls away */}
-      <div className="bg-law-dark h-[30px]" />
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="flex items-center justify-between h-[70px] md:h-[80px]">
 
-      {/* Sticky header wrapper */}
-      <div className="sticky top-0 z-50 bg-law-dark pb-[30px]">
-        <div className="max-w-[2560px] mx-auto w-[95%]">
-          <div className="bg-law-card border border-law-border px-[30px] py-[10px] flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center w-[300px]">
-              <Link to="/" className="mr-[30px]">
-                {logoUrl ? (
-                  <img
-                    src={logoUrl}
-                    alt={logoAlt}
-                    className="w-[306px] max-w-full"
-                    width={306}
-                    height={50}
-                  />
-                ) : (
-                  <span className="font-outfit text-white text-[22px] leading-none">
-                    {settings.siteName || "NEO MAG"}
-                  </span>
-                )}
-              </Link>
-            </div>
+          {/* ── Logo ── */}
+          <Link to="/" className="flex-shrink-0" onClick={() => setMobileOpen(false)}>
+            {logoUrl ? (
+              <img src={logoUrl} alt={logoAlt} className="h-10 md:h-12 w-auto" />
+            ) : (
+              <span className="font-outfit font-bold text-xl text-gray-900">
+                {settings.siteName || "NEO MAG"}
+              </span>
+            )}
+          </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center flex-1 justify-end">
-              <ul className="flex flex-wrap justify-end -mx-[8px]">
-                {NAV_ITEMS.map((item) => (
-                  <DesktopNavItem key={item.href + item.label} item={item} />
-                ))}
-              </ul>
-            </nav>
+          {/* ── Desktop navigation (flat — no dropdowns) ── */}
+          <nav className="hidden md:flex items-center gap-6 lg:gap-8" aria-label="Glavna navigacija">
+            {NAV_ITEMS.map((item) => (
+              <DesktopNavLink key={item.label} item={item} />
+            ))}
+          </nav>
 
-            {/* CTA Button — Desktop */}
-            <div className="hidden md:block w-[220px] ml-4">
-              {ctaText ? (
-                <Link to={ctaUrl}>
-                  <Button className="bg-white text-black font-outfit text-[18px] py-[25px] px-[15px] h-auto w-full hover:bg-law-accent hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
-                    {ctaText}
-                    <ArrowRight className="w-5 h-5" />
-                  </Button>
-                </Link>
-              ) : null}
-            </div>
-
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild className="md:hidden">
-                <Button variant="ghost" size="icon" className="text-white">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="bg-law-card border-law-border overflow-y-auto">
-                <nav className="flex flex-col gap-1 mt-8">
-                  {NAV_ITEMS.map((item) => (
-                    <MobileNavItem key={item.href + item.label} item={item} />
-                  ))}
-                  {ctaText && (
-                    <Link to={ctaUrl} className="mt-4">
-                      <Button className="bg-white text-black font-outfit text-[18px] py-[25px] w-full hover:bg-law-accent hover:text-black transition-all duration-300 flex items-center justify-center gap-2">
-                        {ctaText}
-                        <ArrowRight className="w-5 h-5" />
-                      </Button>
-                    </Link>
-                  )}
-                </nav>
-              </SheetContent>
-            </Sheet>
+          {/* ── Desktop CTA ── */}
+          <div className="hidden md:flex items-center gap-3">
+            {phoneDisplay && (
+              <a
+                href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+                className="font-outfit text-sm text-gray-600 hover:text-neo-blue transition-colors flex items-center gap-1.5"
+              >
+                <Phone className="h-4 w-4" />
+                {phoneDisplay}
+              </a>
+            )}
+            <Link
+              to={ctaUrl}
+              className="bg-neo-blue text-white font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
+            >
+              {ctaText}
+            </Link>
           </div>
+
+          {/* ── Mobile hamburger ── */}
+          <button
+            className="md:hidden p-2 text-gray-700 hover:text-neo-blue transition-colors"
+            onClick={() => setMobileOpen((o) => !o)}
+            aria-label={mobileOpen ? "Zatvori meni" : "Otvori meni"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </div>
-    </>
+
+      {/* ── Mobile drawer ── */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-gray-200 bg-white">
+          <nav className="max-w-[1200px] mx-auto w-[90%] py-4 flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => (
+              <MobileNavItem key={item.label} item={item} onClose={() => setMobileOpen(false)} />
+            ))}
+            <Link
+              to={ctaUrl}
+              onClick={() => setMobileOpen(false)}
+              className="mt-3 w-full bg-neo-blue text-white font-outfit font-semibold text-center py-3 rounded-lg hover:bg-neo-blue-dark transition-colors"
+            >
+              {ctaText}
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }
 
-// ── Desktop nav item (with hover dropdown) ─────────────────────────────────
-function DesktopNavItem({ item }: { item: NavItem }) {
+// ── Desktop flat nav link (no dropdowns) ────────────────────────────────────
+function DesktopNavLink({ item }: { item: NavItem }) {
   const { pathname } = useLocation();
-  const isActive = item.href !== "#" && (pathname === item.href || pathname.startsWith(item.href === "/" ? "/_never_" : item.href));
 
-  if (!item.children) {
-    return (
-      <li className="px-[8px]">
-        <Link
-          to={item.href}
-          className={`font-outfit text-[17px] py-[31px] px-[4px] inline-block whitespace-nowrap transition-colors duration-200 ${
-            isActive ? "text-law-accent" : "text-white hover:text-law-accent"
-          }`}
-        >
-          {item.label}
-        </Link>
-      </li>
-    );
-  }
+  // For items with children and href="#", link to the first child or the parent
+  const href = item.href !== "#" ? item.href : (item.children?.[0]?.href ?? "/");
 
-  // Item with dropdown
+  const isActive =
+    href !== "/" && pathname.startsWith(href.replace(/\/$/, ""));
+
   return (
-    <li className="px-[8px] relative group">
-      {/* Trigger */}
-      <button
-        className={`font-outfit text-[17px] py-[31px] px-[4px] inline-flex items-center gap-1 whitespace-nowrap transition-colors duration-200 ${
-          isActive ? "text-law-accent" : "text-white group-hover:text-law-accent"
+    <Link
+      to={href}
+      className={`relative font-outfit text-[15px] font-medium py-1 transition-colors duration-200 group ${
+        isActive ? "text-neo-blue" : "text-gray-700 hover:text-neo-blue"
+      }`}
+    >
+      {item.label}
+      <span
+        className={`absolute -bottom-0.5 left-0 h-0.5 bg-neo-blue transition-all duration-200 ${
+          isActive ? "w-full" : "w-0 group-hover:w-full"
         }`}
-        aria-haspopup="true"
-      >
-        {item.label}
-        <ChevronDown className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
-      </button>
-
-      {/* Dropdown panel */}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 pt-0 hidden group-hover:block z-50 min-w-[220px]">
-        {/* Small bridge to prevent gap between button and panel */}
-        <div className="h-2" />
-        <ul className="bg-law-card border border-law-border shadow-xl py-1">
-          {item.children.map((child) => (
-            <li key={child.href}>
-              <Link
-                to={child.href}
-                className="block font-outfit text-[15px] text-white px-5 py-3 hover:bg-law-dark hover:text-law-accent transition-colors whitespace-nowrap"
-              >
-                {child.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </li>
+      />
+    </Link>
   );
 }
 
-// ── Mobile nav item (accordion) ────────────────────────────────────────────
-function MobileNavItem({ item }: { item: NavItem }) {
+// ── Mobile accordion item ────────────────────────────────────────────────────
+function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }) {
   const [open, setOpen] = useState(false);
+  const href = item.href !== "#" ? item.href : (item.children?.[0]?.href ?? "/");
 
   if (!item.children) {
     return (
       <Link
-        to={item.href}
-        className="font-outfit text-[18px] text-white py-[12px] px-[5%] border-b border-law-border/30 hover:text-law-accent transition-colors block"
+        to={href}
+        onClick={onClose}
+        className="font-outfit text-base text-gray-800 py-3 px-1 border-b border-gray-100 hover:text-neo-blue transition-colors block"
       >
         {item.label}
       </Link>
@@ -164,21 +134,33 @@ function MobileNavItem({ item }: { item: NavItem }) {
   }
 
   return (
-    <div className="border-b border-law-border/30">
+    <div className="border-b border-gray-100">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between font-outfit text-[18px] text-white py-[12px] px-[5%] hover:text-law-accent transition-colors"
+        className="w-full flex items-center justify-between font-outfit text-base text-gray-800 py-3 px-1 hover:text-neo-blue transition-colors"
       >
         {item.label}
-        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
       </button>
       {open && (
-        <ul className="bg-law-dark">
+        <ul className="pl-4 pb-2 space-y-1">
+          <li>
+            <Link
+              to={href}
+              onClick={onClose}
+              className="block font-outfit text-[15px] text-gray-600 py-2 hover:text-neo-blue transition-colors"
+            >
+              {item.label} – sve
+            </Link>
+          </li>
           {item.children.map((child) => (
             <li key={child.href}>
               <Link
                 to={child.href}
-                className="block font-outfit text-[16px] text-white/80 py-[10px] px-[10%] hover:text-law-accent transition-colors"
+                onClick={onClose}
+                className="block font-outfit text-[15px] text-gray-600 py-2 hover:text-neo-blue transition-colors"
               >
                 {child.label}
               </Link>

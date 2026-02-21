@@ -1,6 +1,5 @@
 import Seo from "@site/components/Seo";
 import Layout from "@site/components/layout/Layout";
-import Hero from "@site/components/home/Hero";
 import ContactForm from "@site/components/home/ContactForm";
 import AboutSection from "@site/components/home/AboutSection";
 import PracticeAreasSection from "@site/components/home/PracticeAreasSection";
@@ -13,12 +12,12 @@ import FaqSection from "@site/components/home/FaqSection";
 import ContactUsSection from "@site/components/home/ContactUsSection";
 import { useHomeContent } from "@site/hooks/useHomeContent";
 import { useGlobalPhone } from "@site/contexts/SiteSettingsContext";
+import { Phone } from "lucide-react";
 
 export default function Index() {
   const { content, isLoading } = useHomeContent();
   const { phoneDisplay, phoneLabel } = useGlobalPhone();
 
-  // Use CMS content for hero and partner logos
   const heroContent = content.hero;
   const partnerLogos = content.partnerLogos;
 
@@ -29,84 +28,77 @@ export default function Index() {
         description="Protecting your rights with integrity, experience, and relentless advocacy."
       />
 
-      {/* Hero and Contact Form Section */}
-      <div className="max-w-[2560px] mx-auto w-[95%] py-[27px] my-[20px] md:my-[40px]">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-[3%]">
-          {/* Left Side: Headline and Call Box */}
-          <div className="lg:w-[65.667%]">
-            <div className="mb-[30px] md:mb-[40px]">
-              <div className="relative">
-                <p className="font-playfair text-[clamp(2.5rem,7vw,68.8px)] font-light leading-[1.2] text-white text-left">
-                  <span className="text-law-accent">
-                    {heroContent.highlightedText}
-                  </span>
-                  <br />
-                  {heroContent.headline}
-                </p>
-              </div>
-              {/* H1 Title - All caps, positioned between headline and phone button */}
+      {/* ── Hero Section ── */}
+      <section className="bg-neo-blue relative overflow-hidden">
+        {/* Decorative circles */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5 pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
+
+        <div className="relative max-w-[1200px] mx-auto w-[90%] py-12 md:py-16">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-[5%]">
+
+            {/* Left: Headline + Phone */}
+            <div className="lg:w-[55%]">
+              <p className="font-playfair text-[clamp(2rem,5vw,3.5rem)] font-light leading-[1.2] text-white mb-4">
+                <span className="font-semibold">
+                  {heroContent.highlightedText || "Protecting your rights"}
+                </span>
+                <br />
+                {heroContent.headline || "with integrity, experience, and relentless advocacy."}
+              </p>
+
               {heroContent.h1Title && (
-                <h1 className="font-outfit text-[18px] md:text-[20px] font-medium tracking-wider uppercase text-white mt-[20px] md:mt-[30px]">
+                <h1 className="font-outfit text-base md:text-lg font-medium tracking-wider uppercase text-white/80 mb-8">
                   {heroContent.h1Title}
                 </h1>
               )}
-            </div>
 
-            {/* Call Box */}
-            <div className="bg-law-accent p-[8px] w-full max-w-[400px] cursor-pointer transition-all duration-300 hover:bg-law-accent-dark group">
-              <div className="flex items-start gap-4">
-                <div className="bg-white p-[15px] mt-1 flex items-center justify-center group-hover:bg-black transition-colors duration-300">
-                  <svg
-                    className="w-8 h-8 text-black group-hover:text-white transition-colors duration-300"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
-                  </svg>
+              {/* Phone CTA */}
+              <a
+                href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+                className="inline-flex items-start gap-4 bg-white/10 hover:bg-white/20 border border-white/20 transition-colors duration-300 p-4 group max-w-sm"
+              >
+                <div className="bg-white p-3 flex-shrink-0 group-hover:bg-neo-blue-light transition-colors duration-300">
+                  <Phone className="w-6 h-6 text-neo-blue" strokeWidth={1.5} />
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-outfit text-[16px] md:text-[18px] leading-tight text-black pb-[10px] font-normal group-hover:text-white transition-colors duration-300">
-                    {phoneLabel}
-                  </h4>
-                  <p className="font-outfit text-[clamp(1.75rem,5vw,40px)] text-black leading-tight group-hover:text-white transition-colors duration-300">
+                <div>
+                  <p className="font-outfit text-sm text-white/80 mb-1">{phoneLabel}</p>
+                  <p className="font-outfit text-[clamp(1.4rem,3.5vw,2rem)] text-white leading-tight font-semibold">
                     {phoneDisplay}
                   </p>
                 </div>
-              </div>
+              </a>
+            </div>
+
+            {/* Right: Contact Form */}
+            <div className="lg:w-[40%]">
+              <ContactForm />
             </div>
           </div>
-
-          {/* Right Side: Contact Form */}
-          <div className="lg:w-[31.3333%]">
-            <ContactForm />
-          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Partner Badges Section - Bottom of Hero */}
-      <div className="bg-law-dark py-[20px] md:py-[30px]">
-        <div className="max-w-[2560px] mx-auto w-[95%]">
-          <div className="bg-law-card border border-law-border py-[10px] px-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-0">
-            {partnerLogos.map((logo, index) => (
-              <div
-                key={index}
-                className="px-[15px] md:px-[30px] flex items-center justify-center"
-              >
-                <div className="text-center">
+      {/* ── Partner Logos Section ── */}
+      {partnerLogos && partnerLogos.length > 0 && (
+        <div className="bg-gray-50 border-b border-gray-200 py-6">
+          <div className="max-w-[1200px] mx-auto w-[90%]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-8 items-center justify-items-center">
+              {partnerLogos.map((logo, index) => (
+                <div key={index} className="flex items-center justify-center px-2">
                   <img
                     src={logo.src}
                     alt={logo.alt}
-                    className="w-[120px] md:w-[190px] max-w-full inline-block"
-                    width={190}
-                    height={123}
+                    className="w-[120px] md:w-[160px] max-w-full"
+                    width={160}
+                    height={104}
                     loading="lazy"
                   />
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* About Us Section */}
       <AboutSection content={content.about} />

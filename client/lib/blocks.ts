@@ -15,7 +15,8 @@ export type ContentBlock =
   | PracticeAreasGridBlock
   | GoogleReviewsBlock
   | AttorneyBioBlock
-  | StatsBlock;
+  | StatsBlock
+  | ReviewsSliderBlock;
 
 export interface HeroBlock {
   type: "hero";
@@ -132,4 +133,9 @@ export interface StatsBlock {
     value: string;
     label: string;
   }>;
+}
+
+export interface ReviewsSliderBlock {
+  type: "reviews-slider";
+  heading?: string;
 }

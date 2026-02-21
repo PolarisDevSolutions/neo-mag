@@ -6,34 +6,19 @@ interface ValueCardProps {
   description: string;
 }
 
-export default function ValueCard({
-  icon: Icon,
-  title,
-  description,
-}: ValueCardProps) {
+export default function ValueCard({ icon: Icon, title, description }: ValueCardProps) {
   return (
-    <div className="group">
-      <div className="flex flex-col items-center text-center">
-        {/* Icon Section */}
-        <div className="mb-[20px] md:mb-[30px]">
-          <div className="bg-law-accent p-[20px] md:p-[25px] inline-block transition-all duration-300 group-hover:bg-white group-hover:scale-110">
-            <Icon
-              className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] text-black transition-colors duration-300"
-              strokeWidth={1.5}
-            />
-          </div>
-        </div>
-
-        {/* Content Section */}
-        <div>
-          <h3 className="font-playfair text-[24px] md:text-[32px] leading-tight text-white pb-[10px] md:pb-[15px]">
-            {title}
-          </h3>
-          <p className="font-outfit text-[14px] md:text-[16px] leading-[22px] md:leading-[26px] text-white/80">
-            {description}
-          </p>
+    <div className="group text-center">
+      <div className="mb-5">
+        <div className="bg-neo-blue/20 group-hover:bg-neo-blue p-5 inline-flex rounded-xl transition-all duration-300">
+          <Icon
+            className="w-10 h-10 text-white transition-colors duration-300"
+            strokeWidth={1.5}
+          />
         </div>
       </div>
+      <h3 className="font-outfit font-bold text-lg text-white mb-2">{title}</h3>
+      <p className="font-outfit text-sm text-gray-400 leading-relaxed">{description}</p>
     </div>
   );
 }
