@@ -1,137 +1,97 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Star, Phone, Activity, FileText, Waves, Layers, Stethoscope, Heart, MapPin, type LucideIcon } from "lucide-react";
 import type { ContentBlock } from "@site/lib/blocks";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Star, Phone } from "lucide-react";
-import {
-  Car,
-  Truck,
-  Bike,
-  Footprints,
-  AlertTriangle,
-  Building,
-  FileText,
-  type LucideIcon,
-} from "lucide-react";
 
+// ── Icon map (expandable) ──────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
-  Car,
-  Truck,
-  Bike,
-  Footprints,
-  AlertTriangle,
-  Building,
+  Activity,
   FileText,
+  Waves,
+  Layers,
+  Stethoscope,
+  Heart,
+  MapPin,
+  Phone,
 };
 
-function getIcon(iconName: string): LucideIcon {
-  return iconMap[iconName] || FileText;
+function getIcon(name?: string): LucideIcon {
+  return (name && iconMap[name]) || FileText;
 }
 
+// ── Root renderer ──────────────────────────────────────────────────────────
 interface BlockRendererProps {
   content: ContentBlock[];
   isPreview?: boolean;
 }
 
-export default function BlockRenderer({
-  content,
-  isPreview = false,
-}: BlockRendererProps) {
-  // Handle null/undefined content
+export default function BlockRenderer({ content, isPreview = false }: BlockRendererProps) {
   if (!content || !Array.isArray(content)) {
     return (
-      <div className="p-8 text-center text-gray-500">
-        <p>No content available</p>
+      <div className="py-16 text-center text-gray-400">
+        <p>Sadržaj nije dostupan.</p>
       </div>
     );
   }
 
   return (
-    <div className={isPreview ? "space-y-4" : ""}>
-      {content.map((block, index) => (
-        <RenderBlock key={index} block={block} isPreview={isPreview} />
+    <div>
+      {content.map((block, i) => (
+        <RenderBlock key={i} block={block} isPreview={isPreview} />
       ))}
     </div>
   );
 }
 
-function RenderBlock({
-  block,
-  isPreview,
-}: {
-  block: ContentBlock;
-  isPreview: boolean;
-}) {
+function RenderBlock({ block, isPreview }: { block: ContentBlock; isPreview: boolean }) {
   switch (block.type) {
-    case "hero":
-      return <HeroBlock block={block} isPreview={isPreview} />;
-    case "heading":
-      return <HeadingBlock block={block} />;
-    case "paragraph":
-      return <ParagraphBlock block={block} />;
-    case "bullets":
-      return <BulletsBlock block={block} />;
-    case "cta":
-      return <CTABlock block={block} isPreview={isPreview} />;
-    case "image":
-      return <ImageBlock block={block} />;
-    case "attorney-bio":
-      return <AttorneyBioBlock block={block} />;
-    case "services-grid":
-      return <ServicesGridBlock block={block} />;
-    case "testimonials":
-      return <TestimonialsBlock block={block} />;
-    case "contact-form":
-      return <ContactFormBlock block={block} />;
-    case "map":
-      return <MapBlock block={block} />;
-    case "two-column":
-      return <TwoColumnBlock block={block} isPreview={isPreview} />;
-    case "practice-areas-grid":
-      return <PracticeAreasGridBlock block={block} />;
-    case "google-reviews":
-      return <GoogleReviewsBlock block={block} />;
+    case "hero":            return <HeroBlock block={block} isPreview={isPreview} />;
+    case "heading":         return <HeadingBlock block={block} />;
+    case "paragraph":       return <ParagraphBlock block={block} />;
+    case "bullets":         return <BulletsBlock block={block} />;
+    case "cta":             return <CTABlock block={block} />;
+    case "image":           return <ImageBlock block={block} />;
+    case "map":             return <MapBlock block={block} />;
+    case "two-column":      return <TwoColumnBlock block={block} isPreview={isPreview} />;
+    case "services-grid":   return <ServicesGridBlock block={block} />;
+    case "testimonials":    return <TestimonialsBlock block={block} />;
+    case "contact-form":    return <ContactFormBlock block={block} />;
+    case "practice-areas-grid": return <PracticeAreasGridBlock block={block} />;
+    case "google-reviews":  return <GoogleReviewsBlock block={block} />;
+    case "attorney-bio":    return <AttorneyBioBlock block={block} />;
+    case "stats":           return <StatsBlock block={block} />;
     default:
-      return <div className="p-4 bg-gray-100 rounded">Unknown block type</div>;
+      if (isPreview) {
+        return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
+      }
+      return null;
   }
 }
 
-function HeroBlock({
-  block,
-  isPreview,
-}: {
-  block: Extract<ContentBlock, { type: "hero" }>;
-  isPreview: boolean;
-}) {
+// ── Hero ───────────────────────────────────────────────────────────────────
+function HeroBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean }) {
   return (
     <section
-      className={`relative py-20 px-6 text-center ${isPreview ? "bg-slate-800" : "bg-[#183658]"}`}
-      style={
-        block.backgroundImage
-          ? {
-              backgroundImage: `url(${block.backgroundImage})`,
-              backgroundSize: "cover",
-            }
-          : undefined
-      }
+      className="relative bg-law-dark py-20 px-6 text-center"
+      style={block.backgroundImage ? { backgroundImage: `url(${block.backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
     >
-      <div className="max-w-4xl mx-auto text-white">
-        <h1
-          className="text-4xl md:text-5xl font-bold mb-4"
-          style={{ fontFamily: "Archivo, sans-serif" }}
-        >
+      {block.backgroundImage && <div className="absolute inset-0 bg-law-dark/70" />}
+      <div className="relative max-w-4xl mx-auto">
+        <h1 className="font-playfair text-[clamp(2rem,5vw,3.5rem)] font-light text-white leading-tight mb-4">
           {block.title}
         </h1>
         {block.subtitle && (
-          <p className="text-xl md:text-2xl opacity-90 mb-8">
+          <p className="font-outfit text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
             {block.subtitle}
           </p>
         )}
         {block.showCTA && (
           <a
-            href="tel:4049057742"
-            className="inline-block bg-white text-[#183658] px-8 py-4 rounded-2xl text-xl font-semibold hover:bg-gray-100 transition-colors"
+            href={`tel:${(block.ctaPhone || "018520640").replace(/\D/g, "")}`}
+            className="inline-flex items-center gap-2 bg-law-accent text-black font-outfit font-semibold px-8 py-4 hover:bg-law-accent/80 transition-colors text-lg"
           >
-            Call 404-905-7742
+            <Phone className="h-5 w-5" />
+            {block.ctaText || "Zakažite pregled"}
           </a>
         )}
       </div>
@@ -139,299 +99,309 @@ function HeroBlock({
   );
 }
 
-function HeadingBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "heading" }>;
-}) {
+// ── Heading ────────────────────────────────────────────────────────────────
+function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading" }> }) {
   const Tag = `h${block.level}` as "h1" | "h2" | "h3";
-  const sizes = {
-    1: "text-4xl",
-    2: "text-3xl",
-    3: "text-2xl",
-  };
+  const sizes = { 1: "text-4xl md:text-5xl", 2: "text-3xl md:text-4xl", 3: "text-xl md:text-2xl" };
   return (
-    <Tag
-      className={`${sizes[block.level]} font-bold text-gray-900 mb-4`}
-      style={{ fontFamily: "Archivo, sans-serif" }}
-    >
-      {block.text}
-    </Tag>
-  );
-}
-
-function ParagraphBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "paragraph" }>;
-}) {
-  return (
-    <div
-      className="prose prose-lg max-w-none text-gray-600 mb-4"
-      dangerouslySetInnerHTML={{ __html: block.content }}
-    />
-  );
-}
-
-function BulletsBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "bullets" }>;
-}) {
-  return (
-    <ul className="list-disc list-inside space-y-2 text-gray-600 mb-4">
-      {block.items.map((item, index) => (
-        <li key={index} className="text-lg">
-          {item}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function CTABlock({
-  block,
-  isPreview,
-}: {
-  block: Extract<ContentBlock, { type: "cta" }>;
-  isPreview: boolean;
-}) {
-  return (
-    <div
-      className={`py-12 text-center ${isPreview ? "bg-slate-100" : "bg-[#f2f2da]"}`}
-    >
-      <a
-        href={`tel:${block.phone.replace(/\D/g, "")}`}
-        className={`inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-xl font-semibold transition-colors ${
-          block.variant === "outline"
-            ? "border-2 border-[#183658] text-[#183658] hover:bg-[#183658] hover:text-white"
-            : "bg-[#183658] text-white hover:bg-[#0f2742]"
-        }`}
-      >
-        <Phone className="h-5 w-5" />
-        {block.text} - {block.phone}
-      </a>
+    <div className="max-w-[1200px] mx-auto w-[90%] py-4">
+      <Tag className={`font-playfair font-light ${sizes[block.level]} text-white`}>
+        {block.text}
+      </Tag>
     </div>
   );
 }
 
-function ImageBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "image" }>;
-}) {
+// ── Paragraph ─────────────────────────────────────────────────────────────
+function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "paragraph" }> }) {
   return (
-    <figure className="my-6">
-      <img src={block.src} alt={block.alt} className="w-full rounded-lg" />
-      {block.alt && (
-        <figcaption className="text-center text-sm text-gray-500 mt-2">
-          {block.alt}
-        </figcaption>
-      )}
-    </figure>
-  );
-}
-
-function AttorneyBioBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "attorney-bio" }>;
-}) {
-  return (
-    <div className="flex flex-col md:flex-row gap-8 py-8">
-      <div className="md:w-1/3">
-        <img src={block.image} alt={block.name} className="w-full rounded-lg" />
-      </div>
-      <div className="md:w-2/3">
-        <h3
-          className="text-2xl font-bold text-gray-900 mb-1"
-          style={{ fontFamily: "Archivo, sans-serif" }}
-        >
-          {block.name}
-        </h3>
-        <p className="text-lg text-[#183658] font-medium mb-4">{block.title}</p>
-        <p className="text-gray-600 mb-4">{block.bio}</p>
-        <a
-          href={`tel:${block.phone.replace(/\D/g, "")}`}
-          className="inline-flex items-center gap-2 text-[#183658] font-semibold hover:underline"
-        >
-          <Phone className="h-4 w-4" />
-          {block.phone}
-        </a>
-      </div>
-    </div>
-  );
-}
-
-function ServicesGridBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "services-grid" }>;
-}) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
-      {block.services.map((service, index) => {
-        const IconComponent = getIcon(service.icon);
-        return (
-          <Card key={index} className="hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <IconComponent className="h-10 w-10 text-[#183658] mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {service.title}
-              </h3>
-              <p className="text-gray-600">{service.description}</p>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
-  );
-}
-
-function TestimonialsBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "testimonials" }>;
-}) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8">
-      {block.testimonials.map((testimonial, index) => (
-        <Card key={index}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-[#183658] text-white flex items-center justify-center font-bold">
-                {testimonial.initials}
-              </div>
-              <div className="flex">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
-              </div>
-            </div>
-            <p className="text-gray-600 italic">"{testimonial.text}"</p>
-            {testimonial.author && (
-              <p className="text-gray-900 font-semibold mt-4">
-                Posted By {testimonial.author}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-}
-
-function ContactFormBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "contact-form" }>;
-}) {
-  return (
-    <div className="bg-white p-6 rounded-lg border">
-      <h3 className="text-xl font-bold text-gray-900 mb-4">{block.heading}</h3>
-      <form className="space-y-4">
-        <input
-          type="text"
-          placeholder="Your Name"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#183658]"
-        />
-        <input
-          type="email"
-          placeholder="Your Email"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#183658]"
-        />
-        <input
-          type="tel"
-          placeholder="Your Phone"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#183658]"
-        />
-        <textarea
-          placeholder="Tell us about your case..."
-          rows={4}
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#183658]"
-        />
-        <Button
-          type="submit"
-          className="w-full bg-[#183658] hover:bg-[#0f2742]"
-        >
-          Submit
-        </Button>
-      </form>
-    </div>
-  );
-}
-
-function MapBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "map" }>;
-}) {
-  const encodedAddress = encodeURIComponent(block.address);
-  return (
-    <div className="w-full h-64 rounded-lg overflow-hidden my-6">
-      <iframe
-        src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodedAddress}`}
-        width="100%"
-        height="100%"
-        style={{ border: 0 }}
-        allowFullScreen
-        loading="lazy"
-        title="Location Map"
+    <div className="max-w-[1200px] mx-auto w-[90%] py-2">
+      <div
+        className="font-outfit text-base md:text-lg text-white/85 leading-relaxed [&_strong]:text-white [&_strong]:font-semibold"
+        dangerouslySetInnerHTML={{ __html: block.content }}
       />
     </div>
   );
 }
 
-function TwoColumnBlock({
-  block,
-  isPreview,
-}: {
-  block: Extract<ContentBlock, { type: "two-column" }>;
-  isPreview: boolean;
-}) {
+// ── Bullets ────────────────────────────────────────────────────────────────
+function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets" }> }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
-      <div>
-        <BlockRenderer content={block.left} isPreview={isPreview} />
+    <div className="max-w-[1200px] mx-auto w-[90%] py-2">
+      <ul className="space-y-2">
+        {block.items.map((item, i) => (
+          <li key={i} className="flex items-start gap-3 font-outfit text-base md:text-lg text-white/85">
+            <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-law-accent" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// ── CTA ────────────────────────────────────────────────────────────────────
+function CTABlock({ block }: { block: Extract<ContentBlock, { type: "cta" }> }) {
+  const isOutline = block.variant === "outline";
+  return (
+    <div className="max-w-[1200px] mx-auto w-[90%] py-4">
+      <a
+        href={`tel:${block.phone.replace(/\D/g, "")}`}
+        className={`inline-flex items-center gap-2 px-8 py-4 font-outfit font-semibold text-lg transition-colors ${
+          isOutline
+            ? "border-2 border-law-accent text-law-accent hover:bg-law-accent hover:text-black"
+            : "bg-law-accent text-black hover:bg-law-accent/80"
+        }`}
+      >
+        <Phone className="h-5 w-5" />
+        {block.text} — {block.phone}
+      </a>
+    </div>
+  );
+}
+
+// ── Image ──────────────────────────────────────────────────────────────────
+function ImageBlock({ block }: { block: Extract<ContentBlock, { type: "image" }> }) {
+  return (
+    <figure className="max-w-[1200px] mx-auto w-[90%] py-4">
+      <img src={block.src} alt={block.alt || ""} className="w-full h-auto" loading="lazy" />
+    </figure>
+  );
+}
+
+// ── Map ────────────────────────────────────────────────────────────────────
+function MapBlock({ block }: { block: Extract<ContentBlock, { type: "map" }> }) {
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(block.address)}`;
+  if (block.embedUrl) {
+    return (
+      <div className="w-full">
+        <iframe
+          src={block.embedUrl}
+          width="100%"
+          height="400"
+          allowFullScreen
+          loading="lazy"
+          className="w-full h-[350px] md:h-[400px]"
+          title="Mapa lokacije"
+        />
       </div>
-      <div>
-        <BlockRenderer content={block.right} isPreview={isPreview} />
+    );
+  }
+  return (
+    <div className="bg-law-card border border-law-border py-10 text-center">
+      <MapPin className="h-10 w-10 text-law-accent mx-auto mb-3" />
+      <p className="font-outfit text-white mb-4">{block.address}</p>
+      <a
+        href={mapsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block bg-law-accent text-black font-outfit px-6 py-3 hover:bg-law-accent/80 transition-colors"
+      >
+        Otvori na Google Mapama
+      </a>
+    </div>
+  );
+}
+
+// ── Two-column ─────────────────────────────────────────────────────────────
+function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean }) {
+  return (
+    <div className="bg-law-dark py-12">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div>
+            <BlockRenderer content={block.left} isPreview={isPreview} />
+          </div>
+          <div>
+            <BlockRenderer content={block.right} isPreview={isPreview} />
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function PracticeAreasGridBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "practice-areas-grid" }>;
-}) {
-  // Check if any area has an image - if so, use image-based layout
-  const hasImages = block.areas.some((area) => area.image);
+// ── Services grid ──────────────────────────────────────────────────────────
+function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "services-grid" }> }) {
+  return (
+    <section className="bg-law-dark py-12">
+      {block.heading && (
+        <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
+          <h2 className="font-playfair text-3xl md:text-4xl font-light text-white">{block.heading}</h2>
+        </div>
+      )}
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {block.services.map((service, i) => {
+            const Icon = getIcon(service.icon);
+            const inner = (
+              <div className="bg-law-card border border-law-border p-6 h-full group hover:border-law-accent transition-colors duration-300">
+                <div className="bg-law-dark inline-flex p-3 mb-4 group-hover:bg-law-accent transition-colors duration-300">
+                  <Icon className="h-8 w-8 text-law-accent group-hover:text-black transition-colors duration-300" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-playfair text-xl text-white mb-2">{service.title}</h3>
+                <p className="font-outfit text-sm md:text-base text-white/70 leading-relaxed">{service.description}</p>
+              </div>
+            );
+            return service.link ? (
+              <Link key={i} to={service.link} className="block">
+                {inner}
+              </Link>
+            ) : (
+              <div key={i}>{inner}</div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Testimonials ───────────────────────────────────────────────────────────
+function TestimonialsBlock({ block }: { block: Extract<ContentBlock, { type: "testimonials" }> }) {
+  return (
+    <section className="bg-law-dark py-12">
+      {block.heading && (
+        <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
+          <h2 className="font-playfair text-3xl md:text-4xl font-light text-white">{block.heading}</h2>
+        </div>
+      )}
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {block.testimonials.map((t, i) => (
+            <div key={i} className="bg-law-card border border-law-border p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-law-accent text-black font-playfair font-bold flex items-center justify-center text-lg">
+                  {t.initials}
+                </div>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: t.rating }).map((_, j) => (
+                    <Star key={j} className="h-4 w-4 fill-law-accent text-law-accent" />
+                  ))}
+                </div>
+              </div>
+              <p className="font-outfit text-white/80 italic mb-3">"{t.text}"</p>
+              {t.author && <p className="font-outfit text-white font-semibold text-sm">— {t.author}</p>}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Contact form ───────────────────────────────────────────────────────────
+function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "contact-form" }> }) {
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", phone: "", service: "", message: "" });
+
+  const services = block.services ?? [
+    "Magnetna rezonanca (MRI)",
+    "Rendgen",
+    "Ultrazvuk",
+    "Multislajsni skener (MSCT)",
+    "Ostali pregledi",
+  ];
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    // TODO: wire to a backend endpoint or email service
+    setSubmitted(true);
+  }
+
+  return (
+    <section className="bg-law-card border-t border-law-border py-12">
+      <div className="max-w-[700px] mx-auto w-[90%]">
+        <h2 className="font-playfair text-2xl md:text-3xl text-white mb-6">{block.heading}</h2>
+        {submitted ? (
+          <div className="bg-law-dark border border-law-accent p-8 text-center">
+            <p className="font-outfit text-law-accent text-xl mb-2">Hvala!</p>
+            <p className="font-outfit text-white/80">Vaš zahtev je primljen. Kontaktiraćemo Vas u najkraćem roku.</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block font-outfit text-sm text-white/70 mb-1">Ime i prezime *</label>
+              <input
+                required
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Vaše ime"
+                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent placeholder:text-white/30"
+              />
+            </div>
+            <div>
+              <label className="block font-outfit text-sm text-white/70 mb-1">Telefon *</label>
+              <input
+                required
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="npr. 060 1234567"
+                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent placeholder:text-white/30"
+              />
+            </div>
+            <div>
+              <label className="block font-outfit text-sm text-white/70 mb-1">Vrsta pregleda</label>
+              <select
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent"
+              >
+                <option value="">— Izaberite pregled —</option>
+                {services.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block font-outfit text-sm text-white/70 mb-1">Napomena</label>
+              <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Dodatne napomene..."
+                className="w-full bg-law-dark border border-law-border text-white font-outfit px-4 py-3 focus:outline-none focus:border-law-accent placeholder:text-white/30 resize-none"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-law-accent text-black font-outfit font-semibold py-4 hover:bg-law-accent/80 transition-colors"
+            >
+              Pošalji zahtev
+            </button>
+          </form>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Practice areas grid ────────────────────────────────────────────────────
+function PracticeAreasGridBlock({ block }: { block: Extract<ContentBlock, { type: "practice-areas-grid" }> }) {
+  const hasImages = block.areas.some((a) => a.image);
 
   if (hasImages) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
-        {block.areas.map((area, index) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {block.areas.map((area, i) => (
           <a
-            key={index}
-            href="/practice-areas"
-            className="relative min-h-[400px] lg:min-h-[500px] overflow-hidden group"
-            style={{
-              backgroundImage: area.image ? `url(${area.image})` : undefined,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
+            key={i}
+            href={area.link || "#"}
+            className="relative min-h-[350px] overflow-hidden group"
+            style={area.image ? { backgroundImage: `url(${area.image})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
           >
-            {/* Dark Overlay with Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70 transition-all duration-500 group-hover:from-[#6b8d0c]/60 group-hover:via-[#6b8d0c]/70 group-hover:to-black/90"></div>
-
-            {/* Content */}
-            <div className="relative h-full flex items-end p-4">
-              <h3 className="font-outfit text-[36px] leading-tight text-white font-normal transition-all duration-300 group-hover:text-[#6b8d0c]">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70 group-hover:to-law-accent-dark/80 transition-all duration-500" />
+            <div className="relative h-full flex items-end p-5">
+              <h3 className="font-playfair text-3xl text-white font-light group-hover:text-law-accent transition-colors duration-300">
                 {area.title}
               </h3>
             </div>
@@ -441,61 +411,90 @@ function PracticeAreasGridBlock({
     );
   }
 
-  // Fallback to card-based layout without images
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
-      {block.areas.map((area, index) => {
-        const IconComponent = getIcon(area.icon);
-        return (
-          <Card key={index} className="hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <IconComponent className="h-12 w-12 text-[#183658] mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                {area.title}
-              </h3>
-              <p className="text-gray-600">{area.description}</p>
-            </CardContent>
-          </Card>
-        );
-      })}
+    <section className="bg-law-dark py-12">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {block.areas.map((area, i) => {
+            const Icon = getIcon(area.icon);
+            return (
+              <a key={i} href={area.link || "#"} className="block bg-law-card border border-law-border p-6 hover:border-law-accent transition-colors group">
+                <Icon className="h-10 w-10 text-law-accent mb-3" strokeWidth={1.5} />
+                <h3 className="font-playfair text-xl text-white mb-2">{area.title}</h3>
+                {area.description && <p className="font-outfit text-sm text-white/70">{area.description}</p>}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Google reviews ─────────────────────────────────────────────────────────
+function GoogleReviewsBlock({ block }: { block: Extract<ContentBlock, { type: "google-reviews" }> }) {
+  return (
+    <section className="bg-law-dark py-12">
+      {block.heading && (
+        <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
+          <h2 className="font-playfair text-3xl md:text-4xl font-light text-white">{block.heading}</h2>
+        </div>
+      )}
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {block.reviews.map((r, i) => (
+            <div key={i} className="bg-law-card border border-law-border p-5">
+              <div className="flex gap-0.5 mb-3">
+                {Array.from({ length: r.rating }).map((_, j) => (
+                  <Star key={j} className="h-4 w-4 fill-law-accent text-law-accent" />
+                ))}
+              </div>
+              <p className="font-outfit text-white/80 text-base mb-4">"{r.text}"</p>
+              <strong className="font-outfit text-white text-sm">{r.author}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Attorney bio ───────────────────────────────────────────────────────────
+function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "attorney-bio" }> }) {
+  return (
+    <div className="max-w-[1200px] mx-auto w-[90%] py-10">
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="md:w-1/3">
+          <img src={block.image} alt={block.name} className="w-full h-auto object-cover" loading="lazy" />
+        </div>
+        <div className="md:w-2/3">
+          <h3 className="font-playfair text-2xl text-white mb-1">{block.name}</h3>
+          <p className="font-outfit text-law-accent mb-4">{block.title}</p>
+          <p className="font-outfit text-white/80 mb-4 leading-relaxed">{block.bio}</p>
+          <a href={`tel:${block.phone.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 text-law-accent font-outfit hover:underline">
+            <Phone className="h-4 w-4" />
+            {block.phone}
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
 
-function GoogleReviewsBlock({
-  block,
-}: {
-  block: Extract<ContentBlock, { type: "google-reviews" }>;
-}) {
+// ── Stats ──────────────────────────────────────────────────────────────────
+function StatsBlock({ block }: { block: Extract<ContentBlock, { type: "stats" }> }) {
   return (
-    <div className="py-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {block.reviews.map((review, index) => (
-          <div key={index} className="border border-gray-200 p-5">
-            <div className="mb-4">
-              <div className="flex mb-2">
-                {[...Array(review.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-5 w-5 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
-              </div>
-              <p className="text-gray-700 text-lg mb-4">{review.text}</p>
-              <div className="flex items-center justify-between">
-                <strong className="font-bold text-gray-900">
-                  {review.author}
-                </strong>
-                <img
-                  src="/images/logos/google-icon.png"
-                  alt="Google"
-                  className="h-6"
-                />
-              </div>
+    <section className="bg-law-accent py-10">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {block.stats.map((stat, i) => (
+            <div key={i}>
+              <p className="font-playfair text-4xl md:text-5xl font-light text-black mb-1">{stat.value}</p>
+              <p className="font-outfit text-sm md:text-base text-black/70 uppercase tracking-wide">{stat.label}</p>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

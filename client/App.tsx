@@ -7,10 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { SiteSettingsProvider } from "./contexts/SiteSettingsContext";
-import Index from "./pages/Index";
-import AboutUs from "./pages/AboutUs";
-import PracticeAreas from "./pages/PracticeAreas";
-import ContactPage from "./pages/ContactPage";
+import CmsPage from "./pages/CmsPage";
 import NotFound from "./pages/NotFound";
 import AdminRoutes from "./pages/AdminRoutes";
 import ScrollToTop from "./components/ScrollToTop";
@@ -27,12 +24,33 @@ const App = () => (
           <BrowserRouter>
             <ScrollToTop />
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<AboutUs />} />
-              <Route path="/practice-areas" element={<PracticeAreas />} />
-              <Route path="/contact" element={<ContactPage />} />
+              {/* ── CMS-driven pages ───────────────────────────────────── */}
+              <Route path="/" element={<CmsPage />} />
+              <Route path="/o-nama" element={<CmsPage />} />
+              <Route path="/o-nama/" element={<CmsPage />} />
+              <Route path="/neo-mag-pirot" element={<CmsPage />} />
+              <Route path="/neo-mag-pirot/" element={<CmsPage />} />
+              <Route path="/dijagnostika" element={<CmsPage />} />
+              <Route path="/dijagnostika/" element={<CmsPage />} />
+              <Route path="/dijagnostika/magnetna-rezonanca" element={<CmsPage />} />
+              <Route path="/dijagnostika/magnetna-rezonanca/" element={<CmsPage />} />
+              <Route path="/dijagnostika/rendgen" element={<CmsPage />} />
+              <Route path="/dijagnostika/rendgen/" element={<CmsPage />} />
+              <Route path="/dijagnostika/ultrazvuk" element={<CmsPage />} />
+              <Route path="/dijagnostika/ultrazvuk/" element={<CmsPage />} />
+              <Route path="/dijagnostika/multilajsni-skener" element={<CmsPage />} />
+              <Route path="/dijagnostika/multilajsni-skener/" element={<CmsPage />} />
+              <Route path="/dijagnostika/ostali-pregledi" element={<CmsPage />} />
+              <Route path="/dijagnostika/ostali-pregledi/" element={<CmsPage />} />
+              <Route path="/cenovnik" element={<CmsPage />} />
+              <Route path="/cenovnik/" element={<CmsPage />} />
+              <Route path="/kontakt" element={<CmsPage />} />
+              <Route path="/kontakt/" element={<CmsPage />} />
+
+              {/* ── Admin (CMS back-office) ────────────────────────────── */}
               <Route path="/admin/*" element={<AdminRoutes />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+              {/* ── Catch-all 404 ─────────────────────────────────────── */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

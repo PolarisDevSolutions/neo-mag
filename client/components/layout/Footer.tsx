@@ -125,7 +125,7 @@ const enabledSocialLinks = (settings.socialLinks ?? []).filter((s) => s.enabled)
         <div className="lg:w-[20%] lg:mr-[3%]">
           <div className="font-outfit text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] text-white">
             <h3 className="font-outfit text-[28px] md:text-[36px] leading-tight md:leading-[36px] text-white pb-[10px]">
-              Resources
+              Brze veze
             </h3>
               {resourceLinks.length > 0 ? (
                 <ul className="text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] space-y-1">
@@ -149,7 +149,7 @@ const enabledSocialLinks = (settings.socialLinks ?? []).filter((s) => s.enabled)
         <div className="lg:w-[20%] lg:mr-[3%]">
           <div className="font-outfit text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] text-white">
             <h3 className="font-outfit text-[28px] md:text-[36px] leading-tight md:leading-[36px] text-white pb-[10px]">
-              Practice Areas
+              Dijagnostika
             </h3>
               {practiceLinks.length > 0 ? (
                 <ul className="text-[18px] md:text-[24px] font-light leading-tight md:leading-[36px] space-y-1">
@@ -246,4 +246,3 @@ function SocialLinksSection() {
     </div>
   );
 }
-
