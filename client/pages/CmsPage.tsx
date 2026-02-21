@@ -62,5 +62,7 @@ export default function CmsPage() {
     return <LandingPageRenderer page={page} />;
   }
 
+  // 'practice' pages (diagnostic services) and 'standard' pages both use
+  // StandardPageRenderer — it provides breadcrumbs and block rendering.
   return <StandardPageRenderer page={page} />;
 }
