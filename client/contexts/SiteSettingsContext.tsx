@@ -7,6 +7,11 @@ import {
 } from "react";
 
 // Site Settings types (matching submodule)
+interface NavChild {
+  label: string;
+  href: string;
+}
+
 interface SiteSettings {
   siteName: string;
   logoUrl: string;
@@ -17,7 +22,7 @@ interface SiteSettings {
   applyPhoneGlobally: boolean;
   headerCtaText: string;
   headerCtaUrl: string;
-  navigationItems: { label: string; href: string; order?: number }[];
+  navigationItems: { label: string; href: string; order?: number; openInNewTab?: boolean; children?: NavChild[] }[];
   footerAboutLinks: { label: string; href?: string }[];
   footerPracticeLinks: { label: string; href?: string }[];
   footerTaglineHtml: string;

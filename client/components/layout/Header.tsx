@@ -10,8 +10,6 @@ export default function Header() {
 
   const logoUrl = settings.logoUrl?.trim() || "";
   const logoAlt = settings.logoAlt?.trim() || settings.siteName?.trim() || "Logo";
-  const ctaText = settings.headerCtaText?.trim() || "Zakažite pregled";
-  const ctaUrl = settings.headerCtaUrl?.trim() || "/kontakt/";
   const phoneDisplay = settings.phoneDisplay?.trim() || "";
 
   return (
@@ -37,23 +35,17 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* ── Desktop CTA ── */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* ── Desktop CTA: phone only ── */}
+          <div className="hidden md:flex items-center">
             {phoneDisplay && (
               <a
                 href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
-                className="font-outfit text-sm text-gray-600 hover:text-neo-blue transition-colors flex items-center gap-1.5"
+                className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
               >
                 <Phone className="h-4 w-4" />
                 {phoneDisplay}
               </a>
             )}
-            <Link
-              to={ctaUrl}
-              className="bg-neo-blue text-white font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
-            >
-              {ctaText}
-            </Link>
           </div>
 
           {/* ── Mobile hamburger ── */}
@@ -75,13 +67,16 @@ export default function Header() {
             {NAV_ITEMS.map((item) => (
               <MobileNavItem key={item.label} item={item} onClose={() => setMobileOpen(false)} />
             ))}
-            <Link
-              to={ctaUrl}
-              onClick={() => setMobileOpen(false)}
-              className="mt-3 w-full bg-neo-blue text-white font-outfit font-semibold text-center py-3 rounded-lg hover:bg-neo-blue-dark transition-colors"
-            >
-              {ctaText}
-            </Link>
+            {phoneDisplay && (
+              <a
+                href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+                onClick={() => setMobileOpen(false)}
+                className="mt-3 w-full bg-neo-blue text-white font-outfit font-semibold text-center py-3 rounded-lg hover:bg-neo-blue-dark transition-colors flex items-center justify-center gap-2"
+              >
+                <Phone className="h-4 w-4" />
+                {phoneDisplay}
+              </a>
+            )}
           </nav>
         </div>
       )}

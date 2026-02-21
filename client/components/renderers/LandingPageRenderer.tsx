@@ -1,7 +1,9 @@
 import Layout from "@site/components/layout/Layout";
 import Seo from "@site/components/Seo";
 import BlockRenderer from "@site/components/BlockRenderer";
+import ReviewsSlider from "@site/components/ReviewsSlider";
 import type { CmsPageData } from "@site/hooks/useCmsPage";
+import type { ContentBlock } from "@site/lib/blocks";
 
 interface Props {
   page: CmsPageData;
@@ -9,10 +11,16 @@ interface Props {
 
 /**
  * Renders a CMS page with page_type="landing".
- * Full-width sections, no inner container wrapper — each block manages its own spacing.
+ * Full-width sections — each block manages its own spacing.
+ * ReviewsSlider is injected globally below the first hero block.
  */
 export default function LandingPageRenderer({ page }: Props) {
-  const hasContent = Array.isArray(page.content) && page.content.length > 0;
+  const content: ContentBlock[] = Array.isArray(page.content) ? page.content : [];
+  const hasContent = content.length > 0;
+
+  // Determine where to split: after the first hero block (index 0 is most common)
+  const firstHeroIdx = content.findIndex((b) => b.type === "hero");
+  const splitAfter = firstHeroIdx >= 0 ? firstHeroIdx + 1 : 0;
 
   return (
     <Layout>
@@ -25,9 +33,21 @@ export default function LandingPageRenderer({ page }: Props) {
       />
 
       {hasContent ? (
-        <BlockRenderer content={page.content} />
+        <>
+          {/* Blocks up to and including the first hero */}
+          {splitAfter > 0 && <BlockRenderer content={content.slice(0, splitAfter)} />}
+          {/* Reviews slider — injected directly after the hero */}
+          <ReviewsSlider />
+          {/* Remaining content blocks */}
+          {content.slice(splitAfter).length > 0 && (
+            <BlockRenderer content={content.slice(splitAfter)} />
+          )}
+        </>
       ) : (
-        <EmptyState title={page.title} />
+        <>
+          <ReviewsSlider />
+          <EmptyState title={page.title} />
+        </>
       )}
     </Layout>
   );

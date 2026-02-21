@@ -18,7 +18,7 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: "/" },
+  { label: "Početna", href: "/" },
   { label: "O Nama", href: "/o-nama/" },
   {
     label: "Lokacije",
