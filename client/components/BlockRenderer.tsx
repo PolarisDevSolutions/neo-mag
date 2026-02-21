@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Star, Phone, Activity, FileText, Waves, Layers,
-  Stethoscope, Heart, MapPin, Scan, type LucideIcon,
+  Stethoscope, Heart, MapPin, Scan, CheckCircle2, type LucideIcon,
 } from "lucide-react";
 import type { ContentBlock } from "@site/lib/blocks";
 import ReviewsSlider from "@site/components/ReviewsSlider";
@@ -76,7 +76,7 @@ function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlo
           : undefined
       }
     >
-      {block.backgroundImage && <div className="absolute inset-0 bg-neo-blue/80" />}
+      <div className={`absolute inset-0 ${block.backgroundImage ? "bg-neo-blue/68" : "bg-neo-blue"}`} />
       {/* Subtle decorative circles */}
       <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5 pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
@@ -135,6 +135,18 @@ function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "parag
 
 // ── Bullets ────────────────────────────────────────────────────────────────
 function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets" }> }) {
+  if ((block as any).variant === "features") {
+    return (
+      <div className="py-2 space-y-3">
+        {block.items.map((item, i) => (
+          <div key={i} className="flex items-start gap-4 p-4 bg-white rounded-xl border border-blue-100 shadow-sm hover:border-neo-blue/30 hover:shadow-md transition-all">
+            <CheckCircle2 className="h-6 w-6 text-neo-blue flex-shrink-0 mt-0.5" />
+            <span className="font-outfit text-gray-800 font-medium leading-snug">{item}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-2">
       <ul className="space-y-2.5">
@@ -215,11 +227,15 @@ function MapBlock({ block }: { block: Extract<ContentBlock, { type: "map" }> }) 
 // ── Two-column ─────────────────────────────────────────────────────────────
 function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean }) {
   return (
-    <div className="bg-gray-50 border-y border-gray-200 py-12 my-4">
+    <div className="py-14" style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #e3eeff 60%, #f0f7ff 100%)' }}>
       <div className="max-w-[1200px] mx-auto w-[90%]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <div><BlockRenderer content={block.left} isPreview={isPreview} /></div>
-          <div><BlockRenderer content={block.right} isPreview={isPreview} /></div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          <div>
+            <BlockRenderer content={block.left} isPreview={isPreview} />
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-8 lg:p-10">
+            <BlockRenderer content={block.right} isPreview={isPreview} />
+          </div>
         </div>
       </div>
     </div>
@@ -231,14 +247,15 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
   return (
     <section className="py-12 bg-white">
       {block.heading && (
-        <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
+        <div className="max-w-[1200px] mx-auto w-[90%] mb-8 text-center">
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
         </div>
       )}
       <div className="max-w-[1200px] mx-auto w-[90%]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
           {block.services.map((service, i) => {
             const Icon = getIcon(service.icon);
+            const cardClass = "w-full sm:w-[calc(50%_-_12px)] lg:w-[calc(33.333%_-_16px)]";
             const inner = (
               <div className="bg-white border border-gray-200 rounded-xl p-6 h-full group hover:border-neo-blue hover:shadow-md transition-all duration-300">
                 <div className="bg-neo-blue-light inline-flex p-3 rounded-lg mb-4 group-hover:bg-neo-blue transition-colors duration-300">
@@ -246,14 +263,14 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
                 </div>
                 <h3 className="font-outfit font-bold text-lg text-gray-900 mb-2">{service.title}</h3>
                 {service.description && (
-                  <p className="font-outfit text-sm text-gray-600 leading-relaxed">{service.description}</p>
+                  <p className="font-outfit text-sm text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: service.description }} />
                 )}
               </div>
             );
             return service.link ? (
-              <Link key={i} to={service.link} className="block">{inner}</Link>
+              <Link key={i} to={service.link} className={`block ${cardClass}`}>{inner}</Link>
             ) : (
-              <div key={i}>{inner}</div>
+              <div key={i} className={cardClass}>{inner}</div>
             );
           })}
         </div>
@@ -320,7 +337,7 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
   return (
     <section className="bg-gray-50 border-y border-gray-200 py-12">
       <div className="max-w-[700px] mx-auto w-[90%]">
-        <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">{block.heading}</h2>
+        <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6 text-center">{block.heading}</h2>
         {submitted ? (
           <div className="bg-neo-blue-light border border-neo-blue/30 rounded-xl p-8 text-center">
             <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Hvala!</p>

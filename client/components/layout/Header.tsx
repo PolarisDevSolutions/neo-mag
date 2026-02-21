@@ -89,30 +89,56 @@ export default function Header() {
   );
 }
 
-// ── Desktop flat nav link (no dropdowns) ────────────────────────────────────
+// ── Desktop nav link — flat link or hover dropdown ─────────────────────────
 function DesktopNavLink({ item }: { item: NavItem }) {
   const { pathname } = useLocation();
-
-  // For items with children and href="#", link to the first child or the parent
+  const hasChildren = item.children && item.children.length > 0;
   const href = item.href !== "#" ? item.href : (item.children?.[0]?.href ?? "/");
+  const isActive = href !== "/" && pathname.startsWith(href.replace(/\/$/, ""));
 
-  const isActive =
-    href !== "/" && pathname.startsWith(href.replace(/\/$/, ""));
-
-  return (
-    <Link
-      to={href}
-      className={`relative font-outfit text-[15px] font-medium py-1 transition-colors duration-200 group ${
-        isActive ? "text-neo-blue" : "text-gray-700 hover:text-neo-blue"
-      }`}
-    >
-      {item.label}
-      <span
-        className={`absolute -bottom-0.5 left-0 h-0.5 bg-neo-blue transition-all duration-200 ${
-          isActive ? "w-full" : "w-0 group-hover:w-full"
+  if (!hasChildren) {
+    return (
+      <Link
+        to={href}
+        className={`relative font-outfit text-[15px] font-medium py-1 transition-colors duration-200 group ${
+          isActive ? "text-neo-blue" : "text-gray-700 hover:text-neo-blue"
         }`}
-      />
-    </Link>
+      >
+        {item.label}
+        <span className={`absolute -bottom-0.5 left-0 h-0.5 bg-neo-blue transition-all duration-200 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+      </Link>
+    );
+  }
+
+  // Item with children → hover dropdown
+  return (
+    <div className="relative group">
+      <Link
+        to={href}
+        className={`inline-flex items-center gap-1 font-outfit text-[15px] font-medium py-1 transition-colors duration-200 ${
+          isActive ? "text-neo-blue" : "text-gray-700 group-hover:text-neo-blue"
+        }`}
+      >
+        {item.label}
+        <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180" />
+        <span className={`absolute -bottom-0.5 left-0 h-0.5 bg-neo-blue transition-all duration-200 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+      </Link>
+
+      {/* Dropdown panel — visible on group hover */}
+      <div className="absolute top-full left-0 pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[220px]">
+          {item.children!.map((child) => (
+            <Link
+              key={child.href}
+              to={child.href}
+              className="flex items-center px-4 py-2.5 font-outfit text-sm text-gray-700 hover:text-neo-blue hover:bg-blue-50 transition-colors"
+            >
+              {child.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
