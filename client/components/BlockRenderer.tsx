@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, Phone, Activity, FileText, Waves, Layers, Stethoscope, Heart, MapPin, type LucideIcon } from "lucide-react";
+import { Star, Phone, Activity, FileText, Waves, Layers, Stethoscope, Heart, MapPin, Scan, type LucideIcon } from "lucide-react";
 import type { ContentBlock } from "@site/lib/blocks";
 
 // ── Icon map (expandable) ──────────────────────────────────────────────────
@@ -13,6 +13,7 @@ const iconMap: Record<string, LucideIcon> = {
   Heart,
   MapPin,
   Phone,
+  Scan,
 };
 
 function getIcon(name?: string): LucideIcon {
