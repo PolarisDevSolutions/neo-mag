@@ -86,17 +86,18 @@ function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlo
           {block.title}
         </h1>
         {block.subtitle && (
-          <p className="font-outfit text-base md:text-lg text-white/85 mb-8 max-w-2xl mx-auto leading-relaxed">
-            {block.subtitle}
-          </p>
+          <div
+            className="font-outfit text-base md:text-lg text-white/85 mb-8 max-w-2xl mx-auto leading-relaxed [&_strong]:font-bold [&_em]:italic [&_p]:mb-2"
+            dangerouslySetInnerHTML={{ __html: block.subtitle }}
+          />
         )}
-        {block.showCTA && (
+        {block.showCTA && block.ctaPhone && (
           <a
-            href={`tel:${(block.ctaPhone || "018520640").replace(/\D/g, "")}`}
+            href={`tel:${block.ctaPhone.replace(/\D/g, "")}`}
             className="inline-flex items-center gap-2 bg-white text-neo-blue font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-gray-100 transition-colors text-base"
           >
             <Phone className="h-5 w-5" />
-            {block.ctaText || "Zakažite pregled"}
+            {block.ctaText}
           </a>
         )}
       </div>
@@ -465,7 +466,7 @@ function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "att
         <div className="md:w-2/3">
           <h3 className="font-outfit font-bold text-2xl text-gray-900 mb-1">{block.name}</h3>
           <p className="font-outfit text-neo-blue font-semibold mb-4">{block.title}</p>
-          <p className="font-outfit text-gray-700 mb-4 leading-relaxed">{block.bio}</p>
+          <div className="font-outfit text-gray-700 mb-4 leading-relaxed [&_strong]:font-semibold [&_em]:italic [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: block.bio }} />
           <a href={`tel:${block.phone.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 text-neo-blue font-outfit font-semibold hover:underline">
             <Phone className="h-4 w-4" />
             {block.phone}

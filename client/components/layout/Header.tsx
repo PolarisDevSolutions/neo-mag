@@ -5,7 +5,12 @@ import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
 import { NAV_ITEMS, type NavItem } from "@site/config/navigation";
 
 export default function Header() {
-  const { settings } = useSiteSettings();
+  const { settings, isLoading } = useSiteSettings();
+
+  // Use Supabase navigation when available, fall back to static config while loading
+  const navItems: NavItem[] = (!isLoading && settings.navigationItems && settings.navigationItems.length > 0)
+    ? settings.navigationItems as NavItem[]
+    : NAV_ITEMS;
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const logoUrl = settings.logoUrl?.trim() || "";
@@ -30,7 +35,7 @@ export default function Header() {
 
           {/* ── Desktop navigation (flat — no dropdowns) ── */}
           <nav className="hidden md:flex items-center gap-6 lg:gap-8" aria-label="Glavna navigacija">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <DesktopNavLink key={item.label} item={item} />
             ))}
           </nav>
@@ -64,7 +69,7 @@ export default function Header() {
       {mobileOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white">
           <nav className="max-w-[1200px] mx-auto w-[90%] py-4 flex flex-col gap-1">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <MobileNavItem key={item.label} item={item} onClose={() => setMobileOpen(false)} />
             ))}
             {phoneDisplay && (

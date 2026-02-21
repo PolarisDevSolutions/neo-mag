@@ -34,23 +34,18 @@ interface SiteSettings {
   siteNoindex: boolean;
 }
 
-// Default values
+// Default values — all blanks so no stale content appears before Supabase loads
 const DEFAULT_SETTINGS: SiteSettings = {
-  siteName: "Constellation Law Firm",
-  logoUrl: "/images/logos/firm-logo.png",
-  logoAlt: "Constellation Law Firm",
-  phoneNumber: "4045555555",
-  phoneDisplay: "404-555-5555",
-  phoneAvailability: "Call Us 24/7",
+  siteName: "",
+  logoUrl: "",
+  logoAlt: "",
+  phoneNumber: "",
+  phoneDisplay: "",
+  phoneAvailability: "",
   applyPhoneGlobally: true,
-  headerCtaText: "Contact Us",
-  headerCtaUrl: "/contact",
-  navigationItems: [
-    { label: "Home", href: "/", order: 1 },
-    { label: "About Us", href: "/about", order: 2 },
-    { label: "Practice Areas", href: "/practice-areas", order: 3 },
-    { label: "Contact", href: "/contact", order: 4 },
-  ],
+  headerCtaText: "",
+  headerCtaUrl: "",
+  navigationItems: [],
   footerAboutLinks: [],
   footerPracticeLinks: [],
   footerTaglineHtml: "",
