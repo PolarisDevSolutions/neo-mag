@@ -76,8 +76,12 @@ function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlo
           : undefined
       }
     >
-      <div className={`absolute inset-0 ${block.backgroundImage ? "bg-neo-blue/68" : "bg-neo-blue"}`} />
-      {/* Subtle decorative circles */}
+      {/* Blue overlay — semi-transparent over image, fully opaque when no image */}
+      <div
+        className="absolute inset-0"
+        style={{ backgroundColor: block.backgroundImage ? 'rgba(2, 91, 250, 0.72)' : 'rgba(2, 91, 250, 1)' }}
+      />
+      {/* Decorative circles */}
       <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5 pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
 
@@ -114,9 +118,11 @@ function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading
     3: "text-lg md:text-xl font-semibold text-gray-800",
   }[block.level];
 
+  const centerClass = block.level === 2 ? "text-center" : "";
+
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] pt-8 pb-2">
-      <Tag className={`font-outfit ${cls} leading-snug`}>{block.text}</Tag>
+      <Tag className={`font-outfit ${cls} leading-snug ${centerClass}`}>{block.text}</Tag>
     </div>
   );
 }
