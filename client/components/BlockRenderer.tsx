@@ -100,6 +100,11 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
           }
         ],
         right: [
+          { type: "heading", level: 2, text: "Gde se nalazi Neo Mag dijagnostički centar u Nišu?" },
+          {
+            type: "paragraph",
+            content: "<p>Neo Mag dijagnostički centar nalazi se u Nišu i dostupan je pacijentima iz celog Nišavskog okruga i juga Srbije.</p><p>Pacijenti iz Niša, Prokuplja, Pirota, Leskovca i okolnih gradova biraju nas zbog stručnosti, opreme i brzine usluge.</p><p>Za tačnu lokaciju i zakazivanje magnetne rezonance u Nišu, kontaktirajte nas telefonom ili putem online forme.</p>"
+          },
           { type: "heading", level: 3, text: "Neo Mag Niš" },
           { type: "paragraph", content: "Prvomajska 2, Niš (kod Gradske bolnice)" },
           { type: "cta", text: "Zakažite u Nišu", phone: "018 520 640", variant: "primary" },
@@ -108,6 +113,24 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
           { type: "cta", text: "Zakažite u Pirotu", phone: "010 321 000", variant: "outline" }
         ]
       } as any);
+    } else {
+      // If section exists, ensure it has the SEO text in the right column
+      const whyIdx = blocks.findIndex((b, idx) => b.type === "two-column" && idx > servicesIdx);
+      const block = { ...blocks[whyIdx] };
+      const right = Array.isArray(block.right) ? [...block.right] : [];
+      const hasRightSeo = right.some((b: any) => b.type === "heading" && b.text?.includes("Gde se nalazi Neo Mag"));
+
+      if (!hasRightSeo) {
+        right.unshift(
+          { type: "heading", level: 2, text: "Gde se nalazi Neo Mag dijagnostički centar u Nišu?" },
+          {
+            type: "paragraph",
+            content: "<p>Neo Mag dijagnostički centar nalazi se u Nišu i dostupan je pacijentima iz celog Nišavskog okruga i juga Srbije.</p><p>Pacijenti iz Niša, Prokuplja, Pirota, Leskovca i okolnih gradova biraju nas zbog stručnosti, opreme i brzine usluge.</p><p>Za tačnu lokaciju i zakazivanje magnetne rezonance u Nišu, kontaktirajte nas telefonom ili putem online forme.</p>"
+          }
+        );
+        block.right = right;
+        blocks[whyIdx] = block;
+      }
     }
 
     // 3. Ensure SEO Text and FAQ are present
