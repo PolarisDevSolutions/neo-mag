@@ -793,12 +793,12 @@ function TabsSectionBlock({ block }: { block: any }) {
         )}
 
         {/* Tab Buttons */}
-        <div className="flex overflow-x-auto pb-2 mb-8 border-b border-gray-100 no-scrollbar gap-2 sm:gap-4 justify-start md:justify-center">
+        <div className="flex flex-wrap md:flex-nowrap pb-2 mb-8 border-b border-gray-100 gap-2 sm:gap-4 justify-center">
           {tabs.map((tab: any, i: number) => (
             <button
               key={i}
               onClick={() => setActiveTab(i)}
-              className={`whitespace-nowrap px-6 py-3 font-outfit font-bold text-sm md:text-base transition-all relative ${
+              className={`px-4 sm:px-6 py-3 font-outfit font-bold text-sm md:text-base transition-all relative ${
                 activeTab === i
                   ? "text-neo-blue"
                   : "text-gray-500 hover:text-gray-700"
