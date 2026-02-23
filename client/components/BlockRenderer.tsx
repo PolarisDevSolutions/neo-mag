@@ -49,6 +49,9 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
       blocks[heroIdx] = hero;
     }
 
+    // 1.5. Suppress redundant/hardcoded title if it appears as a separate block
+    blocks = blocks.filter(b => !(b.type === "heading" && b.text === "Naše dijagnostičke usluge"));
+
     // 2. Add Testimonials Slider if missing
     const hasTestimonials = blocks.some(b => b.type === "testimonials" || b.type === "reviews-slider");
     if (!hasTestimonials) {
@@ -366,9 +369,10 @@ function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { t
 
 // ── Services grid ──────────────────────────────────────────────────────────
 function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "services-grid" }> }) {
+  const showHeading = block.heading && block.heading !== "Naše dijagnostičke usluge";
   return (
     <section className="py-12 bg-white">
-      {block.heading && (
+      {showHeading && (
         <div className="max-w-[1200px] mx-auto w-[90%] mb-8 text-center">
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
         </div>
