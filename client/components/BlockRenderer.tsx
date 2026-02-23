@@ -19,9 +19,10 @@ function getIcon(name?: string): LucideIcon {
 interface BlockRendererProps {
   content: ContentBlock[];
   isPreview?: boolean;
+  isRoot?: boolean;
 }
 
-export default function BlockRenderer({ content, isPreview = false }: BlockRendererProps) {
+export default function BlockRenderer({ content, isPreview = false, isRoot = true }: BlockRendererProps) {
   if (!content || !Array.isArray(content)) {
     return (
       <div className="py-16 text-center text-gray-400">
@@ -35,7 +36,9 @@ export default function BlockRenderer({ content, isPreview = false }: BlockRende
   const isHomepage = !isPreview && (window.location.pathname === "/" || window.location.pathname === "");
   const hasSlider = content.some(b => b.type === "reviews-slider");
 
-  if (isHomepage && !hasSlider) {
+  const shouldAddSlider = isRoot && isHomepage && !hasSlider;
+
+  if (shouldAddSlider) {
     const heroIdx = content.findIndex(b => b.type === "hero");
     const insertIdx = heroIdx >= 0 ? heroIdx + 1 : 0;
     blocks = [...content];
@@ -45,13 +48,13 @@ export default function BlockRenderer({ content, isPreview = false }: BlockRende
   return (
     <div>
       {blocks.map((block, i) => (
-        <RenderBlock key={i} block={block} isPreview={isPreview} />
+        <RenderBlock key={i} block={block} isPreview={isPreview} isRoot={isRoot} />
       ))}
     </div>
   );
 }
 
-function RenderBlock({ block, isPreview }: { block: ContentBlock; isPreview: boolean }) {
+function RenderBlock({ block, isPreview, isRoot }: { block: ContentBlock; isPreview: boolean; isRoot: boolean }) {
   switch (block.type) {
     case "hero":                return <HeroBlock block={block} isPreview={isPreview} />;
     case "heading":             return <HeadingBlock block={block} />;
@@ -249,10 +252,10 @@ function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { t
       <div className="max-w-[1200px] mx-auto w-[90%]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           <div>
-            <BlockRenderer content={block.left} isPreview={isPreview} />
+            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} />
           </div>
           <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-8 lg:p-10">
-            <BlockRenderer content={block.right} isPreview={isPreview} />
+            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} />
           </div>
         </div>
       </div>
