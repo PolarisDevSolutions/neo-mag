@@ -68,6 +68,48 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
       } as any);
     }
 
+    // 2.5. Ensure "Zašto izabrati" exists
+    const servicesIdx = blocks.findIndex(b => b.type === "services-grid");
+    const hasWhy = blocks.some((b, idx) => b.type === "two-column" && idx > servicesIdx);
+    if (!hasWhy) {
+      const insertIdx = servicesIdx !== -1 ? servicesIdx + 1 : (heroIdx !== -1 ? heroIdx + 2 : 0);
+      blocks.splice(insertIdx, 0, {
+        type: "two-column",
+        left: [
+          { type: "heading", level: 2, text: "Zašto izabrati NEO MAG?" },
+          {
+            type: "paragraph",
+            content: "Neo Mag je dijagnostički centar u Nišu sa dugogodišnjim iskustvom i fokusom na preciznu dijagnostiku. Pacijenti iz Niša i juga Srbije biraju nas za magnetnu rezonancu, rendgen i ultrazvuk zbog brzine, stručnosti i savremene opreme."
+          },
+          {
+            type: "bullets",
+            variant: "features",
+            items: [
+              "Savremena MR oprema jačine 1,5T",
+              "Vrhunski tim radiologa i stručnog osoblja",
+              "Brzo zakazivanje i rezultati bez čekanja",
+              "Najviši standardi bezbednosti i komfor"
+            ]
+          },
+          {
+            type: "stats",
+            stats: [
+              { value: "20+", label: "Godina iskustva" },
+              { value: "50k+", label: "Pregleda godišnje" }
+            ]
+          }
+        ],
+        right: [
+          { type: "heading", level: 3, text: "Neo Mag Niš" },
+          { type: "paragraph", content: "Prvomajska 2, Niš (kod Gradske bolnice)" },
+          { type: "cta", text: "Zakažite u Nišu", phone: "018 520 640", variant: "primary" },
+          { type: "heading", level: 3, text: "Neo Mag Pirot" },
+          { type: "paragraph", content: "Srpskih vladara 82, Pirot (Hotel Ana Lux)" },
+          { type: "cta", text: "Zakažite u Pirotu", phone: "010 321 000", variant: "outline" }
+        ]
+      } as any);
+    }
+
     // 3. Ensure SEO Text and FAQ are present
     const hasSeoText = blocks.some(b => b.type === "seo-text");
     const hasFaq = blocks.some(b => b.type === "faq");
