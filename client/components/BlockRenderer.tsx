@@ -35,10 +35,11 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
 
   // Fallback for homepage: ensure testimonials block is present
   let blocks = content;
-  const isHomepage = !isPreview && (window.location.pathname === "/" || window.location.pathname === "");
-  const hasTestimonials = content.some(b => b.type === "testimonials" || b.type === "reviews-slider");
+  const { pathname } = window.location;
+  const isHomepage = (pathname === "/" || pathname === "" || pathname === "/index.html");
 
-  const shouldAddSlider = isRoot && isHomepage && !hasTestimonials;
+  const hasTestimonials = content.some(b => b.type === "testimonials" || b.type === "reviews-slider");
+  const shouldAddSlider = isRoot && isHomepage && !hasTestimonials && !isPreview;
 
   if (shouldAddSlider) {
     const heroIdx = content.findIndex(b => b.type === "hero");
@@ -59,18 +60,30 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
   }
 
   const testimonialsBlock = blocks.find(b => b.type === "testimonials");
+  const contactFormIdx = blocks.findIndex(b => b.type === "contact-form");
+  const hasContactForm = contactFormIdx !== -1;
 
   return (
     <div>
-      {blocks.map((block, i) => (
-        <RenderBlock
-          key={i}
-          block={block}
-          isPreview={isPreview}
-          isRoot={isRoot}
-          testimonialsBlock={testimonialsBlock}
-        />
-      ))}
+      {blocks.map((block, i) => {
+        const isLastBlock = i === blocks.length - 1;
+        const renderGridHere = !hasContactForm && isLastBlock && isHomepage;
+
+        return (
+          <div key={i}>
+            <RenderBlock
+              block={block}
+              isPreview={isPreview}
+              isRoot={isRoot}
+              testimonialsBlock={testimonialsBlock}
+              isHomepage={isHomepage}
+            />
+            {renderGridHere && testimonialsBlock && (testimonialsBlock.type === "testimonials") && (
+              <GoogleReviewsGrid testimonials={testimonialsBlock.testimonials} />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -79,15 +92,15 @@ function RenderBlock({
   block,
   isPreview,
   isRoot,
-  testimonialsBlock
+  testimonialsBlock,
+  isHomepage
 }: {
   block: ContentBlock;
   isPreview: boolean;
   isRoot: boolean;
   testimonialsBlock?: ContentBlock;
+  isHomepage: boolean;
 }) {
-  const isHomepage = window.location.pathname === "/" || window.location.pathname === "";
-
   switch (block.type) {
     case "hero":                return <HeroBlock block={block} isPreview={isPreview} />;
     case "heading":             return <HeadingBlock block={block} />;
@@ -97,13 +110,13 @@ function RenderBlock({
     case "image":               return <ImageBlock block={block} />;
     case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} />;
     case "services-grid":       return <ServicesGridBlock block={block} />;
-    case "testimonials":        return <TestimonialsBlock block={block} />;
+    case "testimonials":        return <TestimonialsBlock block={block} isHomepage={isHomepage} />;
     case "contact-form":
       return (
         <>
           {/* Inject the Google Grid extension here if requested or on homepage by default */}
           {testimonialsBlock && (testimonialsBlock.type === "testimonials") && (
-            (testimonialsBlock.variant === "both" || (testimonialsBlock as any).showGoogleGrid || (isHomepage && !testimonialsBlock.variant)) && (
+            (testimonialsBlock.variant === "both" || (testimonialsBlock as any).showGoogleGrid || isHomepage) && (
               <GoogleReviewsGrid testimonials={testimonialsBlock.testimonials} />
             )
           )}
@@ -310,9 +323,7 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
 }
 
 // ── Testimonials ───────────────────────────────────────────────────────────
-function TestimonialsBlock({ block }: { block: Extract<ContentBlock, { type: "testimonials" }> }) {
-  const isHomepage = window.location.pathname === "/" || window.location.pathname === "";
-
+function TestimonialsBlock({ block, isHomepage }: { block: Extract<ContentBlock, { type: "testimonials" }>; isHomepage: boolean }) {
   // If no variant is set on homepage, this block only shows the slider
   // because the Google Grid is automatically injected above the form.
   const isDefaultSlider = !block.variant;
