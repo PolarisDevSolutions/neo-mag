@@ -7,6 +7,7 @@ import {
 import type { ContentBlock } from "@site/lib/blocks";
 import ReviewsSlider from "@site/components/ReviewsSlider";
 import TestimonialsSlider from "@site/components/TestimonialsSlider";
+import GoogleReviewsGrid from "@site/components/GoogleReviewsGrid";
 
 // ── Icon map ───────────────────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
@@ -74,7 +75,6 @@ function RenderBlock({ block, isPreview, isRoot }: { block: ContentBlock; isPrev
     case "bullets":             return <BulletsBlock block={block} />;
     case "cta":                 return <CTABlock block={block} />;
     case "image":               return <ImageBlock block={block} />;
-    case "map":                 return <MapBlock block={block} />;
     case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} />;
     case "services-grid":       return <ServicesGridBlock block={block} />;
     case "testimonials":        return <TestimonialsBlock block={block} />;
@@ -223,40 +223,6 @@ function ImageBlock({ block }: { block: Extract<ContentBlock, { type: "image" }>
   );
 }
 
-// ── Map ────────────────────────────────────────────────────────────────────
-function MapBlock({ block }: { block: Extract<ContentBlock, { type: "map" }> }) {
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(block.address)}`;
-  if (block.embedUrl) {
-    return (
-      <div className="w-full">
-        <iframe
-          src={block.embedUrl}
-          width="100%"
-          height="400"
-          allowFullScreen
-          loading="lazy"
-          className="w-full h-[350px] md:h-[400px]"
-          title="Mapa lokacije"
-        />
-      </div>
-    );
-  }
-  return (
-    <div className="bg-gray-50 border border-gray-200 py-10 text-center rounded-lg mx-auto max-w-[1200px] w-[90%] my-4">
-      <MapPin className="h-10 w-10 text-neo-blue mx-auto mb-3" />
-      <p className="font-outfit text-gray-800 mb-4">{block.address}</p>
-      <a
-        href={mapsUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-block bg-neo-blue text-white font-outfit font-semibold px-6 py-3 rounded-lg hover:bg-neo-blue-dark transition-colors"
-      >
-        Otvori na Google Mapama
-      </a>
-    </div>
-  );
-}
-
 // ── Two-column ─────────────────────────────────────────────────────────────
 function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean }) {
   return (
@@ -314,40 +280,18 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
 
 // ── Testimonials ───────────────────────────────────────────────────────────
 function TestimonialsBlock({ block }: { block: Extract<ContentBlock, { type: "testimonials" }> }) {
-  if (block.variant === "slider") {
-    return <TestimonialsSlider heading={block.heading} testimonials={block.testimonials} />;
-  }
+  const showSlider = block.variant === "slider" || block.variant === "both" || !block.variant;
+  const showGrid = block.variant === "grid" || block.variant === "both" || (block as any).showGoogleGrid;
+
   return (
-    <section className="bg-gray-50 py-12 border-y border-gray-200">
-      {block.heading && (
-        <div className="max-w-[1200px] mx-auto w-[90%] mb-8">
-          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
-        </div>
+    <>
+      {showSlider && (
+        <TestimonialsSlider heading={block.heading} testimonials={block.testimonials} />
       )}
-      <div className="max-w-[1200px] mx-auto w-[90%]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {block.testimonials.map((t, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-full bg-neo-blue text-white font-outfit font-bold flex items-center justify-center text-sm">
-                  {t.initials}
-                </div>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-neo-blue text-neo-blue" />
-                  ))}
-                </div>
-              </div>
-              <div
-                className="font-outfit text-gray-700 italic text-sm mb-3 [&_p]:inline"
-                dangerouslySetInnerHTML={{ __html: `"${t.text}"` }}
-              />
-              {t.author && <p className="font-outfit text-gray-900 font-semibold text-sm">— {t.author}</p>}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      {showGrid && (
+        <GoogleReviewsGrid testimonials={block.testimonials} />
+      )}
+    </>
   );
 }
 
@@ -374,64 +318,84 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
   }
 
   return (
-    <section className="bg-gray-50 border-y border-gray-200 py-12">
-      <div className="max-w-[700px] mx-auto w-[90%]">
-        <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6 text-center">{block.heading}</h2>
-        {submitted ? (
-          <div className="bg-neo-blue-light border border-neo-blue/30 rounded-xl p-8 text-center">
-            <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Hvala!</p>
-            <p className="font-outfit text-gray-700">Vaš zahtev je primljen. Kontaktiraćemo Vas u najkraćem roku.</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {[
-              { label: "Ime i prezime *", name: "name", type: "text", placeholder: "Vaše ime", required: true },
-              { label: "Telefon *", name: "phone", type: "tel", placeholder: "npr. 060 1234567", required: true },
-            ].map(({ label, name, type, placeholder, required }) => (
-              <div key={name}>
-                <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">{label}</label>
-                <input
-                  required={required}
-                  name={name}
-                  type={type}
-                  value={formData[name as keyof typeof formData]}
-                  onChange={handleChange}
-                  placeholder={placeholder}
-                  className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue focus:border-transparent placeholder:text-gray-400"
-                />
+    <section className="bg-gray-50 border-y border-gray-200 py-16">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        <div className={`grid grid-cols-1 ${block.image ? 'lg:grid-cols-2' : ''} gap-12 items-center`}>
+          {/* Left/Main Column: Form */}
+          <div className={block.image ? 'max-w-[600px]' : 'max-w-[700px] mx-auto w-full'}>
+            <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-8">{block.heading}</h2>
+            {submitted ? (
+              <div className="bg-neo-blue-light border border-neo-blue/30 rounded-xl p-8 text-center">
+                <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Hvala!</p>
+                <p className="font-outfit text-gray-700">Vaš zahtev je primljen. Kontaktiraćemo Vas u najkraćem roku.</p>
               </div>
-            ))}
-            <div>
-              <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">Vrsta pregleda</label>
-              <select
-                name="service"
-                value={formData.service}
-                onChange={handleChange}
-                className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue"
-              >
-                <option value="">— Izaberite pregled —</option>
-                {services.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">Napomena</label>
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                rows={3}
-                placeholder="Dodatne napomene..."
-                className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue resize-none placeholder:text-gray-400"
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {[
+                  { label: "Ime i prezime *", name: "name", type: "text", placeholder: "Vaše ime", required: true },
+                  { label: "Telefon *", name: "phone", type: "tel", placeholder: "npr. 060 1234567", required: true },
+                ].map(({ label, name, type, placeholder, required }) => (
+                  <div key={name}>
+                    <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">{label}</label>
+                    <input
+                      required={required}
+                      name={name}
+                      type={type}
+                      value={formData[name as keyof typeof formData]}
+                      onChange={handleChange}
+                      placeholder={placeholder}
+                      className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue focus:border-transparent placeholder:text-gray-400"
+                    />
+                  </div>
+                ))}
+                <div>
+                  <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">Vrsta pregleda</label>
+                  <select
+                    name="service"
+                    value={formData.service}
+                    onChange={handleChange}
+                    className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                  >
+                    <option value="">— Izaberite pregled —</option>
+                    {services.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-outfit text-sm font-medium text-gray-700 mb-1">Napomena</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows={3}
+                    placeholder="Dodatne napomene..."
+                    className="w-full bg-white border border-gray-300 text-gray-900 font-outfit px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-neo-blue resize-none placeholder:text-gray-400"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-neo-blue text-white font-outfit font-bold py-3.5 rounded-lg hover:bg-neo-blue-dark transition-colors"
+                >
+                  Pošalji zahtev
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Right Column: Image */}
+          {block.image && (
+            <div className="hidden lg:block relative group">
+              <div className="absolute -inset-4 bg-neo-blue/5 rounded-2xl group-hover:bg-neo-blue/10 transition-colors" />
+              <img
+                src={block.image}
+                alt={block.heading}
+                className="relative w-full h-[500px] object-cover rounded-xl shadow-lg"
               />
+              {/* Decorative elements */}
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-neo-blue/10 rounded-full blur-2xl" />
+              <div className="absolute -top-6 -left-6 w-24 h-24 bg-neo-blue/10 rounded-full blur-2xl" />
             </div>
-            <button
-              type="submit"
-              className="w-full bg-neo-blue text-white font-outfit font-bold py-3.5 rounded-lg hover:bg-neo-blue-dark transition-colors"
-            >
-              Pošalji zahtev
-            </button>
-          </form>
-        )}
+          )}
+        </div>
       </div>
     </section>
   );
