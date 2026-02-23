@@ -30,9 +30,21 @@ export default function BlockRenderer({ content, isPreview = false }: BlockRende
     );
   }
 
+  // Fallback for homepage: ensure reviews-slider is present
+  let blocks = content;
+  const isHomepage = !isPreview && (window.location.pathname === "/" || window.location.pathname === "");
+  const hasSlider = content.some(b => b.type === "reviews-slider");
+
+  if (isHomepage && !hasSlider) {
+    const heroIdx = content.findIndex(b => b.type === "hero");
+    const insertIdx = heroIdx >= 0 ? heroIdx + 1 : 0;
+    blocks = [...content];
+    blocks.splice(insertIdx, 0, { type: "reviews-slider", heading: "Šta kažu naši pacijenti" } as any);
+  }
+
   return (
     <div>
-      {content.map((block, i) => (
+      {blocks.map((block, i) => (
         <RenderBlock key={i} block={block} isPreview={isPreview} />
       ))}
     </div>
