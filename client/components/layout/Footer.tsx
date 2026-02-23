@@ -105,7 +105,7 @@ export default function Footer() {
         {resourceLinks.length > 0 && (
           <div>
             <h3 className="font-outfit text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
-              Quick Links
+              Brzi linkovi
             </h3>
             <ul className="space-y-2">
               {resourceLinks.map((link) => (
@@ -126,7 +126,7 @@ export default function Footer() {
         {practiceLinks.length > 0 && (
           <div>
             <h3 className="font-outfit text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
-              Services
+              Usluge
             </h3>
             <ul className="space-y-2">
               {practiceLinks.map((link) => (
@@ -147,7 +147,7 @@ export default function Footer() {
         {mapEmbedUrl && (
           <div className="sm:col-span-2 lg:col-span-1">
             <h3 className="font-outfit text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
-              Location
+              Lokacija
             </h3>
             <iframe
               src={mapEmbedUrl}
