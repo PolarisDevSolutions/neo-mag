@@ -368,11 +368,6 @@ function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { t
 function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "services-grid" }> }) {
   return (
     <section className="py-12 bg-white">
-      {block.heading && (
-        <div className="max-w-[1200px] mx-auto w-[90%] mb-8 text-center">
-          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
-        </div>
-      )}
       <div className="max-w-[1200px] mx-auto w-[90%]">
         <div className="flex flex-wrap justify-center gap-6">
           {block.services.map((service, i) => {
