@@ -236,19 +236,19 @@ function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlo
       <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
 
       <div className="relative max-w-4xl mx-auto flex flex-col items-center">
+        <h1 className="font-outfit font-semibold text-[14px] md:text-[16px] lg:text-[18px] uppercase tracking-wider text-white/80 mb-6 order-1">
+          {h1Text}
+        </h1>
         {leadText && (
           <div
-            className="font-outfit text-xl md:text-2xl lg:text-3xl text-white font-medium mb-6 max-w-3xl mx-auto leading-relaxed [&_strong]:font-bold [&_em]:italic [&_p]:mb-2 order-1"
+            className="font-outfit text-2xl md:text-4xl lg:text-5xl text-white font-bold mb-10 max-w-3xl mx-auto leading-tight [&_strong]:font-bold [&_em]:italic [&_p]:mb-2 order-2"
             dangerouslySetInnerHTML={{ __html: leadText }}
           />
         )}
-        <h1 className="font-outfit font-bold text-[clamp(1.5rem,4vw,2.4rem)] text-white/90 leading-tight mb-8 order-2">
-          {h1Text}
-        </h1>
         {block.showCTA && ctaUrl && (
           <a
             href={ctaUrl}
-            className="inline-flex items-center gap-2 bg-white text-neo-blue font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-gray-100 transition-colors text-base order-3"
+            className="inline-flex items-center gap-2 bg-white text-neo-blue font-outfit font-bold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors text-base order-3"
           >
             <Phone className="h-5 w-5" />
             {block.ctaText}
