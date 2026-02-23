@@ -271,11 +271,17 @@ function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading
     3: "text-lg md:text-xl font-semibold text-gray-800",
   }[block.level];
 
-  const centerClass = block.level === 2 ? "text-center" : "";
+  const centerClass = block.level === 2 ? "text-center mx-auto" : "";
+  const subtext = (block as any).subtext;
 
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] pt-8 pb-2">
       <Tag className={`font-outfit ${cls} leading-snug ${centerClass}`}>{block.text}</Tag>
+      {subtext && (
+        <p className={`font-outfit text-base md:text-lg text-gray-600 mt-2 ${centerClass} max-w-2xl`}>
+          {subtext}
+        </p>
+      )}
     </div>
   );
 }
@@ -285,7 +291,7 @@ function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "parag
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-2">
       <div
-        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold"
+        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold [&_p]:mb-4 last:[&_p]:mb-0"
         dangerouslySetInnerHTML={{ __html: block.content }}
       />
     </div>
