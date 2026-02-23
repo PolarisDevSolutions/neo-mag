@@ -376,11 +376,18 @@ function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { t
 // ── Services grid ──────────────────────────────────────────────────────────
 function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "services-grid" }> }) {
   const showHeading = block.heading && block.heading !== "Naše dijagnostičke usluge";
+  const subtext = (block as any).subtext;
+
   return (
     <section className="py-12 bg-white">
       {showHeading && (
         <div className="max-w-[1200px] mx-auto w-[90%] mb-8 text-center">
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900">{block.heading}</h2>
+          {subtext && (
+            <p className="font-outfit text-base md:text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
+              {subtext}
+            </p>
+          )}
         </div>
       )}
       <div className="max-w-[1200px] mx-auto w-[90%]">
