@@ -95,8 +95,6 @@ export default function GoogleReviewsGrid({ testimonials }: Props) {
               />
               
               <div className="text-gray-400 text-xs mt-auto flex items-center gap-1.5">
-                <span>Pre 1 nedelju</span>
-                <span className="w-1 h-1 rounded-full bg-gray-200" />
                 <span className="text-neo-blue/70">Google Review</span>
               </div>
             </article>
