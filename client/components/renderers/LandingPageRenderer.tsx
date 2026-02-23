@@ -16,6 +16,7 @@ interface Props {
 export default function LandingPageRenderer({ page }: Props) {
   const content: ContentBlock[] = Array.isArray(page.content) ? page.content : [];
   const hasContent = content.length > 0;
+  const isHomepage = page.url_path === "/";
 
   return (
     <Layout>
@@ -28,7 +29,7 @@ export default function LandingPageRenderer({ page }: Props) {
       />
 
       {hasContent ? (
-        <BlockRenderer content={content} />
+        <BlockRenderer content={content} isHomepage={isHomepage} />
       ) : (
         <EmptyState title={page.title} />
       )}

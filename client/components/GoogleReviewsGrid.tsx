@@ -12,10 +12,13 @@ interface Props {
 }
 
 export default function GoogleReviewsGrid({ testimonials }: Props) {
+  // Ensure testimonials is an array
+  const items = Array.isArray(testimonials) ? testimonials : [];
+
   // Use first 9 testimonials or pad with defaults if less than 9
-  const gridTestimonials = testimonials.slice(0, 9);
-  
-  // If we have fewer than 9, just show what we have (or handle differently)
+  const gridTestimonials = items.slice(0, 9);
+
+  // If we have fewer than 1, just return null
   if (gridTestimonials.length === 0) return null;
 
   return (
