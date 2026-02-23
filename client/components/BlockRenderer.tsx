@@ -34,28 +34,86 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
     );
   }
 
-  // Fallback for homepage: ensure testimonials block is present
+  // Fallback for homepage: ensure testimonials and new SEO sections are present
   let blocks = content;
 
-  const hasTestimonials = content.some(b => b.type === "testimonials" || b.type === "reviews-slider");
-  const shouldAddSlider = isRoot && isHomepage && !hasTestimonials && !isPreview;
-
-  if (shouldAddSlider) {
-    const heroIdx = content.findIndex(b => b.type === "hero");
-    const insertIdx = heroIdx >= 0 ? heroIdx + 1 : 0;
+  if (isRoot && isHomepage && !isPreview) {
     blocks = [...content];
-    // We add a static testimonials block instead of a dynamic reviews-slider
-    // so it shows up in the CMS editor for the user to edit!
-    blocks.splice(insertIdx, 0, {
-      type: "testimonials",
-      heading: "Šta kažu naši pacijenti",
-      variant: "both",
-      testimonials: [
-        { initials: "MJ", rating: 5, text: "Odlična usluga i veoma ljubazno osoblje. Pregled je obavljen brzo i profesionalno. Preporučujem svima!", author: "Marija J. (Niš)" },
-        { initials: "SM", rating: 5, text: "Profesionalan tim lekara, moderna oprema i kratko vreme čekanja. Rezultati su bili gotovi isti dan.", author: "Stefan M. (Niš)" },
-        { initials: "DP", rating: 5, text: "Veoma sam zadovoljna pregledima u Neo Mag centru u Pirotu. Toplo preporučujem svim pacijentima.", author: "Dragana P. (Pirot)" }
-      ]
-    } as any);
+
+    // 1. Update Hero fields mapping if needed
+    const heroIdx = blocks.findIndex(b => b.type === "hero");
+    if (heroIdx !== -1) {
+      const hero = { ...blocks[heroIdx] };
+      if (!(hero as any).h1) (hero as any).h1 = hero.title;
+      if (!(hero as any).lead) (hero as any).lead = hero.subtitle;
+      blocks[heroIdx] = hero;
+    }
+
+    // 2. Add Testimonials Slider if missing
+    const hasTestimonials = blocks.some(b => b.type === "testimonials" || b.type === "reviews-slider");
+    if (!hasTestimonials) {
+      const insertIdx = heroIdx >= 0 ? heroIdx + 1 : 0;
+      blocks.splice(insertIdx, 0, {
+        type: "testimonials",
+        heading: "Šta kažu naši pacijenti",
+        variant: "both",
+        testimonials: [
+          { initials: "MJ", rating: 5, text: "Odlična usluga i veoma ljubazno osoblje. Pregled je obavljen brzo i profesionalno. Preporučujem svima!", author: "Marija J. (Niš)" },
+          { initials: "SM", rating: 5, text: "Profesionalan tim lekara, moderna oprema i kratko vreme čekanja. Rezultati su bili gotovi isti dan.", author: "Stefan M. (Niš)" },
+          { initials: "DP", rating: 5, text: "Veoma sam zadovoljna pregledima u Neo Mag centru u Pirotu. Toplo preporučujem svim pacijentima.", author: "Dragana P. (Pirot)" }
+        ]
+      } as any);
+    }
+
+    // 3. Ensure SEO Text and FAQ are present
+    const hasSeoText = blocks.some(b => b.type === "seo-text");
+    const hasFaq = blocks.some(b => b.type === "faq");
+
+    if (!hasSeoText || !hasFaq) {
+      // Find position after Section 4 (Why Choose Us)
+      // We assume Why Choose Us is the two-column block after services
+      const servicesIdx = blocks.findIndex(b => b.type === "services-grid");
+      const whyIdx = blocks.findIndex((b, idx) => b.type === "two-column" && idx > servicesIdx);
+      const testimonialsGridIdx = blocks.findIndex((b, idx) => b.type === "testimonials" && idx > whyIdx);
+      const contactFormIdx = blocks.findIndex(b => b.type === "contact-form");
+
+      let insertIdx = testimonialsGridIdx !== -1 ? testimonialsGridIdx : (contactFormIdx !== -1 ? contactFormIdx : blocks.length);
+
+      if (!hasFaq) {
+        blocks.splice(insertIdx, 0, {
+          type: "faq",
+          heading: "Česta pitanja o magnetnoj rezonanci i pregledima",
+          items: [
+            { question: "Koliko traje magnetna rezonanca u Nišu?", answer: "U proseku 20–40 minuta, u zavisnosti od regije koja se snima." },
+            { question: "Da li je magnetna rezonanca bezbedna?", answer: "Da. MR ne koristi jonizujuće zračenje i smatra se bezbednom metodom. Za trudnice i decu preporučuje se konsultacija sa lekarom." },
+            { question: "Da li je potreban uput za MR?", answer: "Preporučuje se uput ili medicinska dokumentacija, a za tačne uslove najbolje je da nas kontaktirate." },
+            { question: "Kada se dobija nalaz?", answer: "U najkraćem mogućem roku, uz stručno mišljenje radiologa." },
+          ]
+        } as any);
+      }
+
+      if (!hasSeoText) {
+        blocks.splice(insertIdx, 0, {
+          type: "seo-text",
+          heading: "Magnetna rezonanca Niš – precizna dijagnostika bez čekanja",
+          paragraphs: [
+            "Magnetna rezonanca u Nišu je jedna od najtraženijih procedura za snimanje kičme, zglobova, mozga, abdomena i male karlice. U Neo Mag centru koristimo savremene MR uređaje jačine 1,5T za visoku rezoluciju i pouzdanu dijagnostiku.",
+            "MR snimanje u Nišu obavljamo uz stalno prisustvo radiologa, uz fokus na bezbednost i komfor pacijenata.",
+            "Pored MR, u okviru centra dostupni su i digitalni rendgen i ultrazvuk, kao i mogućnost konsultativnog pregleda nakon dijagnostike."
+          ],
+          bullets: [
+            "MR (magnetna rezonanca) 1,5T",
+            "Digitalni rendgen",
+            "Ultrazvuk",
+            "MSCT (multislajsni skener)",
+            "Konsultativni pregledi"
+          ],
+          imageUrl: "",
+          imageAlt: "Magnetna rezonanca Niš",
+          imagePosition: "right"
+        } as any);
+      }
+    }
   }
 
   const findTestimonials = (blocks: ContentBlock[]): ContentBlock | undefined => {
@@ -139,6 +197,8 @@ function RenderBlock({
         </>
       );
     case "practice-areas-grid": return <PracticeAreasGridBlock block={block} />;
+    case "seo-text":            return <SEOTextBlock block={block} />;
+    case "faq":                 return <FAQBlock block={block} />;
     case "google-reviews":      return <GoogleReviewsBlock block={block} />;
     case "attorney-bio":        return <AttorneyBioBlock block={block} />;
     case "stats":               return <StatsBlock block={block} />;
@@ -153,6 +213,10 @@ function RenderBlock({
 
 // ── Hero ───────────────────────────────────────────────────────────────────
 function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean }) {
+  const h1Text = (block as any).h1 || block.title;
+  const leadText = (block as any).lead || block.subtitle;
+  const ctaUrl = (block as any).ctaUrl || (block.ctaPhone ? `tel:${block.ctaPhone.replace(/\D/g, "")}` : undefined);
+
   return (
     <section
       className="relative bg-neo-blue py-20 px-6 text-center overflow-hidden"
@@ -171,20 +235,20 @@ function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlo
       <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5 pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
 
-      <div className="relative max-w-4xl mx-auto">
-        <h1 className="font-outfit font-bold text-[clamp(2rem,5vw,3.2rem)] text-white leading-tight mb-4">
-          {block.title}
-        </h1>
-        {block.subtitle && (
+      <div className="relative max-w-4xl mx-auto flex flex-col items-center">
+        {leadText && (
           <div
-            className="font-outfit text-base md:text-lg text-white/85 mb-8 max-w-2xl mx-auto leading-relaxed [&_strong]:font-bold [&_em]:italic [&_p]:mb-2"
-            dangerouslySetInnerHTML={{ __html: block.subtitle }}
+            className="font-outfit text-xl md:text-2xl lg:text-3xl text-white font-medium mb-6 max-w-3xl mx-auto leading-relaxed [&_strong]:font-bold [&_em]:italic [&_p]:mb-2 order-1"
+            dangerouslySetInnerHTML={{ __html: leadText }}
           />
         )}
-        {block.showCTA && block.ctaPhone && (
+        <h1 className="font-outfit font-bold text-[clamp(1.5rem,4vw,2.4rem)] text-white/90 leading-tight mb-8 order-2">
+          {h1Text}
+        </h1>
+        {block.showCTA && ctaUrl && (
           <a
-            href={`tel:${block.ctaPhone.replace(/\D/g, "")}`}
-            className="inline-flex items-center gap-2 bg-white text-neo-blue font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-gray-100 transition-colors text-base"
+            href={ctaUrl}
+            className="inline-flex items-center gap-2 bg-white text-neo-blue font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-gray-100 transition-colors text-base order-3"
           >
             <Phone className="h-5 w-5" />
             {block.ctaText}
@@ -314,6 +378,7 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
           {block.services.map((service, i) => {
             const Icon = getIcon(service.icon);
             const cardClass = "w-full sm:w-[calc(50%_-_12px)] lg:w-[calc(33.333%_-_16px)]";
+            const link = service.url || service.link;
             const inner = (
               <div className="bg-white border border-gray-200 rounded-xl p-6 h-full group hover:border-neo-blue hover:shadow-md transition-all duration-300">
                 <div className="bg-neo-blue-light inline-flex p-3 rounded-lg mb-4 group-hover:bg-neo-blue transition-colors duration-300">
@@ -325,8 +390,8 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
                 )}
               </div>
             );
-            return service.link ? (
-              <Link key={i} to={service.link} className={`block ${cardClass}`}>{inner}</Link>
+            return link ? (
+              <Link key={i} to={link} className={`block ${cardClass}`}>{inner}</Link>
             ) : (
               <div key={i} className={cardClass}>{inner}</div>
             );
@@ -562,6 +627,112 @@ function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "att
         </div>
       </div>
     </div>
+  );
+}
+
+// ── SEO Text ────────────────────────────────────────────────────────────────
+function SEOTextBlock({ block }: { block: any }) {
+  const { heading, paragraphs = [], bullets = [], imageUrl, imageAlt, imagePosition = "right" } = block;
+
+  const textContent = (
+    <div className="flex-1">
+      {heading && (
+        <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">{heading}</h2>
+      )}
+      <div className="space-y-4">
+        {paragraphs.map((p: string, i: number) => (
+          <p key={i} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
+            {p}
+          </p>
+        ))}
+      </div>
+      {bullets.length > 0 && (
+        <ul className="mt-6 space-y-2.5">
+          {bullets.map((item: string, i: number) => (
+            <li key={i} className="flex items-start gap-3 font-outfit text-base md:text-lg text-gray-700">
+              <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-neo-blue" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+
+  const imageContent = imageUrl ? (
+    <div className="flex-1">
+      <img
+        src={imageUrl}
+        alt={imageAlt || ""}
+        className="w-full h-auto rounded-xl shadow-sm object-cover max-h-[500px]"
+        loading="lazy"
+      />
+    </div>
+  ) : null;
+
+  return (
+    <section className="py-16 bg-white overflow-hidden">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        {imageUrl ? (
+          <div className={`flex flex-col md:flex-row gap-12 lg:gap-20 items-center ${imagePosition === "left" ? "md:flex-row-reverse" : ""}`}>
+            {textContent}
+            {imageContent}
+          </div>
+        ) : (
+          <div className="max-w-3xl mx-auto">
+            {textContent}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── FAQ ────────────────────────────────────────────────────────────────────
+function FAQBlock({ block }: { block: any }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  return (
+    <section className="py-16 bg-gray-50 border-y border-gray-100">
+      <div className="max-w-[800px] mx-auto w-[90%]">
+        {block.heading && (
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-10 text-center">
+            {block.heading}
+          </h2>
+        )}
+        <div className="space-y-4">
+          {block.items.map((item: { question: string; answer: string }, i: number) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-200 hover:border-neo-blue/30">
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                className="w-full text-left px-6 py-4 flex items-center justify-between gap-4 focus:outline-none"
+              >
+                <span className="font-outfit font-bold text-gray-900 text-lg leading-tight">
+                  {item.question}
+                </span>
+                <span className={`flex-shrink-0 w-6 h-6 rounded-full bg-neo-blue-light text-neo-blue flex items-center justify-center transition-transform duration-200 ${openIndex === i ? 'rotate-180' : ''}`}>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </button>
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  openIndex === i ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+                }`}
+              >
+                <div className="px-6 pb-5 pt-0">
+                  <div className="h-px bg-gray-100 mb-4" />
+                  <p className="font-outfit text-gray-700 leading-relaxed">
+                    {item.answer}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
