@@ -115,7 +115,10 @@ export default function TestimonialsSlider({ heading, testimonials }: Props) {
                           ))}
                         </div>
                       </div>
-                      <p className="font-outfit text-gray-700 italic text-sm mb-3">"{t.text}"</p>
+                      <div
+                        className="font-outfit text-gray-700 italic text-sm mb-3 [&_p]:inline"
+                        dangerouslySetInnerHTML={{ __html: `"${t.text}"` }}
+                      />
                       {t.author && <p className="font-outfit text-gray-900 font-semibold text-sm">— {t.author}</p>}
                     </article>
                   ))}

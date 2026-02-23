@@ -338,7 +338,10 @@ function TestimonialsBlock({ block }: { block: Extract<ContentBlock, { type: "te
                   ))}
                 </div>
               </div>
-              <p className="font-outfit text-gray-700 italic text-sm mb-3">"{t.text}"</p>
+              <div
+                className="font-outfit text-gray-700 italic text-sm mb-3 [&_p]:inline"
+                dangerouslySetInnerHTML={{ __html: `"${t.text}"` }}
+              />
               {t.author && <p className="font-outfit text-gray-900 font-semibold text-sm">— {t.author}</p>}
             </div>
           ))}
@@ -498,7 +501,10 @@ function GoogleReviewsBlock({ block }: { block: Extract<ContentBlock, { type: "g
                   <Star key={j} className="h-4 w-4 fill-neo-blue text-neo-blue" />
                 ))}
               </div>
-              <p className="font-outfit text-gray-700 text-sm mb-4 italic">"{r.text}"</p>
+              <div
+                className="font-outfit text-gray-700 text-sm mb-4 italic [&_p]:inline"
+                dangerouslySetInnerHTML={{ __html: `"${r.text}"` }}
+              />
               <strong className="font-outfit text-gray-900 text-sm">{r.author}</strong>
             </div>
           ))}
