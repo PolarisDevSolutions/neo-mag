@@ -49,7 +49,7 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
     blocks.splice(insertIdx, 0, {
       type: "testimonials",
       heading: "Šta kažu naši pacijenti",
-      variant: "slider",
+      variant: "both",
       testimonials: [
         { initials: "MJ", rating: 5, text: "Odlična usluga i veoma ljubazno osoblje. Pregled je obavljen brzo i profesionalno. Preporučujem svima!", author: "Marija J. (Niš)" },
         { initials: "SM", rating: 5, text: "Profesionalan tim lekara, moderna oprema i kratko vreme čekanja. Rezultati su bili gotovi isti dan.", author: "Stefan M. (Niš)" },
