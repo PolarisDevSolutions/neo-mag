@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import type { ContentBlock } from "@site/lib/blocks";
 import ReviewsSlider from "@site/components/ReviewsSlider";
+import TestimonialsSlider from "@site/components/TestimonialsSlider";
 
 // ── Icon map ───────────────────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
@@ -31,18 +32,29 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
     );
   }
 
-  // Fallback for homepage: ensure reviews-slider is present
+  // Fallback for homepage: ensure testimonials block is present
   let blocks = content;
   const isHomepage = !isPreview && (window.location.pathname === "/" || window.location.pathname === "");
-  const hasSlider = content.some(b => b.type === "reviews-slider");
+  const hasTestimonials = content.some(b => b.type === "testimonials" || b.type === "reviews-slider");
 
-  const shouldAddSlider = isRoot && isHomepage && !hasSlider;
+  const shouldAddSlider = isRoot && isHomepage && !hasTestimonials;
 
   if (shouldAddSlider) {
     const heroIdx = content.findIndex(b => b.type === "hero");
     const insertIdx = heroIdx >= 0 ? heroIdx + 1 : 0;
     blocks = [...content];
-    blocks.splice(insertIdx, 0, { type: "reviews-slider", heading: "Šta kažu naši pacijenti" } as any);
+    // We add a static testimonials block instead of a dynamic reviews-slider
+    // so it shows up in the CMS editor for the user to edit!
+    blocks.splice(insertIdx, 0, {
+      type: "testimonials",
+      heading: "Šta kažu naši pacijenti",
+      variant: "slider",
+      testimonials: [
+        { initials: "MJ", rating: 5, text: "Odlična usluga i veoma ljubazno osoblje. Pregled je obavljen brzo i profesionalno. Preporučujem svima!", author: "Marija J. (Niš)" },
+        { initials: "SM", rating: 5, text: "Profesionalan tim lekara, moderna oprema i kratko vreme čekanja. Rezultati su bili gotovi isti dan.", author: "Stefan M. (Niš)" },
+        { initials: "DP", rating: 5, text: "Veoma sam zadovoljna pregledima u Neo Mag centru u Pirotu. Toplo preporučujem svim pacijentima.", author: "Dragana P. (Pirot)" }
+      ]
+    } as any);
   }
 
   return (
@@ -302,6 +314,9 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
 
 // ── Testimonials ───────────────────────────────────────────────────────────
 function TestimonialsBlock({ block }: { block: Extract<ContentBlock, { type: "testimonials" }> }) {
+  if (block.variant === "slider") {
+    return <TestimonialsSlider heading={block.heading} testimonials={block.testimonials} />;
+  }
   return (
     <section className="bg-gray-50 py-12 border-y border-gray-200">
       {block.heading && (

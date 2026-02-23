@@ -84,6 +84,7 @@ export interface ServicesGridBlock {
 export interface TestimonialsBlock {
   type: "testimonials";
   heading?: string;
+  variant?: "grid" | "slider";
   testimonials: Array<{
     initials: string;
     rating: number;
