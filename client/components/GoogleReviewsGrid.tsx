@@ -38,13 +38,10 @@ export default function GoogleReviewsGrid({ testimonials }: Props) {
               <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 leading-tight">
                 Google Recenzije
               </h2>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-gray-600 font-medium text-sm">Ocena 5.0</span>
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star key={s} className="h-4 w-4 fill-[#f4b400] text-[#f4b400]" />
-                  ))}
-                </div>
+              <div className="flex gap-0.5 mt-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} className="h-4 w-4 fill-[#f4b400] text-[#f4b400]" />
+                ))}
               </div>
             </div>
           </div>
@@ -106,16 +103,6 @@ export default function GoogleReviewsGrid({ testimonials }: Props) {
           ))}
         </div>
         
-        <div className="mt-12 text-center">
-          <a 
-            href="#" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-gray-700 font-outfit font-bold rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Pogledaj sve recenzije na Google-u
-          </a>
-        </div>
       </div>
     </section>
   );
