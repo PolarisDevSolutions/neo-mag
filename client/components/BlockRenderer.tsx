@@ -133,11 +133,12 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
       }
     }
 
-    // 3. Ensure SEO Text and FAQ are present
+    // 3. Ensure Tabs Section, SEO Text and FAQ are present
+    const hasTabsSection = blocks.some(b => b.type === "tabs-section");
     const hasSeoText = blocks.some(b => b.type === "seo-text");
     const hasFaq = blocks.some(b => b.type === "faq");
 
-    if (!hasSeoText || !hasFaq) {
+    if (!hasTabsSection || !hasSeoText || !hasFaq) {
       // Find position after Section 4 (Why Choose Us)
       // We assume Why Choose Us is the two-column block after services
       const servicesIdx = blocks.findIndex(b => b.type === "services-grid");
@@ -179,6 +180,67 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
           imageUrl: "",
           imageAlt: "Magnetna rezonanca Niš",
           imagePosition: "right"
+        } as any);
+      }
+
+      if (!hasTabsSection) {
+        blocks.splice(insertIdx, 0, {
+          type: "tabs-section",
+          heading: "Dijagnostički centar Niš – Sve na jednom mestu",
+          tabs: [
+            {
+              label: "Magnetna rezonanca (MR)",
+              contentHeading: "Dijagnostički centar Niš – Sve na jednom mestu",
+              paragraphs: [
+                "Neo Mag je savremeni dijagnostički centar u Nišu koji objedinjuje:",
+                "Naš cilj je da pacijentima omogućimo kompletnu dijagnostiku na jednom mestu – od snimanja do stručnog mišljenja specijaliste.",
+                "Kao jedan od prvih privatnih centara sa magnetnom rezonancom južno od Beograda, postavili smo standarde u oblasti dijagnostike u Nišu i regionu."
+              ],
+              bullets: [
+                "Magnetnu rezonancu (MR)",
+                "Digitalni rendgen",
+                "Ultrazvuk",
+                "Multislajsni skener (MSCT)",
+                "Specijalističke konsultativne preglede"
+              ],
+              ctaText: "Saznaj više o magnetnoj rezonanci",
+              ctaUrl: "/dijagnostika/magnetna-rezonanca/"
+            },
+            {
+              label: "Rendgen",
+              contentHeading: "Rendgen Niš – Digitalna preciznost",
+              paragraphs: [
+                "Digitalni rendgen u Nišu u Neo Mag centru omogućava brzu i preciznu dijagnostiku uz minimalnu dozu zračenja.",
+                "Digitalna tehnologija omogućava visoku jasnoću snimka i bržu interpretaciju nalaza od strane radiologa."
+              ],
+              bullets: [
+                "Rendgengrafiju pluća i srca",
+                "Snimanje koštano-zglobnog sistema",
+                "Nativnu grafiju abdomena",
+                "Urotrakt",
+                "Kraniogram"
+              ],
+              ctaText: "Saznaj više o rendgenu",
+              ctaUrl: "/dijagnostika/rendgen/"
+            },
+            {
+              label: "Ultrazvuk",
+              contentHeading: "Ultrazvuk Niš – Brza i bezbedna metoda pregleda",
+              paragraphs: [
+                "Ultrazvučna dijagnostika u Nišu u našem centru koristi se za pregled:",
+                "Ultrazvuk je bezbolna, bezbedna i široko primenjiva metoda koja omogućava rano otkrivanje brojnih stanja i oboljenja."
+              ],
+              bullets: [
+                "Organa abdomena",
+                "Štitne žlezde",
+                "Dojke",
+                "Meke strukture",
+                "Male karlice"
+              ],
+              ctaText: "Saznaj više o ultrazvuku",
+              ctaUrl: "/dijagnostika/ultrazvuk/"
+            }
+          ]
         } as any);
       }
     }
@@ -265,6 +327,7 @@ function RenderBlock({
         </>
       );
     case "practice-areas-grid": return <PracticeAreasGridBlock block={block} />;
+    case "tabs-section":       return <TabsSectionBlock block={block} />;
     case "seo-text":            return <SEOTextBlock block={block} />;
     case "faq":                 return <FAQBlock block={block} />;
     case "google-reviews":      return <GoogleReviewsBlock block={block} />;
@@ -709,6 +772,89 @@ function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "att
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Tabs Section ──────────────────────────────────────────────────────────
+function TabsSectionBlock({ block }: { block: any }) {
+  const [activeTab, setActiveTab] = useState(0);
+  const tabs = block.tabs || [];
+  const currentTab = tabs[activeTab];
+
+  if (tabs.length === 0) return null;
+
+  return (
+    <section className="py-16 bg-white">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        {block.heading && (
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-10 text-center">
+            {block.heading}
+          </h2>
+        )}
+
+        {/* Tab Buttons */}
+        <div className="flex overflow-x-auto pb-2 mb-8 border-b border-gray-100 no-scrollbar gap-2 sm:gap-4 justify-start md:justify-center">
+          {tabs.map((tab: any, i: number) => (
+            <button
+              key={i}
+              onClick={() => setActiveTab(i)}
+              className={`whitespace-nowrap px-6 py-3 font-outfit font-bold text-sm md:text-base transition-all relative ${
+                activeTab === i
+                  ? "text-neo-blue"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {tab.label}
+              {activeTab === i && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neo-blue" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        {currentTab && (
+          <div className="bg-gray-50 rounded-2xl p-8 md:p-12 transition-all duration-300">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+              <div>
+                <h3 className="font-outfit font-bold text-xl md:text-2xl text-gray-900 mb-6">
+                  {currentTab.contentHeading}
+                </h3>
+                <div className="space-y-4">
+                  {(currentTab.paragraphs || []).map((p: string, i: number) => (
+                    <p key={i} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                {(currentTab.bullets || []).length > 0 && (
+                  <ul className="space-y-4 mb-8">
+                    {currentTab.bullets.map((item: string, i: number) => (
+                      <li key={i} className="flex items-start gap-3 font-outfit text-base md:text-lg text-gray-700">
+                        <CheckCircle2 className="h-6 w-6 text-neo-blue flex-shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {currentTab.ctaText && currentTab.ctaUrl && (
+                  <Link
+                    to={currentTab.ctaUrl}
+                    className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-neo-blue-dark transition-colors"
+                  >
+                    {currentTab.ctaText}
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 
