@@ -1,7 +1,6 @@
 import Layout from "@site/components/layout/Layout";
 import Seo from "@site/components/Seo";
 import BlockRenderer from "@site/components/BlockRenderer";
-import ReviewsSlider from "@site/components/ReviewsSlider";
 import type { CmsPageData } from "@site/hooks/useCmsPage";
 import type { ContentBlock } from "@site/lib/blocks";
 
@@ -24,8 +23,7 @@ export default function StandardPageRenderer({ page }: Props) {
   const firstBlockIsHero = content.length > 0 && content[0].type === "hero";
 
   if (firstBlockIsHero) {
-    // Hero-first: render identically to LandingPageRenderer
-    const splitAfter = 1;
+    // Hero-first: render full content
     return (
       <Layout>
         <Seo
@@ -36,16 +34,7 @@ export default function StandardPageRenderer({ page }: Props) {
           noindex={page.noindex}
         />
 
-        {/* Hero block from CMS */}
-        <BlockRenderer content={content.slice(0, splitAfter)} />
-
-        {/* Reviews slider — injected globally below the hero */}
-        <ReviewsSlider />
-
-        {/* Remaining content blocks */}
-        {content.slice(splitAfter).length > 0 && (
-          <BlockRenderer content={content.slice(splitAfter)} />
-        )}
+        <BlockRenderer content={content} />
       </Layout>
     );
   }
@@ -69,9 +58,6 @@ export default function StandardPageRenderer({ page }: Props) {
           </h1>
         </div>
       </div>
-
-      {/* Reviews slider — injected globally below the header */}
-      <ReviewsSlider />
 
       {/* Page content blocks */}
       {content.length > 0 ? (

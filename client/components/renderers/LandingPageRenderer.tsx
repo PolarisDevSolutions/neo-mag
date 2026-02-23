@@ -1,7 +1,6 @@
 import Layout from "@site/components/layout/Layout";
 import Seo from "@site/components/Seo";
 import BlockRenderer from "@site/components/BlockRenderer";
-import ReviewsSlider from "@site/components/ReviewsSlider";
 import type { CmsPageData } from "@site/hooks/useCmsPage";
 import type { ContentBlock } from "@site/lib/blocks";
 
@@ -18,10 +17,6 @@ export default function LandingPageRenderer({ page }: Props) {
   const content: ContentBlock[] = Array.isArray(page.content) ? page.content : [];
   const hasContent = content.length > 0;
 
-  // Determine where to split: after the first hero block (index 0 is most common)
-  const firstHeroIdx = content.findIndex((b) => b.type === "hero");
-  const splitAfter = firstHeroIdx >= 0 ? firstHeroIdx + 1 : 0;
-
   return (
     <Layout>
       <Seo
@@ -33,21 +28,9 @@ export default function LandingPageRenderer({ page }: Props) {
       />
 
       {hasContent ? (
-        <>
-          {/* Blocks up to and including the first hero */}
-          {splitAfter > 0 && <BlockRenderer content={content.slice(0, splitAfter)} />}
-          {/* Reviews slider — injected directly after the hero */}
-          <ReviewsSlider />
-          {/* Remaining content blocks */}
-          {content.slice(splitAfter).length > 0 && (
-            <BlockRenderer content={content.slice(splitAfter)} />
-          )}
-        </>
+        <BlockRenderer content={content} />
       ) : (
-        <>
-          <ReviewsSlider />
-          <EmptyState title={page.title} />
-        </>
+        <EmptyState title={page.title} />
       )}
     </Layout>
   );

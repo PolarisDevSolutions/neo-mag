@@ -22,7 +22,7 @@ interface Review {
 const CARDS_PER_SLIDE = 3;
 const SLIDE_INTERVAL = 6000;
 
-export default function ReviewsSlider() {
+export default function ReviewsSlider({ heading }: { heading?: string }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -77,6 +77,11 @@ export default function ReviewsSlider() {
       aria-label="Recenzije pacijenata"
     >
       <div className="max-w-[1200px] mx-auto w-[90%]">
+        {heading && (
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-8 text-center">
+            {heading}
+          </h2>
+        )}
         {/* Controls row */}
         {totalSlides > 1 && (
           <div className="flex justify-end mb-4 gap-2">

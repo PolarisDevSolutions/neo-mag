@@ -56,7 +56,7 @@ function RenderBlock({ block, isPreview }: { block: ContentBlock; isPreview: boo
     case "google-reviews":      return <GoogleReviewsBlock block={block} />;
     case "attorney-bio":        return <AttorneyBioBlock block={block} />;
     case "stats":               return <StatsBlock block={block} />;
-    case "reviews-slider":      return <ReviewsSlider />;
+    case "reviews-slider":      return <ReviewsSlider heading={block.heading} />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
