@@ -639,11 +639,18 @@ function TabsSectionBlock({ block }: { block: any }) {
                   {currentTab.contentHeading}
                 </h3>
                 <div className="space-y-4">
-                  {(currentTab.paragraphs || []).map((p: string, i: number) => (
-                    <p key={i} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
-                      {p}
-                    </p>
-                  ))}
+                  {typeof currentTab.paragraphs === 'string' ? (
+                    <div
+                      className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+                      dangerouslySetInnerHTML={{ __html: currentTab.paragraphs }}
+                    />
+                  ) : (
+                    (currentTab.paragraphs || []).map((p: string, i: number) => (
+                      <p key={i} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
+                        {p}
+                      </p>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -686,11 +693,18 @@ function SEOTextBlock({ block }: { block: any }) {
         <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">{heading}</h2>
       )}
       <div className="space-y-4">
-        {paragraphs.map((p: string, i: number) => (
-          <p key={i} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
-            {p}
-          </p>
-        ))}
+        {typeof paragraphs === 'string' ? (
+          <div
+            className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+            dangerouslySetInnerHTML={{ __html: paragraphs }}
+          />
+        ) : (
+          (paragraphs || []).map((p: string, i: number) => (
+            <p key={i} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
+              {p}
+            </p>
+          ))
+        )}
       </div>
       {bullets.length > 0 && (
         <ul className="mt-6 space-y-2.5">
@@ -769,9 +783,10 @@ function FAQBlock({ block }: { block: any }) {
               >
                 <div className="px-6 pb-5 pt-0">
                   <div className="h-px bg-gray-100 mb-4" />
-                  <p className="font-outfit text-gray-700 leading-relaxed">
-                    {item.answer}
-                  </p>
+                  <div
+                    className="font-outfit text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+                    dangerouslySetInnerHTML={{ __html: item.answer }}
+                  />
                 </div>
               </div>
             </div>
