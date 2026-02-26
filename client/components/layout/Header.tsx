@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, Phone, ChevronDown, X } from "lucide-react";
+import { Menu, Phone, Smartphone, ChevronDown, X } from "lucide-react";
 import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
 import { NAV_ITEMS, type NavItem } from "@site/config/navigation";
 
@@ -16,6 +16,7 @@ export default function Header() {
   const logoUrl = settings.logoUrl?.trim() || "";
   const logoAlt = settings.logoAlt?.trim() || settings.siteName?.trim() || "Logo";
   const phoneDisplay = settings.phoneDisplay?.trim() || "";
+  const phone2Display = settings.phone2Display?.trim() || "";
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
@@ -41,7 +42,7 @@ export default function Header() {
           </nav>
 
           {/* ── Desktop CTA: phone only ── */}
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center gap-3">
             {phoneDisplay && (
               <a
                 href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
@@ -49,6 +50,15 @@ export default function Header() {
               >
                 <Phone className="h-4 w-4" />
                 {phoneDisplay}
+              </a>
+            )}
+            {phone2Display && (
+              <a
+                href={`tel:${phone2Display.replace(/\D/g, "")}`}
+                className="inline-flex items-center gap-2 bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap"
+              >
+                <Smartphone className="h-4 w-4" />
+                {phone2Display}
               </a>
             )}
           </div>
@@ -80,6 +90,16 @@ export default function Header() {
               >
                 <Phone className="h-4 w-4" />
                 {phoneDisplay}
+              </a>
+            )}
+            {phone2Display && (
+              <a
+                href={`tel:${phone2Display.replace(/\D/g, "")}`}
+                onClick={() => setMobileOpen(false)}
+                className="mt-2 w-full bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-center py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <Smartphone className="h-4 w-4" />
+                {phone2Display}
               </a>
             )}
           </nav>

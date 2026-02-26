@@ -19,6 +19,9 @@ interface SiteSettings {
   phoneNumber: string;
   phoneDisplay: string;
   phoneAvailability: string;
+  phone2Number: string;
+  phone2Display: string;
+  phone2Availability: string;
   applyPhoneGlobally: boolean;
   headerCtaText: string;
   headerCtaUrl: string;
@@ -42,6 +45,9 @@ const DEFAULT_SETTINGS: SiteSettings = {
   phoneNumber: "",
   phoneDisplay: "",
   phoneAvailability: "",
+  phone2Number: "",
+  phone2Display: "",
+  phone2Availability: "",
   applyPhoneGlobally: true,
   headerCtaText: "",
   headerCtaUrl: "",
@@ -121,6 +127,10 @@ export function SiteSettingsProvider({ children }: SiteSettingsProviderProps) {
             phoneDisplay: row.phone_display || DEFAULT_SETTINGS.phoneDisplay,
             phoneAvailability:
               row.phone_availability || DEFAULT_SETTINGS.phoneAvailability,
+            phone2Number: row.phone_2_number || DEFAULT_SETTINGS.phone2Number,
+            phone2Display: row.phone_2_display || DEFAULT_SETTINGS.phone2Display,
+            phone2Availability:
+              row.phone_2_availability || DEFAULT_SETTINGS.phone2Availability,
             applyPhoneGlobally:
               row.apply_phone_globally ?? DEFAULT_SETTINGS.applyPhoneGlobally,
             headerCtaText:
