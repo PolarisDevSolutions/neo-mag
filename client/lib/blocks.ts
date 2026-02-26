@@ -19,7 +19,8 @@ export type ContentBlock =
   | ReviewsSliderBlock
   | TabsSectionBlock
   | SEOTextBlock
-  | FAQBlock;
+  | FAQBlock
+  | LogoGridBlock;
 
 export interface HeroBlock {
   type: "hero";
@@ -34,11 +35,13 @@ export interface HeadingBlock {
   type: "heading";
   level: 1 | 2 | 3;
   text: string;
+  align?: "left" | "center" | "right";
 }
 
 export interface ParagraphBlock {
   type: "paragraph";
   content: string;
+  align?: "left" | "center" | "right";
 }
 
 export interface BulletsBlock {
@@ -51,6 +54,8 @@ export interface CTABlock {
   type: "cta";
   text: string;
   variant?: "primary" | "outline" | "solid";
+  phoneType?: "primary" | "secondary";
+  align?: "left" | "center" | "right";
 }
 
 export interface ImageBlock {
@@ -172,5 +177,14 @@ export interface FAQBlock {
   items: Array<{
     question: string;
     answer: string;
+  }>;
+}
+
+export interface LogoGridBlock {
+  type: "logo-grid";
+  heading?: string;
+  logos: Array<{
+    src: string;
+    alt?: string;
   }>;
 }

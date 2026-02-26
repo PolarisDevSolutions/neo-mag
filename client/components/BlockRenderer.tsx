@@ -107,6 +107,7 @@ function RenderBlock({
     case "attorney-bio":        return <AttorneyBioBlock block={block} globalPhone={globalPhone} />;
     case "stats":               return <StatsBlock block={block} />;
     case "reviews-slider":      return <ReviewsSlider heading={block.heading} />;
+    case "logo-grid":           return <LogoGridBlock block={block} />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -170,11 +171,13 @@ function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading
     3: "text-lg md:text-xl font-semibold text-gray-800",
   }[block.level];
 
-  const centerClass = block.level === 2 ? "text-center mx-auto" : "";
+  const alignmentClass = block.align === "center" ? "text-center mx-auto" :
+                         block.align === "right" ? "text-right ml-auto" : "";
+  const centerClass = (block.level === 2 || block.align === "center") ? "text-center mx-auto" : "";
   const subtext = (block as any).subtext;
 
   return (
-    <div className="max-w-[1200px] mx-auto w-[90%] pt-8 pb-2">
+    <div className={`max-w-[1200px] mx-auto w-[90%] pt-8 pb-2 ${alignmentClass}`}>
       <Tag className={`font-outfit ${cls} leading-snug ${centerClass}`}>{block.text}</Tag>
       {subtext && (
         <p className={`font-outfit text-base md:text-lg text-gray-600 mt-2 ${centerClass} max-w-2xl`}>
@@ -187,8 +190,10 @@ function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading
 
 // ── Paragraph ─────────────────────────────────────────────────────────────
 function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "paragraph" }> }) {
+  const alignmentClass = block.align === "center" ? "text-center mx-auto" :
+                         block.align === "right" ? "text-right ml-auto" : "";
   return (
-    <div className="max-w-[1200px] mx-auto w-[90%] py-2">
+    <div className={`max-w-[1200px] mx-auto w-[90%] py-2 ${alignmentClass}`}>
       <div
         className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold [&_p]:mb-4 last:[&_p]:mb-0"
         dangerouslySetInnerHTML={{ __html: block.content }}
@@ -227,10 +232,14 @@ function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets
 
 // ── CTA ────────────────────────────────────────────────────────────────────
 function CTABlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string }) {
+  const { settings } = useSiteSettings();
   const isOutline = block.variant === "outline";
-  const phone = globalPhone;
+  const phone = block.phoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
+  const alignmentClass = block.align === "center" ? "text-center mx-auto" :
+                         block.align === "right" ? "text-right ml-auto" : "";
+
   return (
-    <div className="max-w-[1200px] mx-auto w-[90%] py-6">
+    <div className={`max-w-[1200px] mx-auto w-[90%] py-6 ${alignmentClass}`}>
       <a
         href={`tel:${phone.replace(/\D/g, "")}`}
         className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold text-base transition-colors ${
@@ -756,6 +765,31 @@ function StatsBlock({ block }: { block: Extract<ContentBlock, { type: "stats" }>
             <div key={i}>
               <p className="font-outfit font-bold text-4xl md:text-5xl text-white mb-1">{stat.value}</p>
               <p className="font-outfit text-sm md:text-base text-white/70 uppercase tracking-wide">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Logo Grid ──────────────────────────────────────────────────────────────
+function LogoGridBlock({ block }: { block: any }) {
+  return (
+    <section className="bg-gray-50 border-b border-gray-200 py-10">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        {block.heading && (
+          <h2 className="font-outfit font-bold text-2xl text-center mb-8 text-gray-900">{block.heading}</h2>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center">
+          {block.logos.map((logo: any, index: number) => (
+            <div key={index} className="flex items-center justify-center px-4 grayscale hover:grayscale-0 transition-all duration-300">
+              <img
+                src={logo.src}
+                alt={logo.alt || ""}
+                className="max-h-12 w-auto object-contain"
+                loading="lazy"
+              />
             </div>
           ))}
         </div>
