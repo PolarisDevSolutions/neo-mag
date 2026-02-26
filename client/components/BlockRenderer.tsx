@@ -8,6 +8,7 @@ import type { ContentBlock } from "@site/lib/blocks";
 import ReviewsSlider from "@site/components/ReviewsSlider";
 import TestimonialsSlider from "@site/components/TestimonialsSlider";
 import GoogleReviewsGrid from "@site/components/GoogleReviewsGrid";
+import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
 
 // ── Icon map ───────────────────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
@@ -26,6 +27,9 @@ interface BlockRendererProps {
 }
 
 export default function BlockRenderer({ content, isPreview = false, isRoot = true, isHomepage = false }: BlockRendererProps) {
+  const { settings } = useSiteSettings();
+  const globalPhone = settings.phoneDisplay || "018 520 640";
+
   if (!content || !Array.isArray(content)) {
     return (
       <div className="py-16 text-center text-gray-400">
@@ -34,216 +38,23 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
     );
   }
 
-  // Fallback for homepage: ensure testimonials and new SEO sections are present
-  let blocks = content;
+  // On homepage, ensure Hero fields mapping if needed
+  let blocks = [...content];
 
-  if (isRoot && isHomepage && !isPreview) {
-    blocks = [...content];
-
-    // 1. Update Hero fields mapping if needed
-    const heroIdx = blocks.findIndex(b => b.type === "hero");
-    if (heroIdx !== -1) {
-      const hero = { ...blocks[heroIdx] };
-      if (!(hero as any).h1) (hero as any).h1 = hero.title;
-      if (!(hero as any).lead) (hero as any).lead = hero.subtitle;
-      blocks[heroIdx] = hero;
-    }
-
-    // 1.5. Suppress redundant/hardcoded title if it appears as a separate block
+  if (isRoot && isHomepage) {
+    // Suppress redundant/hardcoded title if it appears as a separate block
     blocks = blocks.filter(b => !(b.type === "heading" && b.text === "Naše dijagnostičke usluge"));
 
-    // 2. Add Testimonials Slider if missing
-    const hasTestimonials = blocks.some(b => b.type === "testimonials" || b.type === "reviews-slider");
-    if (!hasTestimonials) {
-      const insertIdx = heroIdx >= 0 ? heroIdx + 1 : 0;
-      blocks.splice(insertIdx, 0, {
-        type: "testimonials",
-        heading: "Šta kažu naši pacijenti",
-        variant: "both",
-        testimonials: [
-          { initials: "MJ", rating: 5, text: "Odlična usluga i veoma ljubazno osoblje. Pregled je obavljen brzo i profesionalno. Preporučujem svima!", author: "Marija J. (Niš)" },
-          { initials: "SM", rating: 5, text: "Profesionalan tim lekara, moderna oprema i kratko vreme čekanja. Rezultati su bili gotovi isti dan.", author: "Stefan M. (Niš)" },
-          { initials: "DP", rating: 5, text: "Veoma sam zadovoljna pregledima u Neo Mag centru u Pirotu. Toplo preporučujem svim pacijentima.", author: "Dragana P. (Pirot)" }
-        ]
-      } as any);
-    }
-
-    // 2.5. Ensure "Zašto izabrati" exists
-    const servicesIdx = blocks.findIndex(b => b.type === "services-grid");
-    const hasWhy = blocks.some((b, idx) => b.type === "two-column" && idx > servicesIdx);
-    if (!hasWhy) {
-      const insertIdx = servicesIdx !== -1 ? servicesIdx + 1 : (heroIdx !== -1 ? heroIdx + 2 : 0);
-      blocks.splice(insertIdx, 0, {
-        type: "two-column",
-        left: [
-          { type: "heading", level: 2, text: "Zašto izabrati NEO MAG?" },
-          {
-            type: "paragraph",
-            content: "Neo Mag je dijagnostički centar u Nišu sa dugogodišnjim iskustvom i fokusom na preciznu dijagnostiku. Pacijenti iz Niša i juga Srbije biraju nas za magnetnu rezonancu, rendgen i ultrazvuk zbog brzine, stručnosti i savremene opreme."
-          },
-          {
-            type: "bullets",
-            variant: "features",
-            items: [
-              "Savremena MR oprema jačine 1,5T",
-              "Vrhunski tim radiologa i stručnog osoblja",
-              "Brzo zakazivanje i rezultati bez čekanja",
-              "Najviši standardi bezbednosti i komfor"
-            ]
-          },
-          {
-            type: "stats",
-            stats: [
-              { value: "20+", label: "Godina iskustva" },
-              { value: "50k+", label: "Pregleda godišnje" }
-            ]
-          }
-        ],
-        right: [
-          { type: "heading", level: 2, text: "Gde se nalazi Neo Mag dijagnostički centar u Nišu?" },
-          {
-            type: "paragraph",
-            content: "<p>Neo Mag dijagnostički centar nalazi se u Nišu i dostupan je pacijentima iz celog Nišavskog okruga i juga Srbije.</p><p>Pacijenti iz Niša, Prokuplja, Pirota, Leskovca i okolnih gradova biraju nas zbog stručnosti, opreme i brzine usluge.</p><p>Za tačnu lokaciju i zakazivanje magnetne rezonance u Nišu, kontaktirajte nas telefonom ili putem online forme.</p>"
-          },
-          { type: "heading", level: 3, text: "Neo Mag Niš" },
-          { type: "paragraph", content: "Prvomajska 2, Niš (kod Gradske bolnice)" },
-          { type: "cta", text: "Zakažite u Nišu", phone: "018 520 640", variant: "primary" },
-          { type: "heading", level: 3, text: "Neo Mag Pirot" },
-          { type: "paragraph", content: "Srpskih vladara 82, Pirot (Hotel Ana Lux)" },
-          { type: "cta", text: "Zakažite u Pirotu", phone: "010 321 000", variant: "outline" }
-        ]
-      } as any);
-    } else {
-      // If section exists, ensure it has the SEO text in the right column
-      const whyIdx = blocks.findIndex((b, idx) => b.type === "two-column" && idx > servicesIdx);
-      const block = { ...blocks[whyIdx] };
-      const right = Array.isArray(block.right) ? [...block.right] : [];
-      const hasRightSeo = right.some((b: any) => b.type === "heading" && b.text?.includes("Gde se nalazi Neo Mag"));
-
-      if (!hasRightSeo) {
-        right.unshift(
-          { type: "heading", level: 2, text: "Gde se nalazi Neo Mag dijagnostički centar u Nišu?" },
-          {
-            type: "paragraph",
-            content: "<p>Neo Mag dijagnostički centar nalazi se u Nišu i dostupan je pacijentima iz celog Nišavskog okruga i juga Srbije.</p><p>Pacijenti iz Niša, Prokuplja, Pirota, Leskovca i okolnih gradova biraju nas zbog stručnosti, opreme i brzine usluge.</p><p>Za tačnu lokaciju i zakazivanje magnetne rezonance u Nišu, kontaktirajte nas telefonom ili putem online forme.</p>"
-          }
-        );
-        block.right = right;
-        blocks[whyIdx] = block;
+    // Map old hero fields if they exist in legacy content
+    blocks = blocks.map(block => {
+      if (block.type === "hero") {
+        const hero = { ...block };
+        if (!(hero as any).h1) (hero as any).h1 = hero.title;
+        if (!(hero as any).lead) (hero as any).lead = hero.subtitle;
+        return hero;
       }
-    }
-
-    // 3. Ensure Tabs Section, SEO Text and FAQ are present
-    const hasTabsSection = blocks.some(b => b.type === "tabs-section");
-    const hasSeoText = blocks.some(b => b.type === "seo-text");
-    const hasFaq = blocks.some(b => b.type === "faq");
-
-    if (!hasTabsSection || !hasSeoText || !hasFaq) {
-      // Find position after Section 4 (Why Choose Us)
-      // We assume Why Choose Us is the two-column block after services
-      const servicesIdx = blocks.findIndex(b => b.type === "services-grid");
-      const whyIdx = blocks.findIndex((b, idx) => b.type === "two-column" && idx > servicesIdx);
-      const testimonialsGridIdx = blocks.findIndex((b, idx) => b.type === "testimonials" && idx > whyIdx);
-      const contactFormIdx = blocks.findIndex(b => b.type === "contact-form");
-
-      let insertIdx = testimonialsGridIdx !== -1 ? testimonialsGridIdx : (contactFormIdx !== -1 ? contactFormIdx : blocks.length);
-
-      if (!hasFaq) {
-        blocks.splice(insertIdx, 0, {
-          type: "faq",
-          heading: "Česta pitanja o magnetnoj rezonanci i pregledima",
-          items: [
-            { question: "Koliko traje magnetna rezonanca u Nišu?", answer: "U proseku 20–40 minuta, u zavisnosti od regije koja se snima." },
-            { question: "Da li je magnetna rezonanca bezbedna?", answer: "Da. MR ne koristi jonizujuće zračenje i smatra se bezbednom metodom. Za trudnice i decu preporučuje se konsultacija sa lekarom." },
-            { question: "Da li je potreban uput za MR?", answer: "Preporučuje se uput ili medicinska dokumentacija, a za tačne uslove najbolje je da nas kontaktirate." },
-            { question: "Kada se dobija nalaz?", answer: "U najkraćem mogućem roku, uz stručno mišljenje radiologa." },
-          ]
-        } as any);
-      }
-
-      if (!hasSeoText) {
-        blocks.splice(insertIdx, 0, {
-          type: "seo-text",
-          heading: "Magnetna rezonanca Niš – precizna dijagnostika bez čekanja",
-          paragraphs: [
-            "Magnetna rezonanca u Nišu je jedna od najtraženijih procedura za snimanje kičme, zglobova, mozga, abdomena i male karlice. U Neo Mag centru koristimo savremene MR uređaje jačine 1,5T za visoku rezoluciju i pouzdanu dijagnostiku.",
-            "MR snimanje u Nišu obavljamo uz stalno prisustvo radiologa, uz fokus na bezbednost i komfor pacijenata.",
-            "Pored MR, u okviru centra dostupni su i digitalni rendgen i ultrazvuk, kao i mogućnost konsultativnog pregleda nakon dijagnostike."
-          ],
-          bullets: [
-            "MR (magnetna rezonanca) 1,5T",
-            "Digitalni rendgen",
-            "Ultrazvuk",
-            "MSCT (multislajsni skener)",
-            "Konsultativni pregledi"
-          ],
-          imageUrl: "",
-          imageAlt: "Magnetna rezonanca Niš",
-          imagePosition: "right"
-        } as any);
-      }
-
-      if (!hasTabsSection) {
-        blocks.splice(insertIdx, 0, {
-          type: "tabs-section",
-          heading: "Dijagnostički centar Niš – Sve na jednom mestu",
-          tabs: [
-            {
-              label: "Magnetna rezonanca (MR)",
-              contentHeading: "Dijagnostički centar Niš – Sve na jednom mestu",
-              paragraphs: [
-                "Neo Mag je savremeni dijagnostički centar u Nišu koji objedinjuje:",
-                "Naš cilj je da pacijentima omogućimo kompletnu dijagnostiku na jednom mestu – od snimanja do stručnog mišljenja specijaliste.",
-                "Kao jedan od prvih privatnih centara sa magnetnom rezonancom južno od Beograda, postavili smo standarde u oblasti dijagnostike u Nišu i regionu."
-              ],
-              bullets: [
-                "Magnetnu rezonancu (MR)",
-                "Digitalni rendgen",
-                "Ultrazvuk",
-                "Multislajsni skener (MSCT)",
-                "Specijalističke konsultativne preglede"
-              ],
-              ctaText: "Saznaj više o magnetnoj rezonanci",
-              ctaUrl: "/dijagnostika/magnetna-rezonanca/"
-            },
-            {
-              label: "Rendgen",
-              contentHeading: "Rendgen Niš – Digitalna preciznost",
-              paragraphs: [
-                "Digitalni rendgen u Nišu u Neo Mag centru omogućava brzu i preciznu dijagnostiku uz minimalnu dozu zračenja.",
-                "Digitalna tehnologija omogućava visoku jasnoću snimka i bržu interpretaciju nalaza od strane radiologa."
-              ],
-              bullets: [
-                "Rendgengrafiju pluća i srca",
-                "Snimanje koštano-zglobnog sistema",
-                "Nativnu grafiju abdomena",
-                "Urotrakt",
-                "Kraniogram"
-              ],
-              ctaText: "Saznaj više o rendgenu",
-              ctaUrl: "/dijagnostika/rendgen/"
-            },
-            {
-              label: "Ultrazvuk",
-              contentHeading: "Ultrazvuk Niš – Brza i bezbedna metoda pregleda",
-              paragraphs: [
-                "Ultrazvučna dijagnostika u Nišu u našem centru koristi se za pregled:",
-                "Ultrazvuk je bezbolna, bezbedna i široko primenjiva metoda koja omogućava rano otkrivanje brojnih stanja i oboljenja."
-              ],
-              bullets: [
-                "Organa abdomena",
-                "Štitne žlezde",
-                "Dojke",
-                "Meke strukture",
-                "Male karlice"
-              ],
-              ctaText: "Saznaj više o ultrazvuku",
-              ctaUrl: "/dijagnostika/ultrazvuk/"
-            }
-          ]
-        } as any);
-      }
-    }
+      return block;
+    });
   }
 
   const findTestimonials = (blocks: ContentBlock[]): ContentBlock | undefined => {
@@ -276,6 +87,7 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
               isRoot={isRoot}
               testimonialsBlock={testimonialsBlock}
               isHomepage={isHomepage}
+              globalPhone={globalPhone}
             />
             {renderGridHere && testimonialsBlock && (testimonialsBlock.type === "testimonials") && (
               <div className="relative z-10" data-debug-grid-bottom="true">
@@ -294,22 +106,24 @@ function RenderBlock({
   isPreview,
   isRoot,
   testimonialsBlock,
-  isHomepage
+  isHomepage,
+  globalPhone
 }: {
   block: ContentBlock;
   isPreview: boolean;
   isRoot: boolean;
   testimonialsBlock?: ContentBlock;
   isHomepage: boolean;
+  globalPhone: string;
 }) {
   switch (block.type) {
-    case "hero":                return <HeroBlock block={block} isPreview={isPreview} />;
+    case "hero":                return <HeroBlock block={block} isPreview={isPreview} globalPhone={globalPhone} />;
     case "heading":             return <HeadingBlock block={block} />;
     case "paragraph":           return <ParagraphBlock block={block} />;
     case "bullets":             return <BulletsBlock block={block} />;
-    case "cta":                 return <CTABlock block={block} />;
+    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} />;
     case "image":               return <ImageBlock block={block} />;
-    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} />;
+    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} />;
     case "services-grid":       return <ServicesGridBlock block={block} />;
     case "testimonials":        return <TestimonialsBlock block={block} isHomepage={isHomepage} />;
     case "contact-form":
@@ -331,7 +145,7 @@ function RenderBlock({
     case "seo-text":            return <SEOTextBlock block={block} />;
     case "faq":                 return <FAQBlock block={block} />;
     case "google-reviews":      return <GoogleReviewsBlock block={block} />;
-    case "attorney-bio":        return <AttorneyBioBlock block={block} />;
+    case "attorney-bio":        return <AttorneyBioBlock block={block} globalPhone={globalPhone} />;
     case "stats":               return <StatsBlock block={block} />;
     case "reviews-slider":      return <ReviewsSlider heading={block.heading} />;
     default:
@@ -343,10 +157,12 @@ function RenderBlock({
 }
 
 // ── Hero ───────────────────────────────────────────────────────────────────
-function HeroBlock({ block, isPreview: _isPreview }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean }) {
+function HeroBlock({ block, isPreview: _isPreview, globalPhone }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean; globalPhone: string }) {
   const h1Text = (block as any).h1 || block.title;
   const leadText = (block as any).lead || block.subtitle;
-  const ctaUrl = (block as any).ctaUrl || (block.ctaPhone ? `tel:${block.ctaPhone.replace(/\D/g, "")}` : undefined);
+
+  const rawCtaUrl = (block as any).ctaUrl || (block.ctaPhone ? `tel:${block.ctaPhone.replace(/\D/g, "")}` : "");
+  const ctaUrl = rawCtaUrl || `tel:${globalPhone.replace(/\D/g, "")}`;
 
   return (
     <section
@@ -455,12 +271,13 @@ function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets
 }
 
 // ── CTA ────────────────────────────────────────────────────────────────────
-function CTABlock({ block }: { block: Extract<ContentBlock, { type: "cta" }> }) {
+function CTABlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string }) {
   const isOutline = block.variant === "outline";
+  const phone = block.phone || globalPhone;
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-6">
       <a
-        href={`tel:${block.phone.replace(/\D/g, "")}`}
+        href={`tel:${phone.replace(/\D/g, "")}`}
         className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold text-base transition-colors ${
           isOutline
             ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
@@ -468,7 +285,7 @@ function CTABlock({ block }: { block: Extract<ContentBlock, { type: "cta" }> }) 
         }`}
       >
         <Phone className="h-5 w-5" />
-        {block.text} · {block.phone}
+        {block.text} · {phone}
       </a>
     </div>
   );
@@ -484,7 +301,7 @@ function ImageBlock({ block }: { block: Extract<ContentBlock, { type: "image" }>
 }
 
 // ── Two-column ─────────────────────────────────────────────────────────────
-function TwoColumnBlock({ block, isPreview }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean }) {
+function TwoColumnBlock({ block, isPreview, globalPhone }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string }) {
   return (
     <div className="py-14" style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #e3eeff 60%, #f0f7ff 100%)' }}>
       <div className="max-w-[1200px] mx-auto w-[90%]">
@@ -754,7 +571,8 @@ function GoogleReviewsBlock({ block }: { block: Extract<ContentBlock, { type: "g
 }
 
 // ── Attorney bio ───────────────────────────────────────────────────────────
-function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "attorney-bio" }> }) {
+function AttorneyBioBlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "attorney-bio" }>; globalPhone: string }) {
+  const phone = block.phone || globalPhone;
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-10">
       <div className="flex flex-col md:flex-row gap-8">
@@ -765,9 +583,9 @@ function AttorneyBioBlock({ block }: { block: Extract<ContentBlock, { type: "att
           <h3 className="font-outfit font-bold text-2xl text-gray-900 mb-1">{block.name}</h3>
           <p className="font-outfit text-neo-blue font-semibold mb-4">{block.title}</p>
           <div className="font-outfit text-gray-700 mb-4 leading-relaxed [&_strong]:font-semibold [&_em]:italic [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5" dangerouslySetInnerHTML={{ __html: block.bio }} />
-          <a href={`tel:${block.phone.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 text-neo-blue font-outfit font-semibold hover:underline">
+          <a href={`tel:${phone.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 text-neo-blue font-outfit font-semibold hover:underline">
             <Phone className="h-4 w-4" />
-            {block.phone}
+            {phone}
           </a>
         </div>
       </div>
