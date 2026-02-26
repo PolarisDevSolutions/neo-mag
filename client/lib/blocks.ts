@@ -16,7 +16,10 @@ export type ContentBlock =
   | GoogleReviewsBlock
   | AttorneyBioBlock
   | StatsBlock
-  | ReviewsSliderBlock;
+  | ReviewsSliderBlock
+  | TabsSectionBlock
+  | SEOTextBlock
+  | FAQBlock;
 
 export interface HeroBlock {
   type: "hero";
@@ -25,7 +28,6 @@ export interface HeroBlock {
   backgroundImage?: string;
   showCTA?: boolean;
   ctaText?: string;
-  ctaPhone?: string;
 }
 
 export interface HeadingBlock {
@@ -48,7 +50,6 @@ export interface BulletsBlock {
 export interface CTABlock {
   type: "cta";
   text: string;
-  phone: string;
   variant?: "primary" | "outline" | "solid";
 }
 
@@ -96,6 +97,7 @@ export interface TestimonialsBlock {
 export interface ContactFormBlock {
   type: "contact-form";
   heading: string;
+  image?: string;
   services?: string[];
 }
 
@@ -126,7 +128,6 @@ export interface AttorneyBioBlock {
   title: string;
   image: string;
   bio: string;
-  phone: string;
 }
 
 export interface StatsBlock {
@@ -140,4 +141,36 @@ export interface StatsBlock {
 export interface ReviewsSliderBlock {
   type: "reviews-slider";
   heading?: string;
+}
+
+export interface TabsSectionBlock {
+  type: "tabs-section";
+  heading?: string;
+  tabs: Array<{
+    label: string;
+    contentHeading: string;
+    paragraphs: string;
+    bullets?: string[];
+    ctaText?: string;
+    ctaUrl?: string;
+  }>;
+}
+
+export interface SEOTextBlock {
+  type: "seo-text";
+  heading?: string;
+  paragraphs: string;
+  bullets?: string[];
+  imageUrl?: string;
+  imageAlt?: string;
+  imagePosition?: "left" | "right";
+}
+
+export interface FAQBlock {
+  type: "faq";
+  heading?: string;
+  items: Array<{
+    question: string;
+    answer: string;
+  }>;
 }

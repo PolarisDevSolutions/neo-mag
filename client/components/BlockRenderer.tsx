@@ -38,24 +38,8 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
     );
   }
 
-  // On homepage, ensure Hero fields mapping if needed
-  let blocks = [...content];
-
-  if (isRoot && isHomepage) {
-    // Suppress redundant/hardcoded title if it appears as a separate block
-    blocks = blocks.filter(b => !(b.type === "heading" && b.text === "Naše dijagnostičke usluge"));
-
-    // Map old hero fields if they exist in legacy content
-    blocks = blocks.map(block => {
-      if (block.type === "hero") {
-        const hero = { ...block };
-        if (!(hero as any).h1) (hero as any).h1 = hero.title;
-        if (!(hero as any).lead) (hero as any).lead = hero.subtitle;
-        return hero;
-      }
-      return block;
-    });
-  }
+  // Use content directly as the only true source of truth
+  const blocks = [...content];
 
   const findTestimonials = (blocks: ContentBlock[]): ContentBlock | undefined => {
     for (const b of blocks) {
@@ -69,34 +53,21 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
   };
 
   const testimonialsBlock = findTestimonials(blocks);
-  const contactFormIdx = blocks.findIndex(b => b.type === "contact-form");
-  const hasContactForm = contactFormIdx !== -1;
 
   return (
     <div>
-      {blocks.map((block, i) => {
-        const isLastBlock = i === blocks.length - 1;
-        // On homepage, if no contact form was found, render the grid at the bottom
-        const renderGridHere = !hasContactForm && isLastBlock && (isHomepage || true);
-
-        return (
-          <div key={i}>
-            <RenderBlock
-              block={block}
-              isPreview={isPreview}
-              isRoot={isRoot}
-              testimonialsBlock={testimonialsBlock}
-              isHomepage={isHomepage}
-              globalPhone={globalPhone}
-            />
-            {renderGridHere && testimonialsBlock && (testimonialsBlock.type === "testimonials") && (
-              <div className="relative z-10" data-debug-grid-bottom="true">
-                <GoogleReviewsGrid testimonials={testimonialsBlock.testimonials} />
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {blocks.map((block, i) => (
+        <div key={i}>
+          <RenderBlock
+            block={block}
+            isPreview={isPreview}
+            isRoot={isRoot}
+            testimonialsBlock={testimonialsBlock}
+            isHomepage={isHomepage}
+            globalPhone={globalPhone}
+          />
+        </div>
+      ))}
     </div>
   );
 }
@@ -127,19 +98,7 @@ function RenderBlock({
     case "services-grid":       return <ServicesGridBlock block={block} />;
     case "testimonials":        return <TestimonialsBlock block={block} isHomepage={isHomepage} />;
     case "contact-form":
-      return (
-        <>
-          {/* Inject the Google Grid extension here if requested or on homepage by default */}
-          {testimonialsBlock && (testimonialsBlock.type === "testimonials") && (
-            (testimonialsBlock.variant === "both" || (testimonialsBlock as any).showGoogleGrid || isHomepage || true) && (
-              <div className="relative z-10" data-debug-grid="true">
-                <GoogleReviewsGrid testimonials={testimonialsBlock.testimonials} />
-              </div>
-            )
-          )}
-          <ContactFormBlock block={block} />
-        </>
-      );
+      return <ContactFormBlock block={block} />;
     case "practice-areas-grid": return <PracticeAreasGridBlock block={block} />;
     case "tabs-section":       return <TabsSectionBlock block={block} />;
     case "seo-text":            return <SEOTextBlock block={block} />;
@@ -157,12 +116,8 @@ function RenderBlock({
 }
 
 // ── Hero ───────────────────────────────────────────────────────────────────
-function HeroBlock({ block, isPreview: _isPreview, globalPhone }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean; globalPhone: string }) {
-  const h1Text = (block as any).h1 || block.title;
-  const leadText = (block as any).lead || block.subtitle;
-
-  const rawCtaUrl = (block as any).ctaUrl || (block.ctaPhone ? `tel:${block.ctaPhone.replace(/\D/g, "")}` : "");
-  const ctaUrl = rawCtaUrl || `tel:${globalPhone.replace(/\D/g, "")}`;
+function HeroBlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "hero" }>; isPreview: boolean; globalPhone: string }) {
+  const ctaUrl = `tel:${globalPhone.replace(/\D/g, "")}`;
 
   return (
     <section
@@ -184,15 +139,15 @@ function HeroBlock({ block, isPreview: _isPreview, globalPhone }: { block: Extra
 
       <div className="relative max-w-4xl mx-auto flex flex-col items-center">
         <h1 className="font-outfit font-semibold text-[14px] md:text-[16px] lg:text-[18px] uppercase tracking-wider text-white/80 mb-6 order-1">
-          {h1Text}
+          {block.title}
         </h1>
-        {leadText && (
+        {block.subtitle && (
           <div
             className="font-outfit text-2xl md:text-4xl lg:text-5xl text-white font-bold mb-10 max-w-3xl mx-auto leading-tight [&_strong]:font-bold [&_em]:italic [&_p]:mb-2 order-2"
-            dangerouslySetInnerHTML={{ __html: leadText }}
+            dangerouslySetInnerHTML={{ __html: block.subtitle }}
           />
         )}
-        {block.showCTA && ctaUrl && (
+        {block.showCTA && (
           <a
             href={ctaUrl}
             className="inline-flex items-center gap-2 bg-white text-neo-blue font-outfit font-bold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors text-base order-3"
@@ -273,7 +228,7 @@ function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets
 // ── CTA ────────────────────────────────────────────────────────────────────
 function CTABlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string }) {
   const isOutline = block.variant === "outline";
-  const phone = block.phone || globalPhone;
+  const phone = globalPhone;
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-6">
       <a
@@ -365,21 +320,15 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
 }
 
 // ── Testimonials ───────────────────────────────────────────────────────────
-function TestimonialsBlock({ block, isHomepage }: { block: Extract<ContentBlock, { type: "testimonials" }>; isHomepage: boolean }) {
-  // If no variant is set on homepage, this block only shows the slider
-  // because the Google Grid is automatically injected above the form or at page bottom.
-  const isDefaultSlider = !block.variant;
-
-  const showSlider = block.variant === "slider" || block.variant === "both" || isDefaultSlider;
-  const showGrid = block.variant === "grid" || block.variant === "both" || (block as any).showGoogleGrid;
+function TestimonialsBlock({ block }: { block: Extract<ContentBlock, { type: "testimonials" }>; isHomepage: boolean }) {
+  const showSlider = block.variant === "slider" || block.variant === "both" || !block.variant;
+  const showGrid = block.variant === "grid" || block.variant === "both";
 
   return (
     <>
       {showSlider && (
         <TestimonialsSlider heading={block.heading} testimonials={block.testimonials} />
       )}
-      {/* On homepage, we usually render the grid above the form, not here,
-          unless explicitly requested via variant="grid" or variant="both" */}
       {showGrid && (
         <GoogleReviewsGrid testimonials={block.testimonials} />
       )}
@@ -572,7 +521,7 @@ function GoogleReviewsBlock({ block }: { block: Extract<ContentBlock, { type: "g
 
 // ── Attorney bio ───────────────────────────────────────────────────────────
 function AttorneyBioBlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "attorney-bio" }>; globalPhone: string }) {
-  const phone = block.phone || globalPhone;
+  const phone = globalPhone;
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-10">
       <div className="flex flex-col md:flex-row gap-8">
