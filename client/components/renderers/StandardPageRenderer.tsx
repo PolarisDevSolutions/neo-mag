@@ -22,6 +22,7 @@ export default function StandardPageRenderer({ page }: Props) {
   const content: ContentBlock[] = Array.isArray(page.content) ? page.content : [];
   const firstBlockIsHero = content.length > 0 && content[0].type === "hero";
   const isHomepage = page.url_path === "/";
+  const isAboutPage = page.url_path === "/o-nama/";
 
   if (firstBlockIsHero) {
     // Hero-first: render full content
@@ -35,7 +36,7 @@ export default function StandardPageRenderer({ page }: Props) {
           noindex={page.noindex}
         />
 
-        <BlockRenderer content={content} isHomepage={isHomepage} />
+        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} />
       </Layout>
     );
   }
@@ -62,7 +63,7 @@ export default function StandardPageRenderer({ page }: Props) {
 
       {/* Page content blocks */}
       {content.length > 0 ? (
-        <BlockRenderer content={content} isHomepage={isHomepage} />
+        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} />
       ) : (
         <EmptyState />
       )}

@@ -17,6 +17,7 @@ export default function LandingPageRenderer({ page }: Props) {
   const content: ContentBlock[] = Array.isArray(page.content) ? page.content : [];
   const hasContent = content.length > 0;
   const isHomepage = page.url_path === "/";
+  const isAboutPage = page.url_path === "/o-nama/";
 
   return (
     <Layout>
@@ -29,7 +30,7 @@ export default function LandingPageRenderer({ page }: Props) {
       />
 
       {hasContent ? (
-        <BlockRenderer content={content} isHomepage={isHomepage} />
+        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} />
       ) : (
         <EmptyState title={page.title} />
       )}

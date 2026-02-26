@@ -24,9 +24,10 @@ interface BlockRendererProps {
   isPreview?: boolean;
   isRoot?: boolean;
   isHomepage?: boolean;
+  isAboutPage?: boolean;
 }
 
-export default function BlockRenderer({ content, isPreview = false, isRoot = true, isHomepage = false }: BlockRendererProps) {
+export default function BlockRenderer({ content, isPreview = false, isRoot = true, isHomepage = false, isAboutPage = false }: BlockRendererProps) {
   const { settings } = useSiteSettings();
   const globalPhone = settings.phoneDisplay || "018 520 640";
 
@@ -64,6 +65,7 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
             isRoot={isRoot}
             testimonialsBlock={testimonialsBlock}
             isHomepage={isHomepage}
+            isAboutPage={isAboutPage}
             globalPhone={globalPhone}
           />
         </div>
@@ -78,6 +80,7 @@ function RenderBlock({
   isRoot,
   testimonialsBlock,
   isHomepage,
+  isAboutPage,
   globalPhone
 }: {
   block: ContentBlock;
@@ -85,6 +88,7 @@ function RenderBlock({
   isRoot: boolean;
   testimonialsBlock?: ContentBlock;
   isHomepage: boolean;
+  isAboutPage: boolean;
   globalPhone: string;
 }) {
   switch (block.type) {
@@ -93,8 +97,8 @@ function RenderBlock({
     case "paragraph":           return <ParagraphBlock block={block} />;
     case "bullets":             return <BulletsBlock block={block} />;
     case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} />;
-    case "image":               return <ImageBlock block={block} />;
-    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} />;
+    case "image":               return <ImageBlock block={block} isRoot={isRoot} />;
+    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} />;
     case "services-grid":       return <ServicesGridBlock block={block} />;
     case "testimonials":        return <TestimonialsBlock block={block} isHomepage={isHomepage} />;
     case "contact-form":
@@ -256,25 +260,32 @@ function CTABlock({ block, globalPhone }: { block: Extract<ContentBlock, { type:
 }
 
 // ── Image ──────────────────────────────────────────────────────────────────
-function ImageBlock({ block }: { block: Extract<ContentBlock, { type: "image" }> }) {
+function ImageBlock({ block, isRoot }: { block: Extract<ContentBlock, { type: "image" }>; isRoot?: boolean }) {
+  const containerClass = isRoot ? "max-w-[1200px] mx-auto w-[90%] py-4" : "w-full py-2";
   return (
-    <figure className="max-w-[1200px] mx-auto w-[90%] py-4">
-      <img src={block.src} alt={block.alt || ""} className="w-full h-auto rounded-lg" loading="lazy" />
+    <figure className={containerClass}>
+      <img src={block.src} alt={block.alt || ""} className="w-full h-auto rounded-2xl" loading="lazy" />
     </figure>
   );
 }
 
 // ── Two-column ─────────────────────────────────────────────────────────────
-function TwoColumnBlock({ block, isPreview, globalPhone }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string }) {
+function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string; isAboutPage?: boolean }) {
+  const isImageOnly = (blocks: ContentBlock[]) => blocks.length === 1 && blocks[0].type === 'image';
+
   return (
     <div className="py-14" style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #e3eeff 60%, #f0f7ff 100%)' }}>
       <div className="max-w-[1200px] mx-auto w-[90%]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 ${isAboutPage ? 'items-center' : 'items-start'}`}>
           <div>
-            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} />
+            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} />
           </div>
-          <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-8 lg:p-10">
-            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} />
+          <div className={
+            (isAboutPage && isImageOnly(block.right))
+              ? ""
+              : "bg-white rounded-2xl shadow-sm border border-blue-100 p-8 lg:p-10"
+          }>
+            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} />
           </div>
         </div>
       </div>
