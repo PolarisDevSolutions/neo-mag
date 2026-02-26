@@ -6,6 +6,7 @@ import {
   Linkedin,
   Twitter,
   Phone,
+  Smartphone,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
@@ -33,6 +34,8 @@ export default function Footer() {
   const logoAlt = settings.logoAlt?.trim() || settings.siteName?.trim() || "Logo";
   const phoneDisplay = settings.phoneDisplay?.trim() || "";
   const phoneLabel = settings.phoneAvailability?.trim() || "";
+  const phone2Display = settings.phone2Display?.trim() || "";
+  const phone2Label = settings.phone2Availability?.trim() || "";
   const copyrightText = settings.copyrightText?.trim() || "";
   const mapEmbedUrl = settings.mapEmbedUrl?.trim() || "";
   const resourceLinks = settings.footerAboutLinks ?? [];
@@ -63,9 +66,9 @@ export default function Footer() {
             )}
           </div>
 
-          {/* Phone CTA */}
-          {phoneDisplay && (
-            <div className="lg:flex-shrink-0">
+          {/* Phone CTAs */}
+          <div className="flex flex-col sm:flex-row lg:flex-shrink-0 gap-4">
+            {phoneDisplay && (
               <a
                 href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
                 className="inline-flex items-start gap-4 bg-neo-blue hover:bg-neo-blue-dark transition-colors duration-300 p-4 group"
@@ -80,8 +83,24 @@ export default function Footer() {
                   </p>
                 </div>
               </a>
-            </div>
-          )}
+            )}
+            {phone2Display && (
+              <a
+                href={`tel:${phone2Display.replace(/\D/g, "")}`}
+                className="inline-flex items-start gap-4 bg-gray-800 hover:bg-gray-700 transition-colors duration-300 p-4 group border border-gray-700"
+              >
+                <div className="bg-white p-3 flex-shrink-0">
+                  <Smartphone className="w-6 h-6 text-neo-blue" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="font-outfit text-sm text-white/80 mb-1">{phone2Label}</p>
+                  <p className="font-outfit text-[clamp(1.25rem,2.5vw,1.75rem)] text-white leading-tight font-semibold whitespace-nowrap">
+                    {phone2Display}
+                  </p>
+                </div>
+              </a>
+            )}
+          </div>
         </div>
       </div>
 
