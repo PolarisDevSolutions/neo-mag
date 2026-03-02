@@ -266,11 +266,11 @@ function CTABlock({ block, globalPhone, isDiagnosticsPage }: { block: Extract<Co
 
   return (
     <div className={`max-w-[1200px] mx-auto w-[90%] py-10 ${alignmentClass}`}>
-      <div className={`${isDiagnosticsPage ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm' : ''}`}>
+      <div className={`${isDiagnosticsPage ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm text-center' : ''}`}>
         {isDiagnosticsPage && (
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">Zakažite Vaš pregled</h2>
         )}
-        <div className={`flex flex-col sm:flex-row gap-4 ${block.align === 'center' ? 'justify-center' : block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
+        <div className={`flex flex-col sm:flex-row gap-4 ${isDiagnosticsPage || block.align === 'center' ? 'justify-center' : block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
           <a
             href={`tel:${phone.replace(/\D/g, "")}`}
             className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 ${
