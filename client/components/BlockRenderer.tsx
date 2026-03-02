@@ -108,9 +108,9 @@ function RenderBlock({
 }) {
   switch (block.type) {
     case "hero":                return <HeroBlock block={block} isPreview={isPreview} globalPhone={globalPhone} />;
-    case "heading":             return <HeadingBlock block={block} />;
-    case "paragraph":           return <ParagraphBlock block={block} />;
-    case "bullets":             return <BulletsBlock block={block} />;
+    case "heading":             return <HeadingBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
+    case "paragraph":           return <ParagraphBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
+    case "bullets":             return <BulletsBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
     case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isDiagnosticsPage={isDiagnosticsPage} />;
     case "image":               return <ImageBlock block={block} isRoot={isRoot} />;
     case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />;
@@ -182,7 +182,7 @@ function HeroBlock({ block, globalPhone }: { block: Extract<ContentBlock, { type
 }
 
 // ── Heading ────────────────────────────────────────────────────────────────
-function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading" }> }) {
+function HeadingBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "heading" }>; isDiagnosticsPage?: boolean }) {
   const Tag = `h${block.level}` as "h1" | "h2" | "h3";
   const cls = {
     1: "text-3xl md:text-4xl font-bold text-gray-900",
@@ -194,9 +194,10 @@ function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading
                          block.align === "right" ? "text-right ml-auto" : "";
   const centerClass = (block.level === 2 || block.align === "center") ? "text-center mx-auto" : "";
   const subtext = (block as any).subtext;
+  const containerClass = `max-w-[1200px] mx-auto w-[90%] pt-8 pb-2 ${alignmentClass} ${isDiagnosticsPage ? 'max-w-[900px]' : ''}`;
 
   return (
-    <div className={`max-w-[1200px] mx-auto w-[90%] pt-8 pb-2 ${alignmentClass}`}>
+    <div className={containerClass}>
       <Tag className={`font-outfit ${cls} leading-snug ${centerClass}`}>{block.text}</Tag>
       {subtext && (
         <p className={`font-outfit text-base md:text-lg text-gray-600 mt-2 ${centerClass} max-w-2xl`}>
@@ -208,11 +209,12 @@ function HeadingBlock({ block }: { block: Extract<ContentBlock, { type: "heading
 }
 
 // ── Paragraph ─────────────────────────────────────────────────────────────
-function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "paragraph" }> }) {
+function ParagraphBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "paragraph" }>; isDiagnosticsPage?: boolean }) {
   const alignmentClass = block.align === "center" ? "text-center mx-auto" :
                          block.align === "right" ? "text-right ml-auto" : "";
+  const containerClass = `max-w-[1200px] mx-auto w-[90%] py-2 ${alignmentClass} ${isDiagnosticsPage ? 'max-w-[900px]' : ''}`;
   return (
-    <div className={`max-w-[1200px] mx-auto w-[90%] py-2 ${alignmentClass}`}>
+    <div className={containerClass}>
       <div
         className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold [&_p]:mb-4 last:[&_p]:mb-0"
         dangerouslySetInnerHTML={{ __html: block.content }}
@@ -222,21 +224,25 @@ function ParagraphBlock({ block }: { block: Extract<ContentBlock, { type: "parag
 }
 
 // ── Bullets ────────────────────────────────────────────────────────────────
-function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets" }> }) {
+function BulletsBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "bullets" }>; isDiagnosticsPage?: boolean }) {
+  const containerClass = `max-w-[1200px] mx-auto w-[90%] py-2 ${isDiagnosticsPage ? 'max-w-[900px]' : ''}`;
+
   if ((block as any).variant === "features") {
     return (
-      <div className="py-2 space-y-3">
-        {block.items.map((item, i) => (
-          <div key={i} className="flex items-start gap-4 p-4 bg-white rounded-xl border border-blue-100 shadow-sm hover:border-neo-blue/30 hover:shadow-md transition-all">
-            <CheckCircle2 className="h-6 w-6 text-neo-blue flex-shrink-0 mt-0.5" />
-            <span className="font-outfit text-gray-800 font-medium leading-snug">{item}</span>
-          </div>
-        ))}
+      <div className={containerClass}>
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-4`}>
+          {block.items.map((item, i) => (
+            <div key={i} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-blue-100 shadow-sm hover:border-neo-blue/30 hover:shadow-md transition-all">
+              <CheckCircle2 className="h-6 w-6 text-neo-blue flex-shrink-0 mt-0.5" />
+              <span className="font-outfit text-gray-800 font-medium leading-snug">{item}</span>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
   return (
-    <div className="max-w-[1200px] mx-auto w-[90%] py-2">
+    <div className={containerClass}>
       <ul className="space-y-2.5">
         {block.items.map((item, i) => (
           <li key={i} className="flex items-start gap-3 font-outfit text-base md:text-lg text-gray-700">
