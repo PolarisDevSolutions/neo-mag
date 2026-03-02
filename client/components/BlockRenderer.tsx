@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Star, Phone, Activity, FileText, Waves, Layers,
-  Stethoscope, Heart, MapPin, Scan, CheckCircle2, type LucideIcon,
+  Stethoscope, Heart, MapPin, Scan, CheckCircle2,
+  Search, ChevronRight, Plus, Microscope, Dna, Syringe,
+  Thermometer, ClipboardPulse, Brain, Bone, Lungs, type LucideIcon,
 } from "lucide-react";
 import type { ContentBlock } from "@site/lib/blocks";
 import ReviewsSlider from "@site/components/ReviewsSlider";
@@ -13,9 +15,11 @@ import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
 // ── Icon map ───────────────────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
   Activity, FileText, Waves, Layers, Stethoscope, Heart, MapPin, Phone, Scan,
+  Search, Microscope, Dna, Syringe, Thermometer, ClipboardPulse, Brain, Bone, Lungs,
 };
 function getIcon(name?: string): LucideIcon {
-  return (name && iconMap[name]) || FileText;
+  if (!name) return FileText;
+  return iconMap[name] || FileText;
 }
 
 // ── Root renderer ──────────────────────────────────────────────────────────
@@ -25,9 +29,17 @@ interface BlockRendererProps {
   isRoot?: boolean;
   isHomepage?: boolean;
   isAboutPage?: boolean;
+  isDiagnosticsPage?: boolean;
 }
 
-export default function BlockRenderer({ content, isPreview = false, isRoot = true, isHomepage = false, isAboutPage = false }: BlockRendererProps) {
+export default function BlockRenderer({
+  content,
+  isPreview = false,
+  isRoot = true,
+  isHomepage = false,
+  isAboutPage = false,
+  isDiagnosticsPage = false
+}: BlockRendererProps) {
   const { settings } = useSiteSettings();
   const globalPhone = settings.phoneDisplay || "018 520 640";
 
@@ -66,6 +78,7 @@ export default function BlockRenderer({ content, isPreview = false, isRoot = tru
             testimonialsBlock={testimonialsBlock}
             isHomepage={isHomepage}
             isAboutPage={isAboutPage}
+            isDiagnosticsPage={isDiagnosticsPage}
             globalPhone={globalPhone}
           />
         </div>
@@ -81,6 +94,7 @@ function RenderBlock({
   testimonialsBlock,
   isHomepage,
   isAboutPage,
+  isDiagnosticsPage,
   globalPhone
 }: {
   block: ContentBlock;
@@ -89,6 +103,7 @@ function RenderBlock({
   testimonialsBlock?: ContentBlock;
   isHomepage: boolean;
   isAboutPage: boolean;
+  isDiagnosticsPage: boolean;
   globalPhone: string;
 }) {
   switch (block.type) {
@@ -96,10 +111,10 @@ function RenderBlock({
     case "heading":             return <HeadingBlock block={block} />;
     case "paragraph":           return <ParagraphBlock block={block} />;
     case "bullets":             return <BulletsBlock block={block} />;
-    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} />;
+    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isDiagnosticsPage={isDiagnosticsPage} />;
     case "image":               return <ImageBlock block={block} isRoot={isRoot} />;
-    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} />;
-    case "services-grid":       return <ServicesGridBlock block={block} />;
+    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />;
+    case "services-grid":       return <ServicesGridBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
     case "testimonials":        return <TestimonialsBlock block={block} isHomepage={isHomepage} />;
     case "contact-form":
       return <ContactFormBlock block={block} />;
@@ -235,26 +250,43 @@ function BulletsBlock({ block }: { block: Extract<ContentBlock, { type: "bullets
 }
 
 // ── CTA ────────────────────────────────────────────────────────────────────
-function CTABlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string }) {
+function CTABlock({ block, globalPhone, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string; isDiagnosticsPage?: boolean }) {
   const { settings } = useSiteSettings();
   const isOutline = block.variant === "outline";
   const phone = block.phoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
+  const phone2 = settings.phone2Display || "065/3520-640";
   const alignmentClass = block.align === "center" ? "text-center mx-auto" :
                          block.align === "right" ? "text-right ml-auto" : "";
 
   return (
-    <div className={`max-w-[1200px] mx-auto w-[90%] py-6 ${alignmentClass}`}>
-      <a
-        href={`tel:${phone.replace(/\D/g, "")}`}
-        className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold text-base transition-colors ${
-          isOutline
-            ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
-            : "bg-neo-blue text-white hover:bg-neo-blue-dark"
-        }`}
-      >
-        <Phone className="h-5 w-5" />
-        {block.text} · {phone}
-      </a>
+    <div className={`max-w-[1200px] mx-auto w-[90%] py-10 ${alignmentClass}`}>
+      <div className={`${isDiagnosticsPage ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm' : ''}`}>
+        {isDiagnosticsPage && (
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">Zakažite Vaš pregled</h2>
+        )}
+        <div className={`flex flex-col sm:flex-row gap-4 ${block.align === 'center' ? 'justify-center' : block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
+          <a
+            href={`tel:${phone.replace(/\D/g, "")}`}
+            className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 ${
+              isOutline
+                ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
+                : "bg-neo-blue text-white hover:bg-neo-blue-dark shadow-lg shadow-neo-blue/20"
+            }`}
+          >
+            <Phone className="h-5 w-5" />
+            {block.text} · {phone}
+          </a>
+          {isDiagnosticsPage && block.phoneType !== "secondary" && (
+            <a
+              href={`tel:${phone2.replace(/\D/g, "")}`}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white shadow-lg shadow-neo-blue/5"
+            >
+              <Phone className="h-5 w-5" />
+              Sekundarni kontakt · {phone2}
+            </a>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -270,22 +302,22 @@ function ImageBlock({ block, isRoot }: { block: Extract<ContentBlock, { type: "i
 }
 
 // ── Two-column ─────────────────────────────────────────────────────────────
-function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string; isAboutPage?: boolean }) {
+function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string; isAboutPage?: boolean; isDiagnosticsPage?: boolean }) {
   const isImageOnly = (blocks: ContentBlock[]) => blocks.length === 1 && blocks[0].type === 'image';
 
   return (
     <div className="py-14" style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #e3eeff 60%, #f0f7ff 100%)' }}>
-      <div className="max-w-[1200px] mx-auto w-[90%]">
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 ${isAboutPage ? 'items-center' : 'items-start'}`}>
+      <div className={`${isDiagnosticsPage ? 'max-w-[1100px]' : 'max-w-[1200px]'} mx-auto w-[90%]`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 ${isAboutPage || isDiagnosticsPage ? 'items-center' : 'items-start'}`}>
           <div>
-            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} />
+            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />
           </div>
           <div className={
-            (isAboutPage && isImageOnly(block.right))
+            ((isAboutPage || isDiagnosticsPage) && isImageOnly(block.right))
               ? ""
               : "bg-white rounded-2xl shadow-sm border border-blue-100 p-8 lg:p-10"
           }>
-            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} />
+            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />
           </div>
         </div>
       </div>
@@ -294,7 +326,7 @@ function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage }: { block:
 }
 
 // ── Services grid ──────────────────────────────────────────────────────────
-function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "services-grid" }> }) {
+function ServicesGridBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "services-grid" }>; isDiagnosticsPage?: boolean }) {
   const showHeading = block.heading && block.heading !== "Naše dijagnostičke usluge";
   const subtext = (block as any).subtext;
 
@@ -315,22 +347,32 @@ function ServicesGridBlock({ block }: { block: Extract<ContentBlock, { type: "se
           {block.services.map((service, i) => {
             const Icon = getIcon(service.icon);
             const cardClass = "w-full sm:w-[calc(50%_-_12px)] lg:w-[calc(33.333%_-_16px)]";
-            const link = service.url || service.link;
-            const inner = (
-              <div className="bg-white border border-gray-200 rounded-xl p-6 h-full group hover:border-neo-blue hover:shadow-md transition-all duration-300">
-                <div className="bg-neo-blue-light inline-flex p-3 rounded-lg mb-4 group-hover:bg-neo-blue transition-colors duration-300">
+            const link = service.url || service.link || service.ctaLink;
+
+            const cardContent = (
+              <div className="bg-white border border-gray-200 rounded-xl p-6 h-full flex flex-col group hover:border-neo-blue hover:shadow-md transition-all duration-300">
+                <div className="bg-neo-blue-light inline-flex p-3 rounded-lg mb-4 self-start group-hover:bg-neo-blue transition-colors duration-300">
                   <Icon className="h-7 w-7 text-neo-blue group-hover:text-white transition-colors duration-300" strokeWidth={1.5} />
                 </div>
                 <h3 className="font-outfit font-bold text-lg text-gray-900 mb-2">{service.title}</h3>
                 {service.description && (
-                  <p className="font-outfit text-sm text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: service.description }} />
+                  <div className="font-outfit text-sm text-gray-600 leading-relaxed mb-4 flex-grow" dangerouslySetInnerHTML={{ __html: service.description }} />
+                )}
+                {(service.ctaText || service.ctaLink) && (
+                  <div className="mt-auto">
+                    <span className="inline-flex items-center gap-1.5 text-neo-blue font-outfit font-bold text-sm group-hover:translate-x-1 transition-transform">
+                      {service.ctaText || 'Saznajte više'}
+                      <ChevronRight className="h-4 w-4" />
+                    </span>
+                  </div>
                 )}
               </div>
             );
+
             return link ? (
-              <Link key={i} to={link} className={`block ${cardClass}`}>{inner}</Link>
+              <Link key={i} to={link} className={`block ${cardClass}`}>{cardContent}</Link>
             ) : (
-              <div key={i} className={cardClass}>{inner}</div>
+              <div key={i} className={cardClass}>{cardContent}</div>
             );
           })}
         </div>

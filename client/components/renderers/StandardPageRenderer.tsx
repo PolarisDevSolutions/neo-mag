@@ -23,6 +23,7 @@ export default function StandardPageRenderer({ page }: Props) {
   const firstBlockIsHero = content.length > 0 && content[0].type === "hero";
   const isHomepage = page.url_path === "/";
   const isAboutPage = page.url_path === "/o-nama/";
+  const isDiagnosticsPage = page.url_path === "/dijagnostika/";
 
   if (firstBlockIsHero) {
     // Hero-first: render full content
@@ -36,7 +37,7 @@ export default function StandardPageRenderer({ page }: Props) {
           noindex={page.noindex}
         />
 
-        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} />
+        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />
       </Layout>
     );
   }
@@ -63,7 +64,7 @@ export default function StandardPageRenderer({ page }: Props) {
 
       {/* Page content blocks */}
       {content.length > 0 ? (
-        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} />
+        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />
       ) : (
         <EmptyState />
       )}

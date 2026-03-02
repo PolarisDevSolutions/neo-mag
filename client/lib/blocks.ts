@@ -84,6 +84,8 @@ export interface ServicesGridBlock {
     title: string;
     description: string;
     link?: string;
+    ctaText?: string;
+    ctaLink?: string;
   }>;
 }
 
