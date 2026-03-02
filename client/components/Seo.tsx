@@ -23,16 +23,13 @@ export default function Seo({
   const fullCanonical = canonical || (siteUrl ? `${siteUrl}${pathname}` : undefined);
   
   // Build full title
-  const siteName = 'Neo Mag';
-  const fullTitle = title ? `${title} | ${siteName}` : siteName;
+  const fullTitle = title || '';
 
   // Default description
-  const defaultDescription = 'Specijalistička lekarska ordinacija za radiologiju i internu medicinu.';
-  const fullDescription = description || defaultDescription;
-  
+  const fullDescription = description || '';
+
   // Default image
-  const defaultImage = siteUrl ? `${siteUrl}/og-image.jpg` : undefined;
-  const fullImage = image || defaultImage;
+  const fullImage = image;
 
   return (
     <Helmet>
