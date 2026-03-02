@@ -23,11 +23,11 @@ export default function Seo({
   const fullCanonical = canonical || (siteUrl ? `${siteUrl}${pathname}` : undefined);
   
   // Build full title
-  const siteName = 'Constellation Law Firm';
+  const siteName = 'Neo Mag';
   const fullTitle = title ? `${title} | ${siteName}` : siteName;
-  
+
   // Default description
-  const defaultDescription = 'Protecting your rights with integrity, experience, and relentless advocacy.';
+  const defaultDescription = 'Specijalistička lekarska ordinacija za radiologiju i internu medicinu.';
   const fullDescription = description || defaultDescription;
   
   // Default image
@@ -38,7 +38,8 @@ export default function Seo({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={fullDescription} />
-      
+      <link rel="icon" type="image/png" href="https://cdn.builder.io/api/v1/image/assets%2F63b17c17cd28402ebbde4e53779092d0%2F43b0f4ae64634c898a35ff8085d25a38?format=webp&width=32&height=32" />
+
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       
       {fullCanonical && <link rel="canonical" href={fullCanonical} />}
