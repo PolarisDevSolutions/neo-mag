@@ -4,7 +4,7 @@ import {
   Star, Phone, Activity, FileText, Waves, Layers,
   Stethoscope, Heart, MapPin, Scan, CheckCircle2,
   Search, ChevronRight, Plus, Microscope, Dna, Syringe,
-  Thermometer, ClipboardPulse, Brain, Bone, Lungs, type LucideIcon,
+  Thermometer, type LucideIcon,
 } from "lucide-react";
 import type { ContentBlock } from "@site/lib/blocks";
 import ReviewsSlider from "@site/components/ReviewsSlider";
@@ -15,7 +15,7 @@ import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
 // ── Icon map ───────────────────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
   Activity, FileText, Waves, Layers, Stethoscope, Heart, MapPin, Phone, Scan,
-  Search, Microscope, Dna, Syringe, Thermometer, ClipboardPulse, Brain, Bone, Lungs,
+  Search, Microscope, Dna, Syringe, Thermometer,
 };
 function getIcon(name?: string): LucideIcon {
   if (!name) return FileText;
