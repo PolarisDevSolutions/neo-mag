@@ -56,6 +56,11 @@ export interface CTABlock {
   variant?: "primary" | "outline" | "solid";
   phoneType?: "primary" | "secondary";
   align?: "left" | "center" | "right";
+  heading?: string;
+  description?: string;
+  secondaryText?: string;
+  secondaryVariant?: "primary" | "outline" | "solid";
+  secondaryPhoneType?: "primary" | "secondary";
 }
 
 export interface ImageBlock {
@@ -104,6 +109,7 @@ export interface TestimonialsBlock {
 export interface ContactFormBlock {
   type: "contact-form";
   heading: string;
+  description?: string;
   image?: string;
   services?: string[];
 }

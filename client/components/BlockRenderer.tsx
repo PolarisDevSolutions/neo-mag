@@ -30,6 +30,7 @@ interface BlockRendererProps {
   isHomepage?: boolean;
   isAboutPage?: boolean;
   isDiagnosticsPage?: boolean;
+  isKontaktPage?: boolean;
 }
 
 export default function BlockRenderer({
@@ -38,7 +39,8 @@ export default function BlockRenderer({
   isRoot = true,
   isHomepage = false,
   isAboutPage = false,
-  isDiagnosticsPage = false
+  isDiagnosticsPage = false,
+  isKontaktPage = false
 }: BlockRendererProps) {
   const { settings } = useSiteSettings();
   const globalPhone = settings.phoneDisplay || "018 520 640";
@@ -79,6 +81,7 @@ export default function BlockRenderer({
             isHomepage={isHomepage}
             isAboutPage={isAboutPage}
             isDiagnosticsPage={isDiagnosticsPage}
+            isKontaktPage={isKontaktPage}
             globalPhone={globalPhone}
           />
         </div>
@@ -95,6 +98,7 @@ function RenderBlock({
   isHomepage,
   isAboutPage,
   isDiagnosticsPage,
+  isKontaktPage,
   globalPhone
 }: {
   block: ContentBlock;
@@ -104,6 +108,7 @@ function RenderBlock({
   isHomepage: boolean;
   isAboutPage: boolean;
   isDiagnosticsPage: boolean;
+  isKontaktPage: boolean;
   globalPhone: string;
 }) {
   switch (block.type) {
@@ -111,9 +116,9 @@ function RenderBlock({
     case "heading":             return <HeadingBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
     case "paragraph":           return <ParagraphBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
     case "bullets":             return <BulletsBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
-    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isDiagnosticsPage={isDiagnosticsPage} />;
+    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} />;
     case "image":               return <ImageBlock block={block} isRoot={isRoot} />;
-    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />;
+    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} />;
     case "services-grid":       return <ServicesGridBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
     case "testimonials":        return <TestimonialsBlock block={block} isHomepage={isHomepage} />;
     case "contact-form":
@@ -127,6 +132,7 @@ function RenderBlock({
     case "stats":               return <StatsBlock block={block} />;
     case "reviews-slider":      return <ReviewsSlider heading={block.heading} />;
     case "logo-grid":           return <LogoGridBlock block={block} />;
+    case "map":                 return <MapBlock block={block} />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -256,21 +262,31 @@ function BulletsBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBloc
 }
 
 // ── CTA ────────────────────────────────────────────────────────────────────
-function CTABlock({ block, globalPhone, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string; isDiagnosticsPage?: boolean }) {
+function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; }) {
   const { settings } = useSiteSettings();
   const isOutline = block.variant === "outline";
   const phone = block.phoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
-  const phone2 = settings.phone2Display || "065/3520-640";
+  const secondaryPhone = block.secondaryPhoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
   const alignmentClass = block.align === "center" ? "text-center mx-auto" :
                          block.align === "right" ? "text-right ml-auto" : "";
 
+  const isBoxed = isDiagnosticsPage || isKontaktPage;
+
   return (
     <div className={`max-w-[1200px] mx-auto w-[90%] py-10 ${alignmentClass}`}>
-      <div className={`${isDiagnosticsPage ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm text-center' : ''}`}>
-        {isDiagnosticsPage && (
-          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">Zakažite Vaš pregled</h2>
+      <div className={`${isBoxed ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm text-center' : ''}`}>
+        {(block.heading || (isDiagnosticsPage && !block.heading)) && (
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">
+            {block.heading || "Zakažite Vaš pregled"}
+          </h2>
         )}
-        <div className={`flex flex-col sm:flex-row gap-4 ${isDiagnosticsPage || block.align === 'center' ? 'justify-center' : block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
+        {block.description && (
+          <div
+            className="font-outfit text-base md:text-lg text-gray-600 mb-8 max-w-2xl mx-auto [&_p]:mb-4 last:[&_p]:mb-0"
+            dangerouslySetInnerHTML={{ __html: block.description }}
+          />
+        )}
+        <div className={`flex flex-col sm:flex-row gap-4 ${isBoxed || block.align === 'center' ? 'justify-center' : block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
           <a
             href={`tel:${phone.replace(/\D/g, "")}`}
             className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 ${
@@ -282,13 +298,30 @@ function CTABlock({ block, globalPhone, isDiagnosticsPage }: { block: Extract<Co
             <Phone className="h-5 w-5" />
             {block.text} · {phone}
           </a>
-          {isDiagnosticsPage && block.phoneType !== "secondary" && (
+
+          {block.secondaryText && (
+             <a
+              href={`tel:${secondaryPhone.replace(/\D/g, "")}`}
+              className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 ${
+                block.secondaryVariant === "outline"
+                  ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
+                  : block.secondaryVariant === "solid"
+                    ? "bg-neo-blue text-white hover:bg-neo-blue-dark"
+                    : "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white shadow-lg shadow-neo-blue/5"
+              }`}
+            >
+              <Phone className="h-5 w-5" />
+              {block.secondaryText} · {secondaryPhone}
+            </a>
+          )}
+
+          {isDiagnosticsPage && !block.secondaryText && block.phoneType !== "secondary" && (
             <a
-              href={`tel:${phone2.replace(/\D/g, "")}`}
+              href={`tel:${(settings.phone2Display || "065/3520-640").replace(/\D/g, "")}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white shadow-lg shadow-neo-blue/5"
             >
               <Phone className="h-5 w-5" />
-              {phone2}
+              {settings.phone2Display || "065/3520-640"}
             </a>
           )}
         </div>
@@ -308,22 +341,22 @@ function ImageBlock({ block, isRoot }: { block: Extract<ContentBlock, { type: "i
 }
 
 // ── Two-column ─────────────────────────────────────────────────────────────
-function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage, isDiagnosticsPage }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string; isAboutPage?: boolean; isDiagnosticsPage?: boolean }) {
+function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage, isDiagnosticsPage, isKontaktPage }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string; isAboutPage?: boolean; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; }) {
   const isImageOnly = (blocks: ContentBlock[]) => blocks.length === 1 && blocks[0].type === 'image';
 
   return (
     <div className="py-14" style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #e3eeff 60%, #f0f7ff 100%)' }}>
       <div className={`${isDiagnosticsPage ? 'max-w-[1100px]' : 'max-w-[1200px]'} mx-auto w-[90%]`}>
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 ${isAboutPage || isDiagnosticsPage ? 'items-center' : 'items-start'}`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 ${isAboutPage || isDiagnosticsPage || isKontaktPage ? 'items-center' : 'items-start'}`}>
           <div>
-            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />
+            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} />
           </div>
           <div className={
-            ((isAboutPage || isDiagnosticsPage) && isImageOnly(block.right))
+            ((isAboutPage || isDiagnosticsPage || isKontaktPage) && isImageOnly(block.right))
               ? ""
               : "bg-white rounded-2xl shadow-sm border border-blue-100 p-8 lg:p-10"
           }>
-            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} />
+            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} />
           </div>
         </div>
       </div>
@@ -432,7 +465,13 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
         <div className={`grid grid-cols-1 ${block.image ? 'lg:grid-cols-2' : ''} gap-12 items-center`}>
           {/* Left/Main Column: Form */}
           <div className={block.image ? 'max-w-[600px]' : 'max-w-[700px] mx-auto w-full'}>
-            <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-8">{block.heading}</h2>
+            <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-4">{block.heading}</h2>
+            {block.description && (
+              <div
+                className="font-outfit text-base md:text-lg text-gray-600 mb-8 [&_p]:mb-4 last:[&_p]:mb-0"
+                dangerouslySetInnerHTML={{ __html: block.description }}
+              />
+            )}
             {submitted ? (
               <div className="bg-neo-blue-light border border-neo-blue/30 rounded-xl p-8 text-center">
                 <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Hvala!</p>
@@ -810,6 +849,32 @@ function FAQBlock({ block }: { block: any }) {
           ))}
         </div>
       </div>
+    </section>
+  );
+}
+
+// ── Map ────────────────────────────────────────────────────────────────────
+function MapBlock({ block }: { block: Extract<ContentBlock, { type: "map" }> }) {
+  return (
+    <section className="w-full h-[450px] relative">
+      {block.embedUrl ? (
+        <iframe
+          src={block.embedUrl}
+          className="w-full h-full border-0"
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Lokacija"
+        />
+      ) : (
+        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 font-outfit">
+          <div className="text-center">
+            <MapPin className="h-10 w-10 mx-auto mb-2 opacity-20" />
+            <p>Mapa nije konfigurisana (nedostaje Embed URL)</p>
+            <p className="text-sm">{block.address}</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
