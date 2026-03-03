@@ -6,8 +6,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function dumpKontaktPage() {
   const { data, error } = await supabase
-    .from('cms_pages')
-    .select('content')
+    .from('pages')
+    .select('id, content, url_path')
     .eq('url_path', '/kontakt/')
     .single();
 
@@ -16,7 +16,9 @@ async function dumpKontaktPage() {
     return;
   }
 
-  console.log(JSON.stringify(data.content, null, 2));
+  console.log('ID:', data.id);
+  console.log('URL Path:', data.url_path);
+  console.log('Content:', JSON.stringify(data.content, null, 2));
 }
 
 dumpKontaktPage();
