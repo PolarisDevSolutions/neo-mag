@@ -77,13 +77,14 @@ export function extractFaqItems(content: any): { question: string; answer: strin
  * Builds LocalBusiness schema for NEO MAG Niš
  */
 export function buildLocalBusinessSchema(overrides: any = {}): SchemaBase {
+  const siteUrl = (typeof process !== "undefined" && process.env.VITE_SITE_URL) || (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_SITE_URL) || "https://neo-mag.rs";
   return {
     "@context": "https://schema.org",
     "@type": "MedicalClinic",
     "name": "NEO MAG Niš - Specijalna bolnica za dijagnostiku",
-    "image": "https://neomag.rs/logo.webp",
-    "@id": "https://neomag.rs/#organization",
-    "url": "https://neomag.rs",
+    "image": `${siteUrl}/logo.webp`,
+    "@id": `${siteUrl}/#organization`,
+    "url": siteUrl,
     "telephone": "+381 18 520 640",
     "address": {
       "@type": "PostalAddress",
@@ -118,12 +119,13 @@ export function buildLocalBusinessSchema(overrides: any = {}): SchemaBase {
  * Builds WebPage schema
  */
 export function buildWebPageSchema(page: any, overrides: any = {}): SchemaBase {
+  const siteUrl = (typeof process !== "undefined" && process.env.VITE_SITE_URL) || (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_SITE_URL) || "https://neo-mag.rs";
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": page.title,
     "description": page.meta_description,
-    "url": `https://neomag.rs${page.url_path}`,
+    "url": `${siteUrl}${page.url_path}`,
     ...overrides
   };
 }

@@ -42,7 +42,7 @@ export default function Seo({
   page
 }: SeoProps) {
   const { pathname } = useLocation();
-  const siteUrl = import.meta.env.VITE_SITE_URL || '';
+  const siteUrl = import.meta.env.VITE_SITE_URL || 'https://neo-mag.rs';
 
   // Build full canonical URL
   const fullCanonical = canonical || (siteUrl ? `${siteUrl}${pathname}` : undefined);
