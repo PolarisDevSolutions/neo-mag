@@ -33,12 +33,13 @@ export default function StandardPageRenderer({ page }: Props) {
     return (
       <Layout>
         <Seo
-          title={page.meta_title || page.title}
-          description={page.meta_description || ""}
-          canonical={page.canonical_url || undefined}
-          image={page.og_image || undefined}
-          noindex={page.noindex}
-        />
+        title={page.meta_title || page.title}
+        description={page.meta_description || ""}
+        canonical={page.canonical_url || undefined}
+        image={page.og_image || undefined}
+        noindex={page.noindex}
+        page={page}
+      />
 
         <BlockRenderer
           content={content}
@@ -62,6 +63,7 @@ export default function StandardPageRenderer({ page }: Props) {
         canonical={page.canonical_url || undefined}
         image={page.og_image || undefined}
         noindex={page.noindex}
+        page={page}
       />
 
       {/* Generic page header sourced from CMS page.title */}

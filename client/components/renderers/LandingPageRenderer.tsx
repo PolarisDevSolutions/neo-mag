@@ -31,6 +31,7 @@ export default function LandingPageRenderer({ page }: Props) {
         canonical={page.canonical_url || undefined}
         image={page.og_image || undefined}
         noindex={page.noindex}
+        page={page}
       />
 
       {hasContent ? (

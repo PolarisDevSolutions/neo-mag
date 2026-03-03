@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
+import { buildPageSchemas } from '@site/lib/schemaHelpers';
 
 interface SeoProps {
   title?: string;
@@ -7,21 +8,23 @@ interface SeoProps {
   canonical?: string;
   image?: string;
   noindex?: boolean;
+  page?: any; // Pass the whole page object to build schema
 }
 
-export default function Seo({ 
-  title, 
-  description, 
-  canonical, 
+export default function Seo({
+  title,
+  description,
+  canonical,
   image,
-  noindex = false 
+  noindex = false,
+  page
 }: SeoProps) {
   const { pathname } = useLocation();
   const siteUrl = import.meta.env.VITE_SITE_URL || '';
-  
+
   // Build full canonical URL
   const fullCanonical = canonical || (siteUrl ? `${siteUrl}${pathname}` : undefined);
-  
+
   // Build full title
   const fullTitle = title || '';
 
@@ -31,6 +34,9 @@ export default function Seo({
   // Default image
   const fullImage = image;
 
+  // Build JSON-LD schemas
+  const schemas = page ? buildPageSchemas(page) : [];
+
   return (
     <Helmet>
       <title>{fullTitle}</title>
@@ -38,21 +44,28 @@ export default function Seo({
       <link rel="icon" type="image/png" href="https://cdn.builder.io/api/v1/image/assets%2F63b17c17cd28402ebbde4e53779092d0%2F43b0f4ae64634c898a35ff8085d25a38?format=webp&width=32&height=32" />
 
       {noindex && <meta name="robots" content="noindex, nofollow" />}
-      
+
       {fullCanonical && <link rel="canonical" href={fullCanonical} />}
-      
+
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={fullDescription} />
       <meta property="og:type" content="website" />
       {fullCanonical && <meta property="og:url" content={fullCanonical} />}
       {fullImage && <meta property="og:image" content={fullImage} />}
-      
+
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={fullDescription} />
       {fullImage && <meta name="twitter:image" content={fullImage} />}
+
+      {/* JSON-LD Schemas */}
+      {schemas.map((schema, i) => (
+        <script key={i} type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      ))}
     </Helmet>
   );
 }
