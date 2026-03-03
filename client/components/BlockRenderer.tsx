@@ -485,7 +485,17 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+
+    const myForm = e.target as HTMLFormElement;
+    const formData = new FormData(myForm);
+
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(formData as any).toString(),
+    })
+      .then(() => setSubmitted(true))
+      .catch((error) => alert(error));
   }
 
   return (
@@ -507,7 +517,17 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
                 <p className="font-outfit text-gray-700">Vaš zahtev je primljen. Kontaktiraćemo Vas u najkraćem roku.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4"
+                name="contact-form"
+                data-netlify="true"
+                netlify-honeypot="bot-field"
+              >
+                <input type="hidden" name="form-name" value="contact-form" />
+                <p className="hidden">
+                  <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                </p>
                 {[
                   { label: "Ime i prezime *", name: "name", type: "text", placeholder: "Vaše ime", required: true },
                   { label: "Telefon *", name: "phone", type: "tel", placeholder: "npr. 060 1234567", required: true },

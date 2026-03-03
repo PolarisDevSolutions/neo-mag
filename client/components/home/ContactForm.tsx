@@ -28,9 +28,19 @@ export default function ContactForm() {
     defaultValues: { honeypot: '' },
   });
 
+  const encode = (data: Record<string, string>) => {
+    return Object.keys(data)
+      .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+      .join("&");
+  }
+
   const onSubmit = async (data: ContactFormData) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: encode({ "form-name": "contact-consultation", ...data }),
+      });
       console.log('Form submitted:', data);
       toast.success('Thank you! We will contact you soon.');
       reset();
@@ -45,7 +55,17 @@ export default function ContactForm() {
       <h3 className="font-outfit font-bold text-lg text-gray-900 mb-5">
         Get a Free Consultation
       </h3>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-4"
+        name="contact-consultation"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+      >
+        <input type="hidden" name="form-name" value="contact-consultation" />
+        <p className="hidden">
+          <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+        </p>
         {/* First Name */}
         <div>
           <Input

@@ -28,7 +28,17 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+
+    const myForm = e.target as HTMLFormElement;
+    const formData = new FormData(myForm);
+
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(formData as any).toString(),
+    })
+      .then(() => setSubmitted(true))
+      .catch((error) => alert(error));
   }
 
   return (
@@ -84,10 +94,21 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
                   <p className="font-outfit text-gray-700 text-sm">We'll be in touch shortly.</p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-4"
+                  name="contact-us-section"
+                  data-netlify="true"
+                  netlify-honeypot="bot-field"
+                >
+                  <input type="hidden" name="form-name" value="contact-us-section" />
+                  <p className="hidden">
+                    <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                  </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Input
+                        name="firstName"
                         type="text"
                         placeholder="First Name *"
                         required
@@ -96,6 +117,7 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
                     </div>
                     <div>
                       <Input
+                        name="lastName"
                         type="text"
                         placeholder="Last Name *"
                         required
@@ -104,17 +126,20 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
                     </div>
                   </div>
                   <Input
+                    name="email"
                     type="email"
                     placeholder="Email Address *"
                     required
                     className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
                   <Input
+                    name="phone"
                     type="tel"
                     placeholder="Phone Number"
                     className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
                   <Textarea
+                    name="message"
                     placeholder="Message *"
                     required
                     className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px] text-sm placeholder:text-gray-400 resize-none focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
