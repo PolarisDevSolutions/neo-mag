@@ -20,7 +20,8 @@ export type ContentBlock =
   | TabsSectionBlock
   | SEOTextBlock
   | FAQBlock
-  | LogoGridBlock;
+  | LogoGridBlock
+  | InfoSectionBlock;
 
 export interface HeroBlock {
   type: "hero";
@@ -196,4 +197,15 @@ export interface LogoGridBlock {
     src: string;
     alt?: string;
   }>;
+}
+
+export interface InfoSectionBlock {
+  type: "info-section";
+  heading?: string;
+  text?: string;
+  image?: string;
+  imagePosition?: "left" | "right";
+  ctaText?: string;
+  ctaLink?: string;
+  ctaVariant?: "primary" | "outline" | "solid";
 }

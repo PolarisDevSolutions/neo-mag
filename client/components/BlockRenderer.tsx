@@ -32,6 +32,7 @@ interface BlockRendererProps {
   isDiagnosticsPage?: boolean;
   isKontaktPage?: boolean;
   isCenovnikPage?: boolean;
+  isPracticePage?: boolean;
 }
 
 export default function BlockRenderer({
@@ -42,7 +43,8 @@ export default function BlockRenderer({
   isAboutPage = false,
   isDiagnosticsPage = false,
   isKontaktPage = false,
-  isCenovnikPage = false
+  isCenovnikPage = false,
+  isPracticePage = false
 }: BlockRendererProps) {
   const { settings } = useSiteSettings();
   const globalPhone = settings.phoneDisplay || "018 520 640";
@@ -85,6 +87,7 @@ export default function BlockRenderer({
             isDiagnosticsPage={isDiagnosticsPage}
             isKontaktPage={isKontaktPage}
             isCenovnikPage={isCenovnikPage}
+            isPracticePage={isPracticePage}
             globalPhone={globalPhone}
           />
         </div>
@@ -103,6 +106,7 @@ function RenderBlock({
   isDiagnosticsPage,
   isKontaktPage,
   isCenovnikPage,
+  isPracticePage,
   globalPhone
 }: {
   block: ContentBlock;
@@ -114,16 +118,17 @@ function RenderBlock({
   isDiagnosticsPage: boolean;
   isKontaktPage: boolean;
   isCenovnikPage: boolean;
+  isPracticePage: boolean;
   globalPhone: string;
 }) {
   switch (block.type) {
     case "hero":                return <HeroBlock block={block} isPreview={isPreview} globalPhone={globalPhone} />;
-    case "heading":             return <HeadingBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage} />;
-    case "paragraph":           return <ParagraphBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage} />;
-    case "bullets":             return <BulletsBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage} />;
-    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} />;
+    case "heading":             return <HeadingBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage || isPracticePage} />;
+    case "paragraph":           return <ParagraphBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage || isPracticePage} />;
+    case "bullets":             return <BulletsBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage || isPracticePage} />;
+    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} isPracticePage={isPracticePage} />;
     case "image":               return <ImageBlock block={block} isRoot={isRoot} />;
-    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} />;
+    case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} isPracticePage={isPracticePage} />;
     case "services-grid":       return <ServicesGridBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
     case "testimonials":        return <TestimonialsBlock block={block} isHomepage={isHomepage} />;
     case "contact-form":
@@ -138,6 +143,7 @@ function RenderBlock({
     case "reviews-slider":      return <ReviewsSlider heading={block.heading} />;
     case "logo-grid":           return <LogoGridBlock block={block} />;
     case "map":                 return <MapBlock block={block} />;
+    case "info-section":        return <InfoSectionBlock block={block} />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -285,7 +291,7 @@ function BulletsBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBloc
 }
 
 // ── CTA ────────────────────────────────────────────────────────────────────
-function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage, isCenovnikPage }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; isCenovnikPage?: boolean; }) {
+function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage, isCenovnikPage, isPracticePage }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; isCenovnikPage?: boolean; isPracticePage?: boolean; }) {
   const { settings } = useSiteSettings();
   const isOutline = block.variant === "outline";
   const phone = block.phoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
@@ -293,12 +299,12 @@ function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage, isCeno
   const alignmentClass = block.align === "center" ? "text-center mx-auto" :
                          block.align === "right" ? "text-right ml-auto" : "";
 
-  const isBoxed = isDiagnosticsPage || isKontaktPage || isCenovnikPage;
+  const isBoxed = isDiagnosticsPage || isKontaktPage || isCenovnikPage || isPracticePage;
 
   return (
     <div className={`max-w-[1200px] mx-auto w-[90%] py-10 ${alignmentClass}`}>
       <div className={`${isBoxed ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm text-center' : ''}`}>
-        {(block.heading || ((isDiagnosticsPage || isCenovnikPage) && !block.heading)) && (
+        {(block.heading || ((isDiagnosticsPage || isCenovnikPage || isPracticePage) && !block.heading)) && (
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">
             {block.heading || "Zakažite Vaš pregled"}
           </h2>
@@ -338,7 +344,7 @@ function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage, isCeno
             </a>
           )}
 
-          {(isDiagnosticsPage || isKontaktPage || isCenovnikPage) && !block.secondaryText && block.phoneType !== "secondary" && (
+          {(isDiagnosticsPage || isKontaktPage || isCenovnikPage || isPracticePage) && !block.secondaryText && block.phoneType !== "secondary" && (
             <a
               href={`tel:${(settings.phone2Display || "065/3520-640").replace(/\D/g, "")}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white shadow-lg shadow-neo-blue/5"
@@ -364,22 +370,22 @@ function ImageBlock({ block, isRoot }: { block: Extract<ContentBlock, { type: "i
 }
 
 // ── Two-column ─────────────────────────────────────────────────────────────
-function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage, isDiagnosticsPage, isKontaktPage, isCenovnikPage }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string; isAboutPage?: boolean; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; isCenovnikPage?: boolean; }) {
+function TwoColumnBlock({ block, isPreview, globalPhone, isAboutPage, isDiagnosticsPage, isKontaktPage, isCenovnikPage, isPracticePage }: { block: Extract<ContentBlock, { type: "two-column" }>; isPreview: boolean; globalPhone: string; isAboutPage?: boolean; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; isCenovnikPage?: boolean; isPracticePage?: boolean; }) {
   const isImageOnly = (blocks: ContentBlock[]) => blocks.length === 1 && blocks[0].type === 'image';
 
   return (
     <div className="py-14" style={{ background: 'linear-gradient(135deg, #eef5ff 0%, #e3eeff 60%, #f0f7ff 100%)' }}>
-      <div className={`${isDiagnosticsPage || isCenovnikPage ? 'max-w-[1100px]' : 'max-w-[1200px]'} mx-auto w-[90%]`}>
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 ${isAboutPage || isDiagnosticsPage || isKontaktPage || isCenovnikPage ? 'items-center' : 'items-start'}`}>
+      <div className={`${isDiagnosticsPage || isCenovnikPage || isPracticePage ? 'max-w-[1100px]' : 'max-w-[1200px]'} mx-auto w-[90%]`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 ${isAboutPage || isDiagnosticsPage || isKontaktPage || isCenovnikPage || isPracticePage ? 'items-center' : 'items-start'}`}>
           <div>
-            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} />
+            <BlockRenderer content={block.left} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} isPracticePage={isPracticePage} />
           </div>
           <div className={
-            ((isAboutPage || isDiagnosticsPage || isKontaktPage || isCenovnikPage) && isImageOnly(block.right))
+            ((isAboutPage || isDiagnosticsPage || isKontaktPage || isCenovnikPage || isPracticePage) && isImageOnly(block.right))
               ? ""
               : "bg-white rounded-2xl shadow-sm border border-blue-100 p-8 lg:p-10"
           }>
-            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} />
+            <BlockRenderer content={block.right} isPreview={isPreview} isRoot={false} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} isPracticePage={isPracticePage} />
           </div>
         </div>
       </div>
@@ -915,6 +921,73 @@ function StatsBlock({ block }: { block: Extract<ContentBlock, { type: "stats" }>
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Info Section ──────────────────────────────────────────────────────────
+function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "info-section" }> }) {
+  const { heading, text, image, imagePosition = "right", ctaText, ctaLink, ctaVariant = "primary" } = block;
+
+  const textContent = (
+    <div className="flex-1">
+      {heading && (
+        <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">{heading}</h2>
+      )}
+      {text && (
+        <div
+          className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+          dangerouslySetInnerHTML={{ __html: text }}
+        />
+      )}
+      {ctaText && ctaLink && (
+        <div className="mt-8">
+          <Link
+            to={ctaLink}
+            className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold transition-all ${
+              ctaVariant === "outline"
+                ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
+                : ctaVariant === "solid"
+                  ? "bg-neo-blue text-white hover:bg-neo-blue-dark"
+                  : "bg-neo-blue text-white hover:bg-neo-blue-dark shadow-lg shadow-neo-blue/20"
+            }`}
+          >
+            {ctaText}
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+
+  const imageContent = image ? (
+    <div className="flex-1">
+      <div className="relative group">
+        <div className="absolute -inset-4 bg-neo-blue/5 rounded-2xl group-hover:bg-neo-blue/10 transition-colors" />
+        <img
+          src={image}
+          alt={heading || ""}
+          className="relative w-full h-auto rounded-xl shadow-lg object-cover max-h-[600px]"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  ) : null;
+
+  return (
+    <section className="py-16 bg-white overflow-hidden">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        {image ? (
+          <div className={`flex flex-col md:flex-row gap-12 lg:gap-20 items-center ${imagePosition === "left" ? "md:flex-row-reverse" : ""}`}>
+            {textContent}
+            {imageContent}
+          </div>
+        ) : (
+          <div className="max-w-3xl mx-auto">
+            {textContent}
+          </div>
+        )}
       </div>
     </section>
   );

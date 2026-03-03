@@ -26,6 +26,7 @@ export default function StandardPageRenderer({ page }: Props) {
   const isDiagnosticsPage = page.url_path === "/dijagnostika/";
   const isKontaktPage = page.url_path === "/kontakt/";
   const isCenovnikPage = page.url_path === "/cenovnik/";
+  const isPracticePage = page.page_type === "practice";
 
   if (firstBlockIsHero) {
     // Hero-first: render full content
@@ -46,6 +47,7 @@ export default function StandardPageRenderer({ page }: Props) {
           isDiagnosticsPage={isDiagnosticsPage}
           isKontaktPage={isKontaktPage}
           isCenovnikPage={isCenovnikPage}
+          isPracticePage={isPracticePage}
         />
       </Layout>
     );
@@ -80,6 +82,7 @@ export default function StandardPageRenderer({ page }: Props) {
           isDiagnosticsPage={isDiagnosticsPage}
           isKontaktPage={isKontaktPage}
           isCenovnikPage={isCenovnikPage}
+          isPracticePage={isPracticePage}
         />
       ) : (
         <EmptyState />
