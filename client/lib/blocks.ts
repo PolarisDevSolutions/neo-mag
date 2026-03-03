@@ -47,7 +47,8 @@ export interface ParagraphBlock {
 export interface BulletsBlock {
   type: "bullets";
   items: string[];
-  variant?: "list" | "features";
+  prices?: string[];
+  variant?: "list" | "features" | "pricing";
 }
 
 export interface CTABlock {

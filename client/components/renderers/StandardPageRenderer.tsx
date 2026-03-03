@@ -25,6 +25,7 @@ export default function StandardPageRenderer({ page }: Props) {
   const isAboutPage = page.url_path === "/o-nama/";
   const isDiagnosticsPage = page.url_path === "/dijagnostika/";
   const isKontaktPage = page.url_path === "/kontakt/";
+  const isCenovnikPage = page.url_path === "/cenovnik/";
 
   if (firstBlockIsHero) {
     // Hero-first: render full content
@@ -38,7 +39,14 @@ export default function StandardPageRenderer({ page }: Props) {
           noindex={page.noindex}
         />
 
-        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} />
+        <BlockRenderer
+          content={content}
+          isHomepage={isHomepage}
+          isAboutPage={isAboutPage}
+          isDiagnosticsPage={isDiagnosticsPage}
+          isKontaktPage={isKontaktPage}
+          isCenovnikPage={isCenovnikPage}
+        />
       </Layout>
     );
   }
@@ -65,7 +73,14 @@ export default function StandardPageRenderer({ page }: Props) {
 
       {/* Page content blocks */}
       {content.length > 0 ? (
-        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} />
+        <BlockRenderer
+          content={content}
+          isHomepage={isHomepage}
+          isAboutPage={isAboutPage}
+          isDiagnosticsPage={isDiagnosticsPage}
+          isKontaktPage={isKontaktPage}
+          isCenovnikPage={isCenovnikPage}
+        />
       ) : (
         <EmptyState />
       )}

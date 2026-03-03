@@ -20,6 +20,7 @@ export default function LandingPageRenderer({ page }: Props) {
   const isAboutPage = page.url_path === "/o-nama/";
   const isDiagnosticsPage = page.url_path === "/dijagnostika/";
   const isKontaktPage = page.url_path === "/kontakt/";
+  const isCenovnikPage = page.url_path === "/cenovnik/";
 
   return (
     <Layout>
@@ -32,7 +33,14 @@ export default function LandingPageRenderer({ page }: Props) {
       />
 
       {hasContent ? (
-        <BlockRenderer content={content} isHomepage={isHomepage} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} />
+        <BlockRenderer
+          content={content}
+          isHomepage={isHomepage}
+          isAboutPage={isAboutPage}
+          isDiagnosticsPage={isDiagnosticsPage}
+          isKontaktPage={isKontaktPage}
+          isCenovnikPage={isCenovnikPage}
+        />
       ) : (
         <EmptyState title={page.title} />
       )}
