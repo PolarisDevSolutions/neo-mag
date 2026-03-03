@@ -315,7 +315,7 @@ function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage }: { bl
             </a>
           )}
 
-          {isDiagnosticsPage && !block.secondaryText && block.phoneType !== "secondary" && (
+          {(isDiagnosticsPage || isKontaktPage) && !block.secondaryText && block.phoneType !== "secondary" && (
             <a
               href={`tel:${(settings.phone2Display || "065/3520-640").replace(/\D/g, "")}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white shadow-lg shadow-neo-blue/5"
