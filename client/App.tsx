@@ -11,6 +11,7 @@ import CmsPage from "./pages/CmsPage";
 import NotFound from "./pages/NotFound";
 import AdminRoutes from "./pages/AdminRoutes";
 import ScrollToTop from "./components/ScrollToTop";
+import GlobalScripts from "./components/GlobalScripts";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <SiteSettingsProvider>
+        <GlobalScripts />
         <TooltipProvider>
           <Toaster />
           <Sonner />
