@@ -1,7 +1,6 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { createServer } from "./server";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -15,6 +14,14 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['lucide-react'],
+        },
+      },
+    },
   },
   plugins: [react(), expressPlugin()],
   resolve: {
@@ -31,10 +38,21 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     configureServer(server) {
-      const app = createServer();
+      let expressApp: any = null;
+      let ready = false;
 
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
+      import("./server").then(({ createServer }) => {
+        expressApp = createServer();
+        ready = true;
+      });
+
+      server.middlewares.use((req, res, next) => {
+        if (ready) {
+          expressApp(req, res, next);
+        } else {
+          next(); // Pass through to Vite while Express loads
+        }
+      });
     },
   };
 }

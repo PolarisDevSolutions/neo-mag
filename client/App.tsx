@@ -7,11 +7,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { SiteSettingsProvider } from "./contexts/SiteSettingsContext";
+import { lazy, Suspense } from "react";
 import CmsPage from "./pages/CmsPage";
-import NotFound from "./pages/NotFound";
-import AdminRoutes from "./pages/AdminRoutes";
 import ScrollToTop from "./components/ScrollToTop";
 import GlobalScripts from "./components/GlobalScripts";
+
+const AdminRoutes = lazy(() => import("./pages/AdminRoutes"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -25,9 +27,10 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <Routes>
-              {/* ── CMS-driven pages ───────────────────────────────────── */}
-              <Route path="/" element={<CmsPage />} />
+            <Suspense fallback={null}>
+              <Routes>
+                {/* ── CMS-driven pages ───────────────────────────────────── */}
+                <Route path="/" element={<CmsPage />} />
               <Route path="/o-nama" element={<CmsPage />} />
               <Route path="/o-nama/" element={<CmsPage />} />
               <Route path="/neo-mag-pirot" element={<CmsPage />} />
@@ -55,7 +58,8 @@ const App = () => (
               {/* ── Catch-all 404 ─────────────────────────────────────── */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
+          </Suspense>
+        </BrowserRouter>
         </TooltipProvider>
       </SiteSettingsProvider>
     </QueryClientProvider>

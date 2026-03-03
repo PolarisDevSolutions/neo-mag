@@ -82,6 +82,8 @@ export default function GoogleReviewsSection({ content }: GoogleReviewsSectionPr
                 alt="Google"
                 className="h-5 w-auto"
                 loading="lazy"
+                width={20}
+                height={20}
               />
             </div>
           </div>

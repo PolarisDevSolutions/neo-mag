@@ -364,7 +364,7 @@ function ImageBlock({ block, isRoot }: { block: Extract<ContentBlock, { type: "i
   const containerClass = isRoot ? "max-w-[1200px] mx-auto w-[90%] py-4" : "w-full py-2";
   return (
     <figure className={containerClass}>
-      <img src={block.src} alt={block.alt || ""} className="w-full h-auto rounded-2xl" loading="lazy" />
+      <img src={block.src} alt={block.alt || ""} className="w-full h-auto rounded-2xl" loading="lazy" width={800} height={500} />
     </figure>
   );
 }
@@ -586,6 +586,8 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
                 src={block.image}
                 alt={block.heading}
                 className="relative w-full h-[500px] object-cover rounded-xl shadow-lg"
+                width={600}
+                height={500}
               />
               {/* Decorative elements */}
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-neo-blue/10 rounded-full blur-2xl" />
@@ -682,7 +684,7 @@ function AttorneyBioBlock({ block, globalPhone }: { block: Extract<ContentBlock,
     <div className="max-w-[1200px] mx-auto w-[90%] py-10">
       <div className="flex flex-col md:flex-row gap-8">
         <div className="md:w-1/3">
-          <img src={block.image} alt={block.name} className="w-full h-auto rounded-xl object-cover" loading="lazy" />
+          <img src={block.image} alt={block.name} className="w-full h-auto rounded-xl object-cover" loading="lazy" width={400} height={400} />
         </div>
         <div className="md:w-2/3">
           <h3 className="font-outfit font-bold text-2xl text-gray-900 mb-1">{block.name}</h3>
@@ -831,6 +833,8 @@ function SEOTextBlock({ block }: { block: any }) {
         alt={imageAlt || ""}
         className="w-full h-auto rounded-xl shadow-sm object-cover max-h-[500px]"
         loading="lazy"
+        width={600}
+        height={450}
       />
     </div>
   ) : null;
@@ -1013,6 +1017,8 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
           alt={heading || ""}
           className="relative w-full h-auto rounded-xl shadow-lg object-cover max-h-[600px]"
           loading="lazy"
+          width={600}
+          height={450}
         />
       </div>
     </div>
@@ -1052,6 +1058,8 @@ function LogoGridBlock({ block }: { block: any }) {
                 alt={logo.alt || ""}
                 className="max-h-12 w-auto object-contain"
                 loading="lazy"
+                width={150}
+                height={48}
               />
             </div>
           ))}

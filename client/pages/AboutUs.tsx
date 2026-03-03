@@ -207,6 +207,8 @@ export default function AboutUs() {
                   alt="Law firm team"
                   className="w-full max-w-[400px] h-auto object-cover rounded-xl"
                   loading="lazy"
+                  width={400}
+                  height={300}
                 />
               </div>
             </div>

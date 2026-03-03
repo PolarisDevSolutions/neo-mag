@@ -26,7 +26,7 @@ export default function Header() {
           {/* ── Logo ── */}
           <Link to="/" className="flex-shrink-0" onClick={() => setMobileOpen(false)}>
             {logoUrl ? (
-              <img src={logoUrl} alt={logoAlt} className="h-10 md:h-12 w-auto" />
+              <img src={logoUrl} alt={logoAlt} className="h-10 md:h-12 w-auto" width={160} height={48} />
             ) : (
               <span className="font-outfit font-bold text-xl text-gray-900">
                 {settings.siteName || "NEO MAG"}
