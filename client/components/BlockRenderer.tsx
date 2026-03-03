@@ -180,7 +180,7 @@ function HeroBlock({ block, globalPhone }: { block: Extract<ContentBlock, { type
         </h1>
         {block.subtitle && (
           <div
-            className="font-outfit text-2xl md:text-4xl lg:text-5xl text-white font-bold mb-10 max-w-3xl mx-auto leading-tight [&_strong]:font-bold [&_em]:italic [&_p]:mb-2 order-2"
+            className="font-outfit text-2xl md:text-4xl lg:text-5xl text-white font-bold mb-10 max-w-3xl mx-auto leading-tight [&_strong]:font-bold [&_em]:italic [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 order-2"
             dangerouslySetInnerHTML={{ __html: block.subtitle }}
           />
         )}
@@ -233,7 +233,7 @@ function ParagraphBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBl
   return (
     <div className={containerClass}>
       <div
-        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold [&_p]:mb-4 last:[&_p]:mb-0"
+        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
         dangerouslySetInnerHTML={{ __html: block.content }}
       />
     </div>
@@ -311,7 +311,7 @@ function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage, isCeno
         )}
         {block.description && (
           <div
-            className="font-outfit text-base md:text-lg text-gray-600 mb-8 max-w-2xl mx-auto [&_p]:mb-4 last:[&_p]:mb-0"
+            className="font-outfit text-base md:text-lg text-gray-600 mb-8 max-w-2xl mx-auto [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
             dangerouslySetInnerHTML={{ __html: block.description }}
           />
         )}
@@ -424,7 +424,7 @@ function ServicesGridBlock({ block, isDiagnosticsPage }: { block: Extract<Conten
                 </div>
                 <h3 className="font-outfit font-bold text-lg text-gray-900 mb-2">{service.title}</h3>
                 {service.description && (
-                  <div className="font-outfit text-sm text-gray-600 leading-relaxed mb-4 flex-grow" dangerouslySetInnerHTML={{ __html: service.description }} />
+                  <div className="font-outfit text-sm text-gray-600 leading-relaxed mb-4 flex-grow [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1" dangerouslySetInnerHTML={{ __html: service.description }} />
                 )}
                 {(service.ctaText || service.ctaLink) && (
                   <div className="mt-auto">
@@ -497,7 +497,7 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
             <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-4">{block.heading}</h2>
             {block.description && (
               <div
-                className="font-outfit text-base md:text-lg text-gray-600 mb-8 [&_p]:mb-4 last:[&_p]:mb-0"
+                className="font-outfit text-base md:text-lg text-gray-600 mb-8 [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                 dangerouslySetInnerHTML={{ __html: block.description }}
               />
             )}
@@ -726,7 +726,7 @@ function TabsSectionBlock({ block }: { block: any }) {
                 <div className="space-y-4">
                   {typeof currentTab.paragraphs === 'string' ? (
                     <div
-                      className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+                      className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                       dangerouslySetInnerHTML={{ __html: currentTab.paragraphs }}
                     />
                   ) : (
@@ -780,7 +780,7 @@ function SEOTextBlock({ block }: { block: any }) {
       <div className="space-y-4">
         {typeof paragraphs === 'string' ? (
           <div
-            className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+            className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
             dangerouslySetInnerHTML={{ __html: paragraphs }}
           />
         ) : (
@@ -869,7 +869,7 @@ function FAQBlock({ block }: { block: any }) {
                 <div className="px-6 pb-5 pt-0">
                   <div className="h-px bg-gray-100 mb-4" />
                   <div
-                    className="font-outfit text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+                    className="font-outfit text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
                     dangerouslySetInnerHTML={{ __html: item.answer }}
                   />
                 </div>
@@ -945,7 +945,7 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
       )}
       {text && (
         <div
-          className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0"
+          className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
           dangerouslySetInnerHTML={{ __html: text }}
         />
       )}
