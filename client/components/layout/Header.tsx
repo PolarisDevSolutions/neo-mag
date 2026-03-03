@@ -43,24 +43,20 @@ export default function Header() {
 
           {/* ── Desktop CTA: phone only ── */}
           <div className="hidden md:flex items-center gap-3">
-            {phoneDisplay && (
-              <a
-                href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
-                className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
-              >
-                <Phone className="h-4 w-4" />
-                {phoneDisplay}
-              </a>
-            )}
-            {phone2Display && (
-              <a
-                href={`tel:${phone2Display.replace(/\D/g, "")}`}
-                className="inline-flex items-center gap-2 bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap"
-              >
-                <Smartphone className="h-4 w-4" />
-                {phone2Display}
-              </a>
-            )}
+          <a
+            href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+            className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
+          >
+            <Phone className="h-4 w-4" />
+            {phoneDisplay}
+          </a>
+          <a
+            href={`tel:${phone2Display.replace(/\D/g, "")}`}
+            className="inline-flex items-center gap-2 bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap"
+          >
+            <Smartphone className="h-4 w-4" />
+            {phone2Display}
+          </a>
           </div>
 
           {/* ── Mobile hamburger ── */}
@@ -82,26 +78,22 @@ export default function Header() {
             {navItems.map((item) => (
               <MobileNavItem key={item.label} item={item} onClose={() => setMobileOpen(false)} />
             ))}
-            {phoneDisplay && (
-              <a
-                href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
-                onClick={() => setMobileOpen(false)}
-                className="mt-3 w-full bg-neo-blue text-white font-outfit font-semibold text-center py-3 rounded-lg hover:bg-neo-blue-dark transition-colors flex items-center justify-center gap-2"
-              >
-                <Phone className="h-4 w-4" />
-                {phoneDisplay}
-              </a>
-            )}
-            {phone2Display && (
-              <a
-                href={`tel:${phone2Display.replace(/\D/g, "")}`}
-                onClick={() => setMobileOpen(false)}
-                className="mt-2 w-full bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-center py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
-              >
-                <Smartphone className="h-4 w-4" />
-                {phone2Display}
-              </a>
-            )}
+          <a
+            href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
+            onClick={() => setMobileOpen(false)}
+            className="mt-3 w-full bg-neo-blue text-white font-outfit font-semibold text-center py-3 rounded-lg hover:bg-neo-blue-dark transition-colors flex items-center justify-center gap-2"
+          >
+            <Phone className="h-4 w-4" />
+            {phoneDisplay}
+          </a>
+          <a
+            href={`tel:${phone2Display.replace(/\D/g, "")}`}
+            onClick={() => setMobileOpen(false)}
+            className="mt-2 w-full bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-center py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+          >
+            <Smartphone className="h-4 w-4" />
+            {phone2Display}
+          </a>
           </nav>
         </div>
       )}
