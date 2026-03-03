@@ -155,6 +155,12 @@ export function buildPageSchemas(page: any): any[] {
   const schemas: any[] = [];
   const customData = page.schema_data || {};
 
+  // If we have customData but no specific types set, and it looks like a full schema, use it
+  if (types.length === 0 && customData["@context"] && customData["@type"]) {
+    schemas.push(customData);
+    return schemas;
+  }
+
   types.forEach((type) => {
     let schema: any = null;
 
@@ -198,4 +204,26 @@ export function buildPageSchemas(page: any): any[] {
   });
 
   return schemas;
+}
+
+/**
+ * Renders an array of schema objects as HTML script tags
+ * Used for SSG/SSR generation or client-side rendering
+ */
+export function renderPageSchemas(page: any): string {
+  const schemas = buildPageSchemas(page);
+  if (!schemas || schemas.length === 0) return "";
+
+  return schemas
+    .map((schema) => {
+      try {
+        const obj = typeof schema === "string" ? JSON.parse(schema) : schema;
+        if (Object.keys(obj).length === 0) return "";
+        const json = JSON.stringify(obj);
+        return `<script type="application/ld+json">${json}</script>`;
+      } catch (e) {
+        return "";
+      }
+    })
+    .join("\n");
 }

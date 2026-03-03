@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { buildPageSchemas } from '@site/lib/schemaHelpers';
@@ -9,6 +10,27 @@ interface SeoProps {
   image?: string;
   noindex?: boolean;
   page?: any; // Pass the whole page object to build schema
+}
+
+/**
+ * Helper to render JSON-LD safely
+ */
+function renderJsonLd(schema: any) {
+  if (!schema) return null;
+  try {
+    // If it's already an object, stringify it. If it's a string, parse it first to validate then stringify.
+    const obj = typeof schema === 'string' ? JSON.parse(schema) : schema;
+    if (Object.keys(obj).length === 0) return null;
+
+    return (
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(obj) }}
+      />
+    );
+  } catch (e) {
+    return null;
+  }
 }
 
 export default function Seo({
@@ -31,10 +53,10 @@ export default function Seo({
   // Default description
   const fullDescription = description || '';
 
-  // Default image
+  // Build full image
   const fullImage = image;
 
-  // Build JSON-LD schemas
+  // Render JSON-LD schemas
   const schemas = page ? buildPageSchemas(page) : [];
 
   return (
@@ -62,9 +84,9 @@ export default function Seo({
 
       {/* JSON-LD Schemas */}
       {schemas.map((schema, i) => (
-        <script key={i} type="application/ld+json">
-          {JSON.stringify(schema)}
-        </script>
+        <Fragment key={i}>
+          {renderJsonLd(schema)}
+        </Fragment>
       ))}
     </Helmet>
   );
