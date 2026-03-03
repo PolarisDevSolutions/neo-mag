@@ -295,7 +295,7 @@ function CTABlock({ block, globalPhone, isDiagnosticsPage, isKontaktPage, isCeno
   const { settings } = useSiteSettings();
   const isOutline = block.variant === "outline";
   const phone = block.phoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
-  const secondaryPhone = block.secondaryPhoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
+  const secondaryPhone = block.secondaryPhoneType === "primary" ? globalPhone : (settings.phone2Display || "065/3520-640");
   const alignmentClass = block.align === "center" ? "text-center mx-auto" :
                          block.align === "right" ? "text-right ml-auto" : "";
 
@@ -928,7 +928,15 @@ function StatsBlock({ block }: { block: Extract<ContentBlock, { type: "stats" }>
 
 // ── Info Section ──────────────────────────────────────────────────────────
 function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "info-section" }> }) {
-  const { heading, text, image, imagePosition = "right", ctaText, ctaLink, ctaVariant = "primary" } = block;
+  const { settings } = useSiteSettings();
+  const {
+    heading, text, image, imagePosition = "right",
+    ctaText, ctaVariant = "primary", ctaPhoneType = "primary",
+    secondaryCtaText, secondaryCtaVariant = "outline", secondaryCtaPhoneType = "secondary"
+  } = block;
+
+  const phone = ctaPhoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : (settings.phoneDisplay || "018 520 640");
+  const secondaryPhone = secondaryCtaPhoneType === "primary" ? (settings.phoneDisplay || "018 520 640") : (settings.phone2Display || "065/3520-640");
 
   const textContent = (
     <div className="flex-1">
@@ -941,11 +949,11 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
           dangerouslySetInnerHTML={{ __html: text }}
         />
       )}
-      {ctaText && ctaLink && (
-        <div className="mt-8">
-          <Link
-            to={ctaLink}
-            className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold transition-all ${
+      <div className="flex flex-wrap gap-4 mt-8">
+        {ctaText && (
+          <a
+            href={`tel:${phone.replace(/\D/g, "")}`}
+            className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold transition-all hover:scale-105 active:scale-95 ${
               ctaVariant === "outline"
                 ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
                 : ctaVariant === "solid"
@@ -953,11 +961,26 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
                   : "bg-neo-blue text-white hover:bg-neo-blue-dark shadow-lg shadow-neo-blue/20"
             }`}
           >
-            {ctaText}
-            <ChevronRight className="h-4 w-4" />
-          </Link>
-        </div>
-      )}
+            <Phone className="h-4 w-4" />
+            {ctaText} · {phone}
+          </a>
+        )}
+        {secondaryCtaText && (
+          <a
+            href={`tel:${secondaryPhone.replace(/\D/g, "")}`}
+            className={`inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-outfit font-bold transition-all hover:scale-105 active:scale-95 ${
+              secondaryCtaVariant === "outline"
+                ? "border-2 border-neo-blue text-neo-blue hover:bg-neo-blue hover:text-white"
+                : secondaryCtaVariant === "solid"
+                  ? "bg-neo-blue text-white hover:bg-neo-blue-dark"
+                  : "bg-neo-blue text-white hover:bg-neo-blue-dark shadow-lg shadow-neo-blue/20"
+            }`}
+          >
+            <Phone className="h-4 w-4" />
+            {secondaryCtaText} · {secondaryPhone}
+          </a>
+        )}
+      </div>
     </div>
   );
 

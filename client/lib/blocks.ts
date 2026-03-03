@@ -206,6 +206,9 @@ export interface InfoSectionBlock {
   image?: string;
   imagePosition?: "left" | "right";
   ctaText?: string;
-  ctaLink?: string;
   ctaVariant?: "primary" | "outline" | "solid";
+  ctaPhoneType?: "primary" | "secondary";
+  secondaryCtaText?: string;
+  secondaryCtaVariant?: "primary" | "outline" | "solid";
+  secondaryCtaPhoneType?: "primary" | "secondary";
 }
