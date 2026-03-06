@@ -16,8 +16,8 @@ const defaultContent: AboutContent = {
   phoneLabel: "Pozovite nas",
   contactLabel: "Kontakt",
   contactText: "Zakažite pregled",
-  attorneyImage: "/images/team/doctor-1.png",
-  attorneyImageAlt: "Doktor",
+  staffImage: "/images/team/doctor-1.png",
+  staffImageAlt: "Doktor",
   features: [
     {
       number: "1",
@@ -100,11 +100,11 @@ export default function AboutSection({ content }: AboutSectionProps) {
             </Link>
           </div>
 
-          {/* Middle: Attorney Image */}
+          {/* Middle: Staff Image */}
           <div className="flex justify-center items-start">
             <img
-              src={data.attorneyImage}
-              alt={data.attorneyImageAlt}
+              src={data.staffImage}
+              alt={data.staffImageAlt}
               className="max-w-full w-auto h-auto object-contain rounded-lg"
               width={462}
               height={631}

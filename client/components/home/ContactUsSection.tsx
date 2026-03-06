@@ -11,14 +11,14 @@ interface ContactUsSectionProps {
 }
 
 const defaultContent: ContactContent = {
-  sectionLabel: "– Contact Us",
-  heading: "Get your FREE case evaluation today.",
+  sectionLabel: "– Kontakt",
+  heading: "Zakažite Vaš pregled danas.",
   description:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
-  phone: "404-555-5555",
-  phoneLabel: "Call Us 24/7",
-  address: "4120 Presidential Parkway, Suite 200, Atlanta, GA 30340",
-  formHeading: "Contact Us Today To Schedule a Consultation",
+    "Naš stručni tim je spreman da Vam pruži najbolju dijagnostičku uslugu.",
+  phone: "+381 18 123 456",
+  phoneLabel: "Pozovite nas",
+  address: "Bulevar Nemanjića 14a, Niš, Srbija",
+  formHeading: "Kontaktirajte nas za više informacija",
 };
 
 export default function ContactUsSection({ content }: ContactUsSectionProps) {
@@ -90,8 +90,8 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
 
               {submitted ? (
                 <div className="bg-neo-blue-light border border-neo-blue/30 rounded-xl p-8 text-center">
-                  <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Thank you!</p>
-                  <p className="font-outfit text-gray-700 text-sm">We'll be in touch shortly.</p>
+                  <p className="font-outfit text-neo-blue font-bold text-xl mb-2">Hvala Vam!</p>
+                  <p className="font-outfit text-gray-700 text-sm">Javićemo Vam se u najkraćem roku.</p>
                 </div>
               ) : (
                 <form
@@ -110,7 +110,7 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
                       <Input
                         name="firstName"
                         type="text"
-                        placeholder="First Name *"
+                        placeholder="Ime *"
                         required
                         className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                       />
@@ -119,7 +119,7 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
                       <Input
                         name="lastName"
                         type="text"
-                        placeholder="Last Name *"
+                        placeholder="Prezime *"
                         required
                         className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                       />
@@ -128,19 +128,19 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
                   <Input
                     name="email"
                     type="email"
-                    placeholder="Email Address *"
+                    placeholder="Email adresa *"
                     required
                     className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
                   <Input
                     name="phone"
                     type="tel"
-                    placeholder="Phone Number"
+                    placeholder="Broj telefona"
                     className="bg-gray-50 border-gray-200 text-gray-900 h-11 text-sm placeholder:text-gray-400 focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
                   <Textarea
                     name="message"
-                    placeholder="Message *"
+                    placeholder="Poruka *"
                     required
                     className="bg-gray-50 border-gray-200 text-gray-900 min-h-[120px] text-sm placeholder:text-gray-400 resize-none focus-visible:ring-neo-blue focus-visible:border-neo-blue rounded-lg"
                   />
@@ -148,7 +148,7 @@ export default function ContactUsSection({ content }: ContactUsSectionProps) {
                     type="submit"
                     className="w-full bg-neo-blue hover:bg-neo-blue-dark text-white font-outfit font-semibold h-11 text-sm transition-colors duration-300 rounded-lg"
                   >
-                    Submit
+                    Pošalji zahtev
                   </Button>
                 </form>
               )}

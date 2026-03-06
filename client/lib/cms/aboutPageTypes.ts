@@ -2,16 +2,16 @@
 // Each section maps directly to a static component's data needs
 
 export interface AboutHeroContent {
-  sectionLabel: string; // "– About Us" (H1)
-  tagline: string; // "Dedicated to Justice & Excellence" (styled paragraph)
+  sectionLabel: string; // "– O nama"
+  tagline: string; // "Posvećeni zdravlju..." (styled paragraph)
   description: string; // Description paragraph
   phone: string;
   phoneLabel: string;
 }
 
 export interface StoryContent {
-  sectionLabel: string; // "– Our Story"
-  heading: string; // "Building Trust Since 1999"
+  sectionLabel: string; // "– Naša priča"
+  heading: string; // "Gradimo poverenje..."
   paragraphs: string[]; // Array of paragraph texts
   image: string;
   imageAlt: string;
@@ -37,8 +37,8 @@ export interface TeamMember {
 }
 
 export interface TeamContent {
-  sectionLabel: string; // "– Our Legal Team"
-  heading: string; // "Experienced Attorneys..."
+  sectionLabel: string; // "– Naš stručni tim"
+  heading: string; // "Iskusni lekari..."
   members: TeamMember[];
 }
 
@@ -49,8 +49,8 @@ export interface ValueItem {
 }
 
 export interface ValuesContent {
-  sectionLabel: string; // "– Our Values"
-  heading: string; // "Principles That Guide Our Practice"
+  sectionLabel: string; // "– Naše vrednosti"
+  heading: string; // "Principi koji vode naš rad"
   subtitle: string; // Subtitle text (NEW)
   items: ValueItem[];
 }
@@ -71,22 +71,22 @@ export interface WhyChooseUsItem {
 }
 
 export interface WhyChooseUsContent {
-  sectionLabel: string; // "– Why Choose Us"
-  heading: string; // "What Sets Us Apart"
+  sectionLabel: string; // "– Zašto mi?"
+  heading: string; // "Šta nas izdvaja"
   description: string; // Intro paragraph
   items: WhyChooseUsItem[];
 }
 
 export interface CTAContent {
-  heading: string; // "Ready to Discuss Your Case?"
+  heading: string; // "Spremni za pregled?"
   description: string; // Subtitle text
   primaryButton: {
-    label: string; // "Call Us 24/7"
+    label: string; // "Pozovite nas"
     phone: string; // Phone number
   };
   secondaryButton: {
-    label: string; // "Schedule Now"
-    sublabel: string; // "Free Consultation"
+    label: string; // "Zakažite odmah"
+    sublabel: string; // "Online zakazivanje"
     link: string; // Link URL
   };
 }
@@ -106,151 +106,133 @@ export interface AboutPageContent {
 // Default content - used as fallback when CMS content is not available
 export const defaultAboutContent: AboutPageContent = {
   hero: {
-    sectionLabel: "– About Us",
-    tagline: "Dedicated to Justice & Excellence",
+    sectionLabel: "– O nama",
+    tagline: "Posvećeni zdravlju i preciznosti",
     description:
-      "For over two decades, our law firm has stood as a beacon of hope for individuals facing legal challenges. We combine deep legal expertise with genuine compassion to deliver results that change lives.",
-    phone: "404-555-5555",
-    phoneLabel: "Call Us 24/7",
+      "Više od dve decenije, naš dijagnostički centar stoji kao simbol poverenja za pojedince koji traže vrhunsku medicinsku uslugu. Kombinujemo duboku medicinsku ekspertizu sa najsavremenijom tehnologijom.",
+    phone: "+381 18 123 456",
+    phoneLabel: "Pozovite nas",
   },
   story: {
-    sectionLabel: "– Our Story",
-    heading: "Building Trust Since 1999",
+    sectionLabel: "– Naša priča",
+    heading: "Gradimo poverenje od 1999. godine",
     paragraphs: [
-      "Our firm was founded on a simple but powerful principle: every person deserves access to exceptional legal representation, regardless of their circumstances.",
-      "What started as a small practice has grown into one of Atlanta's most respected law firms, but our core values remain unchanged. We still treat every client like family and fight for their rights with unwavering dedication.",
-      "Today, our team of experienced attorneys has recovered over $50 million for our clients and continues to set new standards for legal excellence in our community.",
+      "Naš centar je osnovan na jednostavnom, ali moćnom principu: svaka osoba zaslužuje pristup izuzetnoj dijagnostici, bez obzira na okolnosti.",
+      "Ono što je počelo kao mala ordinacija preraslo je u jedan od najrespektabilnijih dijagnostičkih centara u Nišu, ali naše osnovne vrednosti ostaju nepromenjene. I dalje svakog pacijenta tretiramo sa maksimalnom pažnjom.",
+      "Danas, naš tim iskusnih stručnjaka nastavlja da postavlja nove standarde u medicinskoj dijagnostici u našoj zajednici.",
     ],
-    image: "/images/team/attorney-2.png",
-    imageAlt: "Our Law Firm",
+    image: "/images/team/doctor-2.png",
+    imageAlt: "Naš centar",
   },
   missionVision: {
     mission: {
-      heading: "Our Mission",
-      text: "To provide exceptional legal representation that empowers our clients, protects their rights, and delivers justice. We are committed to being accessible, responsive, and relentless in pursuing the best outcomes for those we serve.",
+      heading: "Naša misija",
+      text: "Pružanje izuzetne dijagnostičke usluge koja osnažuje naše pacijente i pruža precizne informacije za dalje lečenje. Posvećeni smo tome da budemo dostupni, brzi i pouzdani.",
     },
     vision: {
-      heading: "Our Vision",
-      text: "To be the most trusted and respected law firm in Atlanta, recognized for our unwavering integrity, legal excellence, and genuine care for our clients. We envision a community where everyone has access to justice.",
+      heading: "Naša vizija",
+      text: "Da budemo najpouzdaniji dijagnostički centar u regionu, prepoznat po integritetu, medicinskoj izvrsnosti i iskrenoj brizi za pacijente.",
     },
   },
   team: {
-    sectionLabel: "– Our Legal Team",
-    heading: "Experienced Attorneys Dedicated to Your Success",
+    sectionLabel: "– Naš stručni tim",
+    heading: "Iskusni lekari posvećeni vašem zdravlju",
     members: [
       {
-        name: "John Anderson",
-        title: "Senior Partner",
-        bio: "With over 20 years of experience in personal injury law, John has successfully represented thousands of clients and recovered millions in settlements.",
-        image: "/images/team/attorney-1.png",
+        name: "Dr Marko Marković",
+        title: "Radiolog",
+        bio: "Sa preko 20 godina iskustva u radiologiji, dr Marković je stručnjak za magnetnu rezonancu i kompleksne dijagnostičke procedure.",
+        image: "/images/team/doctor-1.png",
         specialties: [
-          "Personal Injury",
-          "Medical Malpractice",
-          "Wrongful Death",
-        ],
-      },
-      {
-        name: "Sarah Mitchell",
-        title: "Managing Partner",
-        bio: "Sarah specializes in complex litigation and has a proven track record of winning cases that others considered unwinnable.",
-        image: "/images/team/attorney-1.png",
-        specialties: ["Civil Litigation", "Class Actions", "Product Liability"],
-      },
-      {
-        name: "Michael Chen",
-        title: "Senior Attorney",
-        bio: "Michael brings expertise in workplace injury cases and has helped countless workers receive the compensation they deserve.",
-        image: "/images/team/attorney-1.png",
-        specialties: [
-          "Workers Compensation",
-          "Employment Law",
-          "Disability Claims",
+          "Magnetna rezonanca",
+          "CT Skeniranje",
+          "Radiologija",
         ],
       },
     ],
   },
   values: {
-    sectionLabel: "– Our Values",
-    heading: "Principles That Guide Our Practice",
+    sectionLabel: "– Naše vrednosti",
+    heading: "Principi koji vode naš rad",
     subtitle: "",
     items: [
       {
-        icon: "Scale",
-        title: "Integrity",
+        icon: "Shield",
+        title: "Integritet",
         description:
-          "We uphold the highest ethical standards in every case we handle. Your trust is our foundation, and we never compromise on honesty and transparency.",
+          "Pridržavamo se najviših etičkih standarda u svakom pregledu. Vaše poverenje je naš temelj.",
       },
       {
         icon: "Award",
-        title: "Excellence",
+        title: "Izvrsnost",
         description:
-          "Our commitment to excellence drives us to thoroughly prepare every case, leverage cutting-edge legal strategies, and pursue the best possible outcomes.",
+          "Naša posvećenost izvrsnosti nas tera da koristimo najnovije medicinske strategije i postižemo najbolje rezultate.",
       },
       {
         icon: "Users",
-        title: "Client-First Approach",
+        title: "Pacijent na prvom mestu",
         description:
-          "Your needs come first. We listen carefully, communicate clearly, and work tirelessly to protect your rights and achieve your goals.",
+          "Vaše potrebe su prioritet. Pažljivo slušamo, jasno komuniciramo i neumorno radimo za vaše zdravlje.",
       },
       {
         icon: "Heart",
-        title: "Compassion",
+        title: "Empatija",
         description:
-          "We understand that legal issues often arise during difficult times. Our team provides not just legal expertise, but genuine care and support.",
+          "Razumemo da su medicinski pregledi stresni. Naš tim pruža ne samo stručnost, već i iskrenu podršku.",
       },
     ],
   },
   stats: {
     stats: [
-      { value: "25+", label: "Years Combined Legal Experience" },
-      { value: "1000+", label: "Cases Successfully Handled" },
-      { value: "$50M+", label: "Recovered for Clients" },
-      { value: "98%", label: "Client Satisfaction Rate" },
+      { value: "25+", label: "Godina iskustva" },
+      { value: "10000+", label: "Uspešnih pregleda" },
+      { value: "99%", label: "Tačnost dijagnoze" },
+      { value: "98%", label: "Zadovoljnih pacijenata" },
     ],
   },
   whyChooseUs: {
-    sectionLabel: "– Why Choose Us",
-    heading: "What Sets Us Apart",
+    sectionLabel: "– Zašto mi?",
+    heading: "Šta nas izdvaja",
     description:
-      "When you choose our firm, you're choosing a team that combines legal expertise with genuine care for your well-being. Here's what makes us different:",
+      "Kada izaberete naš centar, birate tim koji kombinuje medicinsku ekspertizu sa iskrenom brigom za vaše dobro.",
     items: [
       {
         number: "1",
-        title: "Personalized Attention",
+        title: "Individualni pristup",
         description:
-          "Every case receives individualized care. We take time to understand your unique situation and develop a tailored legal strategy.",
+          "Svaki pacijent dobija individualnu pažnju. Razvijamo strategiju pregleda prilagođenu vašoj situaciji.",
       },
       {
         number: "2",
-        title: "Proven Track Record",
+        title: "Dokazani rezultati",
         description:
-          "Our history of successful verdicts and settlements speaks for itself. We have the experience and skills to win.",
+          "Naša istorija preciznih dijagnoza govori sama za sebe. Posedujemo iskustvo i veštine za vrhunsku uslugu.",
       },
       {
         number: "3",
-        title: "24/7 Availability",
+        title: "Dostupnost",
         description:
-          "Legal emergencies don't wait for business hours. Our team is available around the clock to address your concerns.",
+          "Tu smo da odgovorimo na vaše brige i zakakažemo termin u najkraćem roku.",
       },
       {
         number: "4",
-        title: "No Win, No Fee",
+        title: "Savremena tehnologija",
         description:
-          "We work on a contingency basis for most cases, meaning you pay nothing unless we win your case.",
+          "Koristimo najnoviju opremu za preciznu i bezbednu dijagnostiku.",
       },
     ],
   },
   cta: {
-    heading: "Ready to Discuss Your Case?",
-    description: "Our experienced legal team is standing by to help you.",
+    heading: "Spremni za pregled?",
+    description: "Naš stručni tim je spreman da vam pomogne.",
     primaryButton: {
-      label: "Call Us 24/7",
-      phone: "404-555-5555",
+      label: "Pozovite nas",
+      phone: "+381 18 123 456",
     },
     secondaryButton: {
-      label: "Schedule Now",
-      sublabel: "Free Consultation",
-      link: "/contact",
+      label: "Zakažite odmah",
+      sublabel: "Online zakazivanje",
+      link: "/kontakt",
     },
   },
 };

@@ -182,12 +182,19 @@ export function buildPageSchemas(page: any): any[] {
           schema = { ...schema, ...customData[type] };
         }
         break;
-      case "Attorney":
-        // Included because the prompt mentioned it, though this is a medical site
+      case "Physician":
         schema = {
           "@context": "https://schema.org",
-          "@type": "Attorney",
+          "@type": "Physician",
           "name": page.title,
+          "telephone": "+381 18 520 640",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Bulevar Nemanjića 14a",
+            "addressLocality": "Niš",
+            "postalCode": "18000",
+            "addressCountry": "RS"
+          },
           ...(customData[type] || customData)
         };
         break;

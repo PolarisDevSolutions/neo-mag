@@ -33,8 +33,8 @@ export interface AboutContent {
   phoneLabel: string;
   contactLabel: string;
   contactText: string;
-  attorneyImage: string;
-  attorneyImageAlt: string;
+  staffImage: string;
+  staffImageAlt: string;
   features: AboutFeature[];
   stats: AboutStat[];
 }
@@ -156,8 +156,8 @@ export const defaultHomeContent: HomePageContent = {
     phoneLabel: "Pozovite nas",
     contactLabel: "Kontakt",
     contactText: "Zakažite pregled",
-    attorneyImage: "/images/team/doctor-1.png",
-    attorneyImageAlt: "Doktor",
+    staffImage: "/images/team/doctor-1.png",
+    staffImageAlt: "Doktor",
     features: [
       {
         number: "1",
