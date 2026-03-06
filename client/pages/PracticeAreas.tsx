@@ -44,8 +44,8 @@ export default function PracticeAreas() {
   return (
     <Layout>
       <Seo
-        title="Practice Areas"
-        description="Explore our comprehensive areas of legal expertise. From personal injury to complex litigation, our experienced attorneys are ready to fight for your rights."
+        title="Usluge"
+        description="Istražite naše sveobuhvatne oblasti dijagnostičke ekspertize. Od magnetne rezonance do CT skeniranja, naš iskusni tim je spreman da pruži vrhunsku uslugu."
       />
 
       {/* ── Hero ── */}
@@ -117,8 +117,8 @@ export default function PracticeAreas() {
               </p>
               <div className="hidden lg:block">
                 <img
-                  src="/images/stock/lawyer-consulting.jpg"
-                  alt="Law book with scales of justice"
+                  src="/images/stock/mri-machine.jpg"
+                  alt="Aparat za magnetnu rezonancu"
                   className="w-full max-w-[400px] h-auto object-cover rounded-xl"
                   loading="lazy"
                 />

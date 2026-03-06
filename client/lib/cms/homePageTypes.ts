@@ -138,233 +138,132 @@ export interface HomePageContent {
 // Default content - used as fallback when CMS content is not available
 export const defaultHomeContent: HomePageContent = {
   hero: {
-    h1Title: "ATLANTA PERSONAL INJURY LAWYERS",
-    headline: "with integrity, experience, and relentless advocacy.",
-    highlightedText: "Protecting your rights",
-    phone: "404-555-5555",
-    phoneLabel: "Call Us 24/7",
+    h1Title: "MODERAN DIJAGNOSTIČKI CENTAR",
+    headline: "Vrhunska dijagnostika i briga o vašem zdravlju.",
+    highlightedText: "Poverenje i kvalitet",
+    phone: "+381 18 123 456",
+    phoneLabel: "Pozovite nas",
   },
   partnerLogos: [
     { src: "/images/logos/google-rating.png", alt: "Google Rating" },
-    {
-      src: "/images/logos/atlanta-law-firm-marketing.png",
-      alt: "Atlanta Law Firm Marketing 2023",
-    },
-    { src: "/images/logos/award-badge-1.png", alt: "Award Badge" },
-    { src: "/images/logos/legal-talk-network.png", alt: "Legal Talk Network" },
-    { src: "/images/logos/award-badge-2.png", alt: "Award Badge" },
-    { src: "/images/logos/award-badge-3.png", alt: "Award Badge" },
   ],
   about: {
-    sectionLabel: "– About Us",
-    heading: "A Leading Lawyer for an Atlanta Law Firm",
+    sectionLabel: "– O nama",
+    heading: "Vodeći dijagnostički centar u regionu",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-    phone: "404-555-5555",
-    phoneLabel: "Call Us 24/7",
-    contactLabel: "Contact Us",
-    contactText: "For a Free Consultation",
-    attorneyImage: "/images/team/attorney-1.png",
-    attorneyImageAlt: "Attorney",
+      "NEO MAG je savremeni dijagnostički centar posvećen pružanju vrhunskih usluga magnetne rezonance i drugih dijagnostičkih procedura.",
+    phone: "+381 18 123 456",
+    phoneLabel: "Pozovite nas",
+    contactLabel: "Kontakt",
+    contactText: "Zakažite pregled",
+    attorneyImage: "/images/team/doctor-1.png",
+    attorneyImageAlt: "Doktor",
     features: [
       {
         number: "1",
-        title: "Nationwide Representation",
+        title: "Najsavremenija oprema",
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget augue tincidunt, rhoncus lacus a, congue diam.",
+          "Koristimo najnoviju tehnologiju za preciznu i brzu dijagnostiku.",
       },
       {
         number: "2",
-        title: "Understanding Your Case",
+        title: "Iskusan tim",
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget augue tincidunt, rhoncus lacus a, congue diam.",
+          "Naš tim čine vrhunski stručnjaci sa dugogodišnjim iskustvom.",
       },
       {
         number: "3",
-        title: "Seeking Compensation",
+        title: "Brzi rezultati",
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget augue tincidunt, rhoncus lacus a, congue diam.",
+          "Rezultati pregleda su dostupni u najkraćem mogućem roku.",
       },
     ],
     stats: [
-      { value: "1000+", label: "Trusted Clients Served" },
-      { value: "$50 Million", label: "Recovered in Legal Dispute Settlements" },
-      { value: "98%", label: "Client Satisfaction Rate" },
-      { value: "150+", label: "Legal Professionals Available 24/7" },
+      { value: "10000+", label: "Zadovoljnih pacijenata" },
+      { value: "15+", label: "Godina iskustva" },
+      { value: "99%", label: "Tačnost dijagnoze" },
+      { value: "24/7", label: "Dostupnost informacija" },
     ],
   },
   practiceAreasIntro: {
-    sectionLabel: "– Practice Areas",
-    heading: "Legal Cases We Handle",
+    sectionLabel: "– Naše usluge",
+    heading: "Dijagnostičke procedure",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Pružamo širok spektar dijagnostičkih usluga sa fokusom na preciznost i komfor pacijenata.",
   },
   practiceAreas: [
     {
-      title: "Practice Area",
-      image: "/images/practice-areas/personal-injury.jpg",
-      link: "/practice-areas",
+      title: "Magnetna rezonanca",
+      image: "/images/services/mri.jpg",
+      link: "/usluge",
     },
     {
-      title: "Practice Area",
-      image: "/images/practice-areas/medical-malpractice.jpg",
-      link: "/practice-areas",
-    },
-    {
-      title: "Practice Area",
-      image: "/images/practice-areas/workers-compensation.jpg",
-      link: "/practice-areas",
-    },
-    {
-      title: "Practice Area",
-      image: "/images/practice-areas/wrongful-death.jpg",
-      link: "/practice-areas",
+      title: "CT Skeniranje",
+      image: "/images/services/ct.jpg",
+      link: "/usluge",
     },
   ],
   awards: {
-    sectionLabel: "– Achievements",
-    heading: "Awards & Membership",
+    sectionLabel: "– Dostignuća",
+    heading: "Sertifikati i priznanja",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-    logos: [
-      { src: "/images/awards/award-1.png", alt: "Award Logo" },
-      { src: "/images/awards/award-2.png", alt: "Award Logo" },
-      { src: "/images/awards/award-3.png", alt: "Award Logo" },
-      { src: "/images/awards/award-4.png", alt: "Award Logo" },
-      { src: "/images/awards/award-5.png", alt: "Award Logo" },
-      { src: "/images/awards/award-6.png", alt: "Award Logo" },
-      { src: "/images/awards/forbes.png", alt: "Forbes" },
-      { src: "/images/awards/lc-logo.png", alt: "LC Logo" },
-    ],
+      "Ponosni smo na brojne sertifikate koji potvrđuju kvalitet našeg rada.",
+    logos: [],
   },
   testimonials: {
-    sectionLabel: "– Testimonials",
-    heading: "Inspiring client success stories that drive change.",
+    sectionLabel: "– Utisci",
+    heading: "Šta kažu naši pacijenti",
     backgroundImage: "/images/backgrounds/testimonials-bg.jpg",
-    items: [
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Sharon",
-        ratingImage: "/images/logos/rating-stars.png",
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Sharon",
-        ratingImage: "/images/logos/rating-stars.png",
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Sharon",
-        ratingImage: "/images/logos/rating-stars.png",
-      },
-    ],
+    items: [],
   },
   process: {
-    sectionLabel: "– Process",
-    headingLine1: "Get Started Easily.",
-    headingLine2: "Take a Look at The Steps",
+    sectionLabel: "– Proces",
+    headingLine1: "Kako do pregleda?",
+    headingLine2: "Jednostavni koraci",
     steps: [
       {
         number: "01",
-        title: "Step 1",
+        title: "Zakazivanje",
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+          "Pozovite nas ili popunite online formu za zakazivanje.",
       },
       {
         number: "02",
-        title: "Step 2",
+        title: "Pregled",
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+          "Obavite pregled u zakazanom terminu uz asistenciju našeg osoblja.",
       },
       {
         number: "03",
-        title: "Step 3",
+        title: "Rezultati",
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+          "Preuzmite nalaze i konsultujte se sa našim lekarima.",
       },
     ],
   },
   googleReviews: {
-    sectionLabel: "– Google Reviews",
-    heading: "Real Voices, Real Trust: Our Google Reviews",
+    sectionLabel: "– Google recenzije",
+    heading: "Vaše mišljenje nam je važno",
     description:
-      "Our clients share their stories and insights about working with us. Dive into their experiences to understand how we prioritize your legal success.",
-    reviews: [
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Lorem Ipsum",
-        ratingImage:
-          "https://design.constellationdev.com/wp-content/uploads/2025/06/Group-2-min.png",
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Lorem Ipsum",
-        ratingImage:
-          "https://design.constellationdev.com/wp-content/uploads/2025/06/Group-2-min.png",
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Lorem Ipsum",
-        ratingImage:
-          "https://design.constellationdev.com/wp-content/uploads/2025/06/Group-2-min.png",
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Lorem Ipsum",
-        ratingImage:
-          "https://design.constellationdev.com/wp-content/uploads/2025/06/Group-2-min.png",
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Lorem Ipsum",
-        ratingImage:
-          "https://design.constellationdev.com/wp-content/uploads/2025/06/Group-2-min.png",
-      },
-      {
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor. consectetur adipiscing elit, sed do eiusmod tempor.",
-        author: "Lorem Ipsum",
-        ratingImage:
-          "https://design.constellationdev.com/wp-content/uploads/2025/06/Group-2-min.png",
-      },
-    ],
+      "Pogledajte šta naši pacijenti pišu o nama na Google-u.",
+    reviews: [],
   },
   faq: {
-    heading: "Frequently Asked Questions",
+    heading: "Često postavljana pitanja",
     description:
-      "Aenean porta erat id urna porttitor scelerisque. Aliquam vitae auctor nunc.",
+      "Pronađite odgovore na najčešća pitanja o našim uslugama.",
     videoThumbnail: "/images/backgrounds/faq-bg.jpg",
     videoUrl:
-      "https://www.youtube.com/embed/FkQuawiGWUw?autoplay=1&feature=oembed",
-    items: [
-      {
-        question: "This is an example FAQ",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
-      },
-      {
-        question: "This is an example FAQ",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
-      },
-      {
-        question: "This is an example FAQ",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
-      },
-      {
-        question: "This is an example FAQ",
-        answer:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
-      },
-    ],
+      "https://www.youtube.com/embed/placeholder",
+    items: [],
   },
   contact: {
-    sectionLabel: "– Contact",
-    heading: "Get in Touch",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    phone: "404-555-5555",
-    phoneLabel: "Call Us 24/7",
-    address: "4120 Presidential Parkway, Suite 200, Atlanta, GA 30340",
-    formHeading: "Send Us a Message",
+    sectionLabel: "– Kontakt",
+    heading: "Kontaktirajte nas",
+    description: "Tu smo za sva vaša pitanja i nedoumice.",
+    phone: "+381 18 123 456",
+    phoneLabel: "Pozovite nas",
+    address: "Niš, Srbija",
+    formHeading: "Pošaljite nam poruku",
   },
 };

@@ -8,41 +8,41 @@ interface AboutSectionProps {
 }
 
 const defaultContent: AboutContent = {
-  sectionLabel: "– About Us",
-  heading: "A Leading Lawyer for an Atlanta Law Firm",
+  sectionLabel: "– O nama",
+  heading: "Vodeći dijagnostički centar u regionu",
   description:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi",
-  phone: "404-555-5555",
-  phoneLabel: "Call Us 24/7",
-  contactLabel: "Contact Us",
-  contactText: "For a Free Consultation",
-  attorneyImage: "/images/team/attorney-1.png",
-  attorneyImageAlt: "Attorney",
+    "NEO MAG je savremeni dijagnostički centar posvećen pružanju vrhunskih usluga magnetne rezonance i drugih dijagnostičkih procedura.",
+  phone: "+381 18 123 456",
+  phoneLabel: "Pozovite nas",
+  contactLabel: "Kontakt",
+  contactText: "Zakažite pregled",
+  attorneyImage: "/images/team/doctor-1.png",
+  attorneyImageAlt: "Doktor",
   features: [
     {
       number: "1",
-      title: "Nationwide Representation",
+      title: "Najsavremenija oprema",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget augue tincidunt, rhoncus lacus a, congue diam.",
+        "Koristimo najnoviju tehnologiju za preciznu i brzu dijagnostiku.",
     },
     {
       number: "2",
-      title: "Understanding Your Case",
+      title: "Iskusan tim",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget augue tincidunt, rhoncus lacus a, congue diam.",
+        "Naš tim čine vrhunski stručnjaci sa dugogodišnjim iskustvom.",
     },
     {
       number: "3",
-      title: "Seeking Compensation",
+      title: "Brzi rezultati",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget augue tincidunt, rhoncus lacus a, congue diam.",
+        "Rezultati pregleda su dostupni u najkraćem mogućem roku.",
     },
   ],
   stats: [
-    { value: "1000+", label: "Trusted Clients Served" },
-    { value: "$50 Million", label: "Recovered in Legal Dispute Settlements" },
-    { value: "98%", label: "Client Satisfaction Rate" },
-    { value: "150+", label: "Legal Professionals Available 24/7" },
+    { value: "10000+", label: "Zadovoljnih pacijenata" },
+    { value: "15+", label: "Godina iskustva" },
+    { value: "99%", label: "Tačnost dijagnoze" },
+    { value: "24/7", label: "Dostupnost informacija" },
   ],
 };
 
