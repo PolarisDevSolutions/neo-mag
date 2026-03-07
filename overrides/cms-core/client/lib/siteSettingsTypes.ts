@@ -1,10 +1,16 @@
 // TypeScript interfaces for global site settings (Header/Footer CMS)
 
+export interface NavigationChildItem {
+  label: string;
+  href: string;
+}
+
 export interface NavigationItem {
   label: string;
   href: string;
   order?: number;
   openInNewTab?: boolean;
+  children?: NavigationChildItem[];
 }
 
 export interface FooterLink {
