@@ -209,3 +209,5 @@ function MobileNavItem({ item, onClose }: { item: NavItem; onClose: () => void }
     </div>
   );
 }
+
+// Small change to trigger push button
