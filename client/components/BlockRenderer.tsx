@@ -138,7 +138,7 @@ function RenderBlock({
     case "seo-text":            return <SEOTextBlock block={block} />;
     case "faq":                 return <FAQBlock block={block} />;
     case "google-reviews":      return <GoogleReviewsBlock block={block} />;
-    case "staff-bio":           return <StaffBioBlock block={block} globalPhone={globalPhone} />;
+    case "attorney-bio":        return <AttorneyBioBlock block={block} globalPhone={globalPhone} />;
     case "stats":               return <StatsBlock block={block} />;
     case "reviews-slider":      return <ReviewsSlider heading={block.heading} />;
     case "logo-grid":           return <LogoGridBlock block={block} />;
@@ -677,8 +677,8 @@ function GoogleReviewsBlock({ block }: { block: Extract<ContentBlock, { type: "g
   );
 }
 
-// ── Staff bio ───────────────────────────────────────────────────────────
-function StaffBioBlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "staff-bio" }>; globalPhone: string }) {
+// ── Attorney bio ───────────────────────────────────────────────────────────
+function AttorneyBioBlock({ block, globalPhone }: { block: Extract<ContentBlock, { type: "attorney-bio" }>; globalPhone: string }) {
   const phone = globalPhone;
   return (
     <div className="max-w-[1200px] mx-auto w-[90%] py-10">

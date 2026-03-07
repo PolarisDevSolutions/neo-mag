@@ -32,7 +32,7 @@ export default function TeamMemberCard({
       <div className="p-5 md:p-6">
         <h3 className="font-outfit font-bold text-xl text-gray-900 mb-1">{name}</h3>
         <p className="font-outfit text-sm text-neo-blue font-semibold mb-3">{title}</p>
-        <p className="font-outfit text-sm text-gray-600 leading-relaxed">{bio}</p>
+        <div className="font-outfit text-sm text-gray-600 leading-relaxed [&_p]:mb-3 last:[&_p]:mb-0 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: bio }} />
 
         {specialties && specialties.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">

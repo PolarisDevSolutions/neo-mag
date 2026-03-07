@@ -14,7 +14,7 @@ export type ContentBlock =
   | ContactFormBlock
   | PracticeAreasGridBlock
   | GoogleReviewsBlock
-  | StaffBioBlock
+  | AttorneyBioBlock
   | StatsBlock
   | ReviewsSliderBlock
   | TabsSectionBlock
@@ -137,8 +137,8 @@ export interface GoogleReviewsBlock {
   }>;
 }
 
-export interface StaffBioBlock {
-  type: "staff-bio";
+export interface AttorneyBioBlock {
+  type: "attorney-bio";
   name: string;
   title: string;
   image: string;
