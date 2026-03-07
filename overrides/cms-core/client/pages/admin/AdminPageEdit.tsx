@@ -1,9 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
-import type { Page, ContentBlock } from "@/lib/database.types";
-import { defaultHomeContent } from "@site/lib/cms/homePageTypes";
-import type { HomePageContent } from "@site/lib/cms/homePageTypes";
+import type { Page } from "@/lib/database.types";
+import type { ContentBlock } from "@site/lib/blocks";
 import { defaultAboutContent } from "@site/lib/cms/aboutPageTypes";
 import type { AboutPageContent } from "@site/lib/cms/aboutPageTypes";
 import { defaultContactContent } from "@site/lib/cms/contactPageTypes";
@@ -36,8 +35,7 @@ import BlockEditor from "../../components/admin/BlockEditor";
 import BlockRenderer from "@site/components/BlockRenderer";
 import PageContentEditor from "../../components/admin/PageContentEditor";
 import ImageUploader from "../../components/admin/ImageUploader";
-import { clearPageCache } from "../../hooks/usePageContent";
-import type { PageKey } from "../../lib/pageContentTypes";
+import { clearCmsPageCache } from "@site/hooks/useCmsPage";
 import RevisionPanel, { createPageRevision } from "../../components/admin/RevisionPanel";
 import URLChangeRedirectModal from "../../components/admin/URLChangeRedirectModal";
 import type { PageRevision } from "@/lib/database.types";
@@ -282,10 +280,8 @@ export default function AdminPageEdit() {
       console.error("Error saving page:", error);
       alert("Failed to save page: " + error.message);
     } else {
-      // Clear the page cache so the frontend fetches fresh content
-      if (page.url_path === "/" || page.url_path === "/about" || page.url_path === "/contact" || page.url_path === "/practice-areas") {
-        clearPageCache(page.url_path as PageKey);
-      }
+      // Clear the frontend page cache so the next visit fetches fresh content
+      clearCmsPageCache(page.url_path);
       // Update tracking state after successful save
       setOriginalUrlPath(page.url_path);
       setPreviousStatus(page.status);
@@ -301,7 +297,7 @@ export default function AdminPageEdit() {
   };
 
   const handleContentChange = (content: ContentBlock[]) => {
-    updatePage({ content });
+    updatePage({ content: content as unknown as ContentBlock[] });
   };
 
   const handleRestoreRevision = (revision: PageRevision) => {
@@ -336,9 +332,10 @@ export default function AdminPageEdit() {
   };
 
   // Check if this is a structured page (main site pages)
+  // Note: "/" (homepage) uses BlockEditor via ContentBlock[] format, not HomePageEditor
   const isStructuredPage =
     page?.url_path &&
-    ["/", "/about", "/contact", "/practice-areas"].includes(page.url_path);
+    ["/about", "/contact", "/practice-areas"].includes(page.url_path);
 
   // Normalize content by merging with defaults based on page type
   const normalizedContent = useMemo(() => {
@@ -347,11 +344,6 @@ export default function AdminPageEdit() {
     const legacyNormalized = normalizeLegacyContent(page.url_path, page.content);
 
     switch (page.url_path) {
-      case '/':
-        return mergeWithDefaults(
-          legacyNormalized as Partial<HomePageContent>,
-          defaultHomeContent
-        );
       case '/about':
         return mergeWithDefaults(
           legacyNormalized as Partial<AboutPageContent>,
@@ -477,7 +469,7 @@ export default function AdminPageEdit() {
                 </CardHeader>
                 <CardContent>
                   <BlockEditor
-                    content={page.content}
+                    content={(page.content as ContentBlock[]) || []}
                     onChange={handleContentChange}
                   />
                 </CardContent>
@@ -755,7 +747,7 @@ export default function AdminPageEdit() {
             </CardHeader>
             <CardContent>
               <div className="border rounded-lg overflow-hidden bg-white">
-                <BlockRenderer content={page.content} isPreview={true} />
+                <BlockRenderer content={page.content as ContentBlock[]} isPreview={true} />
               </div>
             </CardContent>
           </Card>

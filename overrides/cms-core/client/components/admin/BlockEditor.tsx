@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ContentBlock } from '../../lib/database.types';
+import type { ContentBlock } from '@site/lib/blocks';
 import RichTextEditor from './RichTextEditor';
 import ImageUploader from './ImageUploader';
 import { Button } from '@/components/ui/button';
@@ -269,6 +269,12 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
             <Switch checked={block.showCTA || false} onCheckedChange={(checked) => onUpdate({ showCTA: checked })} />
             <Label>Show Call-to-Action Button</Label>
           </div>
+          {block.showCTA && (
+            <div>
+              <Label>CTA Button Text</Label>
+              <Input value={block.ctaText || ''} onChange={(e) => onUpdate({ ctaText: e.target.value })} />
+            </div>
+          )}
         </div>
       );
 
@@ -327,8 +333,15 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
             <Input value={block.text} onChange={(e) => onUpdate({ text: e.target.value })} />
           </div>
           <div>
-            <Label>Phone Number</Label>
-            <Input value={block.phone} onChange={(e) => onUpdate({ phone: e.target.value })} />
+            <Label>Phone Type</Label>
+            <Select value={block.phoneType || 'primary'} onValueChange={(v) => onUpdate({ phoneType: v as 'primary' | 'secondary' })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="primary">Primary Phone</SelectItem>
+                <SelectItem value="secondary">Secondary Phone</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-400 mt-1">Phone numbers are managed in Site Settings</p>
           </div>
           <div>
             <Label>Style</Label>
@@ -412,11 +425,23 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
       );
 
     case 'services-grid':
-    case 'practice-areas-grid':
+    case 'practice-areas-grid': {
       const items = block.type === 'services-grid' ? block.services : block.areas;
       const itemKey = block.type === 'services-grid' ? 'services' : 'areas';
       return (
         <div className="space-y-4">
+          {block.type === 'services-grid' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+              </div>
+              <div>
+                <Label>Subtext</Label>
+                <Input value={(block as any).subtext || ''} onChange={(e) => onUpdate({ subtext: e.target.value } as any)} />
+              </div>
+            </>
+          )}
           {items.map((item, idx) => (
             <div key={idx} className="p-4 border rounded-lg space-y-2">
               <div className="flex justify-between items-center">
@@ -448,6 +473,17 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
                   onUpdate({ [itemKey]: newItems });
                 }}
               />
+              {block.type === 'services-grid' && (
+                <Input
+                  placeholder="Link (e.g., /services/example)"
+                  value={(item as any).link || ''}
+                  onChange={(e) => {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], link: e.target.value };
+                    onUpdate({ [itemKey]: newItems });
+                  }}
+                />
+              )}
               <div className="space-y-1">
                 <Label className="text-xs text-gray-400 uppercase tracking-wider">Description</Label>
                 <RichTextEditor
@@ -471,6 +507,7 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </Button>
         </div>
       );
+    }
 
     case 'google-reviews':
       return (
@@ -577,6 +614,37 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
                 newTabs[idx] = { ...newTabs[idx], paragraphs: val };
                 onUpdate({ tabs: newTabs });
               }} />
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-wider">Bullet Points (one per line)</Label>
+                <Textarea
+                  value={(tab.bullets || []).join('\n')}
+                  onChange={(e) => {
+                    const newTabs = [...block.tabs];
+                    newTabs[idx] = { ...newTabs[idx], bullets: e.target.value.split('\n') };
+                    onUpdate({ tabs: newTabs });
+                  }}
+                  rows={3}
+                  placeholder="Enter each bullet point on a new line"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-gray-400 uppercase tracking-wider">CTA Text</Label>
+                  <Input placeholder="Button text" value={tab.ctaText || ''} onChange={(e) => {
+                    const newTabs = [...block.tabs];
+                    newTabs[idx] = { ...newTabs[idx], ctaText: e.target.value };
+                    onUpdate({ tabs: newTabs });
+                  }} />
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-400 uppercase tracking-wider">CTA URL</Label>
+                  <Input placeholder="/page-link" value={tab.ctaUrl || ''} onChange={(e) => {
+                    const newTabs = [...block.tabs];
+                    newTabs[idx] = { ...newTabs[idx], ctaUrl: e.target.value };
+                    onUpdate({ tabs: newTabs });
+                  }} />
+                </div>
+              </div>
             </div>
           ))}
           <Button variant="outline" onClick={() => onUpdate({ tabs: [...block.tabs, { label: '', contentHeading: '', paragraphs: '' }] })}>
@@ -595,6 +663,15 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           <div>
             <Label>Content</Label>
             <RichTextEditor content={block.paragraphs} onChange={(val) => onUpdate({ paragraphs: val })} />
+          </div>
+          <div>
+            <Label>Bullet Points (one per line)</Label>
+            <Textarea
+              value={(block.bullets || []).join('\n')}
+              onChange={(e) => onUpdate({ bullets: e.target.value.split('\n') })}
+              rows={4}
+              placeholder="Enter each bullet point on a new line"
+            />
           </div>
           <div>
             <Label>Image</Label>
@@ -745,6 +822,59 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
               onChange={(right) => onUpdate({ right })}
             />
           </div>
+        </div>
+      );
+
+    case 'testimonials':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          <div>
+            <Label>Display Variant</Label>
+            <Select value={block.variant || 'slider'} onValueChange={(v) => onUpdate({ variant: v as 'grid' | 'slider' })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="slider">Slider</SelectItem>
+                <SelectItem value="grid">Grid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {block.testimonials.map((t, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Testimonial {idx + 1}</Label>
+                <Button variant="ghost" size="sm" onClick={() => onUpdate({ testimonials: block.testimonials.filter((_, i) => i !== idx) })} className="text-red-500">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input placeholder="Initials (e.g. AR)" value={t.initials} onChange={(e) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], initials: e.target.value };
+                onUpdate({ testimonials: newT });
+              }} />
+              <Input placeholder="Author name" value={t.author || ''} onChange={(e) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], author: e.target.value };
+                onUpdate({ testimonials: newT });
+              }} />
+              <Input type="number" min="1" max="5" placeholder="Rating" value={t.rating} onChange={(e) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], rating: Number(e.target.value) };
+                onUpdate({ testimonials: newT });
+              }} />
+              <RichTextEditor content={t.text} onChange={(val) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], text: val };
+                onUpdate({ testimonials: newT });
+              }} />
+            </div>
+          ))}
+          <Button variant="outline" onClick={() => onUpdate({ testimonials: [...block.testimonials, { initials: '', text: '', rating: 5 }] })}>
+            <Plus className="h-4 w-4 mr-2" /> Add Testimonial
+          </Button>
         </div>
       );
 

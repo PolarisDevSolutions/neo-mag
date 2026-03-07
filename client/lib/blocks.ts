@@ -86,6 +86,7 @@ export interface TwoColumnBlock {
 export interface ServicesGridBlock {
   type: "services-grid";
   heading?: string;
+  subtext?: string;
   services: Array<{
     icon?: string;
     title: string;
