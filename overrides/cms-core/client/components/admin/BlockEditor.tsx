@@ -259,7 +259,11 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </div>
           <div>
             <Label>Subtitle</Label>
-            <Input value={block.subtitle || ''} onChange={(e) => onUpdate({ subtitle: e.target.value })} />
+            <RichTextEditor
+              content={block.subtitle || ''}
+              onChange={(val) => onUpdate({ subtitle: val })}
+              placeholder="Hero subtitle text..."
+            />
           </div>
           <div>
             <Label>Background Image</Label>
