@@ -1,7 +1,0 @@
-[submodule "vendor/cms-core"]
-	path = vendor/cms-core
-	url = https://github.com/ConstellationMarketing/cms-core.git
-	shallow = true
-[submodule "cms-core"]
-	path = vendor/cms-core
-	url = https://github.com/PolarisDevSolutions/cms-core
