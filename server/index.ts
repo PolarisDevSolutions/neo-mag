@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { handleSitemap } from "./routes/sitemap";
 
 export function createServer() {
   const app = express();
@@ -18,6 +19,9 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Dynamic sitemap — must be registered before the Vite / SPA catch-all
+  app.get("/sitemap.xml", handleSitemap);
 
   return app;
 }
