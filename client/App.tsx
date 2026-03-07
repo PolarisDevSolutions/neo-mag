@@ -13,7 +13,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import GlobalScripts from "./components/GlobalScripts";
 
 const AdminRoutes = lazy(() => import("./pages/AdminRoutes"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -29,35 +28,12 @@ const App = () => (
             <ScrollToTop />
             <Suspense fallback={null}>
               <Routes>
-                {/* ── CMS-driven pages ───────────────────────────────────── */}
-                <Route path="/" element={<CmsPage />} />
-              <Route path="/o-nama" element={<CmsPage />} />
-              <Route path="/o-nama/" element={<CmsPage />} />
-              <Route path="/neo-mag-pirot" element={<CmsPage />} />
-              <Route path="/neo-mag-pirot/" element={<CmsPage />} />
-              <Route path="/dijagnostika" element={<CmsPage />} />
-              <Route path="/dijagnostika/" element={<CmsPage />} />
-              <Route path="/dijagnostika/magnetna-rezonanca" element={<CmsPage />} />
-              <Route path="/dijagnostika/magnetna-rezonanca/" element={<CmsPage />} />
-              <Route path="/dijagnostika/rendgen" element={<CmsPage />} />
-              <Route path="/dijagnostika/rendgen/" element={<CmsPage />} />
-              <Route path="/dijagnostika/ultrazvuk" element={<CmsPage />} />
-              <Route path="/dijagnostika/ultrazvuk/" element={<CmsPage />} />
-              <Route path="/dijagnostika/multilajsni-skener" element={<CmsPage />} />
-              <Route path="/dijagnostika/multilajsni-skener/" element={<CmsPage />} />
-              <Route path="/dijagnostika/ostali-pregledi" element={<CmsPage />} />
-              <Route path="/dijagnostika/ostali-pregledi/" element={<CmsPage />} />
-              <Route path="/cenovnik" element={<CmsPage />} />
-              <Route path="/cenovnik/" element={<CmsPage />} />
-              <Route path="/kontakt" element={<CmsPage />} />
-              <Route path="/kontakt/" element={<CmsPage />} />
+                {/* ── Admin (CMS back-office) ────────────────────────────── */}
+                <Route path="/admin/*" element={<AdminRoutes />} />
 
-              {/* ── Admin (CMS back-office) ────────────────────────────── */}
-              <Route path="/admin/*" element={<AdminRoutes />} />
-
-              {/* ── Catch-all 404 ─────────────────────────────────────── */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                {/* ── All other paths go through CmsPage (handles 404 internally) ── */}
+                <Route path="*" element={<CmsPage />} />
+              </Routes>
           </Suspense>
         </BrowserRouter>
         </TooltipProvider>
