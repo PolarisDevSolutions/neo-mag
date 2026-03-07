@@ -14,7 +14,7 @@
     "dev": "vite",
     "build": "export VITE_SITE_URL=https://neo-mag.rs && npm run build:client && npm run build:server",
     "build:client": "export VITE_SITE_URL=https://neo-mag.rs && vite build",
-    "build:ssg": "export VITE_SITE_URL=https://neo-mag.rs && npm run build:client && npx tsx vendor/cms-core/scripts/ssg-generate.ts",
+    "build:ssg": "export VITE_SITE_URL=https://neo-mag.rs && npm run build:client && npx tsx scripts/ssg-generate.ts",
     "build:server": "export VITE_SITE_URL=https://neo-mag.rs && vite build --config vite.config.server.ts",
     "start": "node dist/server/node-build.mjs",
     "test": "vitest --run",
