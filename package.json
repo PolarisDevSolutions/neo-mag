@@ -22,7 +22,7 @@
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
     "seed:admin": "tsx scripts/bootstrap-admin.ts",
-    "bootstrap": "git submodule update --init --recursive && pnpm install --frozen-lockfile",
+    "bootstrap": "pnpm install --frozen-lockfile",
     "verify:builder": "pnpm build"
   },
   "dependencies": {
