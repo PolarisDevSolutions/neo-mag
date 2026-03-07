@@ -6,7 +6,7 @@ import type { Database } from '../client/lib/database.types';
 // Load environment variables
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const siteUrl = 'https://neo-mag.rs';
+const siteUrl = process.env.VITE_SITE_URL || 'https://neo-mag.rs';
 
 if (!supabaseUrl || !supabaseServiceRoleKey) {
   console.log('Supabase credentials not configured. Skipping SSG generation.');
