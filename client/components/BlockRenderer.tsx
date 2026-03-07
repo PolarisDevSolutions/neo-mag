@@ -126,7 +126,7 @@ function RenderBlock({
     case "heading":             return <HeadingBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage || isPracticePage} />;
     case "paragraph":           return <ParagraphBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage || isPracticePage} />;
     case "bullets":             return <BulletsBlock block={block} isDiagnosticsPage={isDiagnosticsPage || isCenovnikPage || isPracticePage} />;
-    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isRoot={isRoot} isHomepage={isHomepage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} isPracticePage={isPracticePage} />;
+    case "cta":                 return <CTABlock block={block} globalPhone={globalPhone} isRoot={isRoot} isHomepage={isHomepage} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} isPracticePage={isPracticePage} />;
     case "image":               return <ImageBlock block={block} isRoot={isRoot} />;
     case "two-column":          return <TwoColumnBlock block={block} isPreview={isPreview} globalPhone={globalPhone} isHomepage={isHomepage} isAboutPage={isAboutPage} isDiagnosticsPage={isDiagnosticsPage} isKontaktPage={isKontaktPage} isCenovnikPage={isCenovnikPage} isPracticePage={isPracticePage} />;
     case "services-grid":       return <ServicesGridBlock block={block} isDiagnosticsPage={isDiagnosticsPage} />;
@@ -291,7 +291,7 @@ function BulletsBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBloc
 }
 
 // ── CTA ────────────────────────────────────────────────────────────────────
-function CTABlock({ block, globalPhone, isRoot = true, isHomepage = false, isDiagnosticsPage, isKontaktPage, isCenovnikPage, isPracticePage }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string; isRoot?: boolean; isHomepage?: boolean; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; isCenovnikPage?: boolean; isPracticePage?: boolean; }) {
+function CTABlock({ block, globalPhone, isRoot = true, isHomepage = false, isAboutPage = false, isDiagnosticsPage, isKontaktPage, isCenovnikPage, isPracticePage }: { block: Extract<ContentBlock, { type: "cta" }>; globalPhone: string; isRoot?: boolean; isHomepage?: boolean; isAboutPage?: boolean; isDiagnosticsPage?: boolean; isKontaktPage?: boolean; isCenovnikPage?: boolean; isPracticePage?: boolean; }) {
   const { settings } = useSiteSettings();
   const isOutline = block.variant === "outline";
   const phone = block.phoneType === "secondary" ? (settings.phone2Display || "065/3520-640") : globalPhone;
@@ -302,7 +302,7 @@ function CTABlock({ block, globalPhone, isRoot = true, isHomepage = false, isDia
   const isBoxed = isDiagnosticsPage || isKontaktPage || isCenovnikPage || isPracticePage;
 
   return (
-    <div className={`${(isHomepage && !isRoot) ? 'py-3' : 'max-w-[1200px] mx-auto w-[90%] py-10'} ${alignmentClass}`}>
+    <div className={`${((isHomepage || isAboutPage) && !isRoot) ? 'py-3' : 'max-w-[1200px] mx-auto w-[90%] py-10'} ${alignmentClass}`}>
       <div className={`${isBoxed ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm text-center' : ''}`}>
         {(block.heading || ((isDiagnosticsPage || isCenovnikPage || isPracticePage) && !block.heading)) && (
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">
