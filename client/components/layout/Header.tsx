@@ -35,7 +35,7 @@ export default function Header() {
           </Link>
 
           {/* ── Desktop navigation (flat — no dropdowns) ── */}
-          <nav className="hidden lg:flex items-center gap-8" aria-label="Glavna navigacija">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-8" aria-label="Glavna navigacija">
             {navItems.map((item) => (
               <DesktopNavLink key={item.label} item={item} />
             ))}
@@ -45,14 +45,14 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-3">
           <a
             href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
-            className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-semibold text-sm lg:px-3 xl:px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
           >
             <Phone className="h-4 w-4" />
             {phoneDisplay}
           </a>
           <a
             href={`tel:${phone2Display.replace(/\D/g, "")}`}
-            className="inline-flex items-center gap-2 bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 bg-white text-neo-blue border border-neo-blue font-outfit font-semibold text-sm lg:px-3 xl:px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors whitespace-nowrap"
           >
             <Smartphone className="h-4 w-4" />
             {phone2Display}
@@ -112,7 +112,7 @@ function DesktopNavLink({ item }: { item: NavItem }) {
     return (
       <Link
         to={href}
-        className={`relative font-outfit text-[15px] font-medium py-1 transition-colors duration-200 group ${
+        className={`relative font-outfit lg:text-[13px] xl:text-[15px] font-medium py-1 whitespace-nowrap transition-colors duration-200 group ${
           isActive ? "text-neo-blue" : "text-gray-700 hover:text-neo-blue"
         }`}
       >
@@ -127,7 +127,7 @@ function DesktopNavLink({ item }: { item: NavItem }) {
     <div className="relative group">
       <Link
         to={href}
-        className={`inline-flex items-center gap-1 font-outfit text-[15px] font-medium py-1 transition-colors duration-200 ${
+        className={`inline-flex items-center gap-1 font-outfit lg:text-[13px] xl:text-[15px] font-medium py-1 whitespace-nowrap transition-colors duration-200 ${
           isActive ? "text-neo-blue" : "text-gray-700 group-hover:text-neo-blue"
         }`}
       >
