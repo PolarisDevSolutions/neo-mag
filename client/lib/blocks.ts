@@ -21,7 +21,8 @@ export type ContentBlock =
   | SEOTextBlock
   | FAQBlock
   | LogoGridBlock
-  | InfoSectionBlock;
+  | InfoSectionBlock
+  | LogoStripBlock;
 
 export interface HeroBlock {
   type: "hero";
@@ -212,4 +213,11 @@ export interface InfoSectionBlock {
   secondaryCtaText?: string;
   secondaryCtaVariant?: "primary" | "outline" | "solid";
   secondaryCtaPhoneType?: "primary" | "secondary";
+}
+
+export interface LogoStripBlock {
+  type: "logo-strip";
+  heading?: string;
+  text?: string;
+  logos: Array<{ src: string; alt?: string }>;
 }

@@ -73,6 +73,7 @@ const BLOCK_TYPES = [
   { type: 'faq', label: 'FAQ', icon: HelpCircle },
   { type: 'logo-grid', label: 'Logo Grid', icon: Grid },
   { type: 'info-section', label: 'Info Section', icon: Info },
+  { type: 'logo-strip', label: 'Logo Strip (5 logos)', icon: Grid },
 ] as const;
 
 function getDefaultBlock(type: string): ContentBlock {
@@ -119,6 +120,19 @@ function getDefaultBlock(type: string): ContentBlock {
       return { type: 'logo-grid', heading: 'Our Partners', logos: [{ src: '/placeholder.svg', alt: 'Partner Logo' }] };
     case 'info-section':
       return { type: 'info-section', heading: 'Info Heading', text: 'Info text...' };
+    case 'logo-strip':
+      return {
+        type: 'logo-strip',
+        heading: 'Naši partneri',
+        text: '',
+        logos: [
+          { src: '', alt: '' },
+          { src: '', alt: '' },
+          { src: '', alt: '' },
+          { src: '', alt: '' },
+          { src: '', alt: '' },
+        ],
+      };
     default:
       return { type: 'paragraph', content: '' };
   }
@@ -881,6 +895,45 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </Button>
         </div>
       );
+
+    case 'logo-strip': {
+      const logoBlock = block as Extract<typeof block, { type: 'logo-strip' }>;
+      const logos = (logoBlock as any).logos || [];
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={(logoBlock as any).heading || ''} onChange={(e) => onUpdate({ heading: e.target.value } as any)} />
+          </div>
+          <div>
+            <Label>Text</Label>
+            <Input value={(logoBlock as any).text || ''} onChange={(e) => onUpdate({ text: e.target.value } as any)} />
+          </div>
+          {logos.map((logo: { src: string; alt?: string }, idx: number) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <Label>Logo {idx + 1}</Label>
+              <ImageUploader
+                value={logo.src}
+                onChange={(url) => {
+                  const newLogos = [...logos];
+                  newLogos[idx] = { ...newLogos[idx], src: url };
+                  onUpdate({ logos: newLogos } as any);
+                }}
+              />
+              <Input
+                placeholder="Alt Text"
+                value={logo.alt || ''}
+                onChange={(e) => {
+                  const newLogos = [...logos];
+                  newLogos[idx] = { ...newLogos[idx], alt: e.target.value };
+                  onUpdate({ logos: newLogos } as any);
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
 
     default:
       return <p className="text-gray-500">No editor available for this block type</p>;

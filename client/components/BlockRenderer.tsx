@@ -144,6 +144,7 @@ function RenderBlock({
     case "logo-grid":           return <LogoGridBlock block={block} />;
     case "map":                 return <MapBlock block={block} />;
     case "info-section":        return <InfoSectionBlock block={block} />;
+    case "logo-strip":          return <LogoStripRenderer block={block} />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -1035,6 +1036,41 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
         ) : (
           <div className="max-w-3xl mx-auto">
             {textContent}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Logo Strip ───────────────────────────────────────────────────────────────
+function LogoStripRenderer({ block }: { block: Extract<ContentBlock, { type: "logo-strip" }> }) {
+  const logos = (block.logos || []).filter((l: { src: string; alt?: string }) => l.src);
+  return (
+    <section className="bg-white border-b border-gray-100 py-12">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        {block.heading && (
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 text-center mb-4">
+            {block.heading}
+          </h2>
+        )}
+        {block.text && (
+          <p className="font-outfit text-base md:text-lg text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+            {block.text}
+          </p>
+        )}
+        {logos.length > 0 && (
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+            {logos.map((logo: { src: string; alt?: string }, i: number) => (
+              <div key={i} className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
+                <img
+                  src={logo.src}
+                  alt={logo.alt || ""}
+                  className="max-h-14 w-auto object-contain"
+                  loading="lazy"
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>
