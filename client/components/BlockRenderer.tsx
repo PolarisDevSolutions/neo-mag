@@ -1047,7 +1047,7 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
 function LogoStripRenderer({ block }: { block: Extract<ContentBlock, { type: "logo-strip" }> }) {
   const logos = (block.logos || []).filter((l: { src: string; alt?: string }) => l.src);
   return (
-    <section className="bg-white border-b border-gray-100 py-12">
+    <section className="bg-white border-b border-gray-100 pt-4 pb-10">
       <div className="max-w-[1200px] mx-auto w-[90%]">
         {block.heading && (
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 text-center mb-4">
@@ -1055,14 +1055,14 @@ function LogoStripRenderer({ block }: { block: Extract<ContentBlock, { type: "lo
           </h2>
         )}
         {block.text && (
-          <p className="font-outfit text-base md:text-lg text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+          <p className="font-outfit text-base md:text-lg text-gray-600 text-center mb-8 max-w-2xl mx-auto">
             {block.text}
           </p>
         )}
         {logos.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8 items-center">
             {logos.map((logo: { src: string; alt?: string }, i: number) => (
-              <div key={i} className="flex items-center justify-center h-16 px-4 grayscale hover:grayscale-0 transition-all duration-300">
+              <div key={i} className="flex items-center justify-center h-16 px-4">
                 <img
                   src={logo.src}
                   alt={logo.alt || ""}
