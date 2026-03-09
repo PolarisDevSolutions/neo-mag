@@ -21,12 +21,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
       <div className="max-w-[1200px] mx-auto w-[90%]">
-        <div className="flex items-center justify-between h-[70px] md:h-[80px]">
+        <div className="flex items-center justify-between h-[70px] lg:h-[80px]">
 
           {/* ── Logo ── */}
           <Link to="/" className="flex-shrink-0" onClick={() => setMobileOpen(false)}>
             {logoUrl ? (
-              <img src={logoUrl} alt={logoAlt} className="h-10 md:h-12 w-auto" width={160} height={48} />
+              <img src={logoUrl} alt={logoAlt} className="h-10 lg:h-12 w-auto" width={160} height={48} />
             ) : (
               <span className="font-outfit font-bold text-xl text-gray-900">
                 {settings.siteName || "NEO MAG"}
@@ -35,14 +35,14 @@ export default function Header() {
           </Link>
 
           {/* ── Desktop navigation (flat — no dropdowns) ── */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8" aria-label="Glavna navigacija">
+          <nav className="hidden lg:flex items-center gap-8" aria-label="Glavna navigacija">
             {navItems.map((item) => (
               <DesktopNavLink key={item.label} item={item} />
             ))}
           </nav>
 
           {/* ── Desktop CTA: phone only ── */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
           <a
             href={`tel:${phoneDisplay.replace(/\D/g, "")}`}
             className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-neo-blue-dark transition-colors whitespace-nowrap"
@@ -61,7 +61,7 @@ export default function Header() {
 
           {/* ── Mobile hamburger ── */}
           <button
-            className="md:hidden p-2 text-gray-700 hover:text-neo-blue transition-colors"
+            className="lg:hidden p-2 text-gray-700 hover:text-neo-blue transition-colors"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label={mobileOpen ? "Zatvori meni" : "Otvori meni"}
             aria-expanded={mobileOpen}
@@ -73,7 +73,7 @@ export default function Header() {
 
       {/* ── Mobile drawer ── */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
+        <div className="lg:hidden border-t border-gray-200 bg-white">
           <nav className="max-w-[1200px] mx-auto w-[90%] py-4 flex flex-col gap-1">
             {navItems.map((item) => (
               <MobileNavItem key={item.label} item={item} onClose={() => setMobileOpen(false)} />
