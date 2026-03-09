@@ -973,7 +973,7 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
           dangerouslySetInnerHTML={{ __html: text }}
         />
       )}
-      <div className="flex flex-wrap gap-4 mt-8">
+      <div className="flex flex-wrap gap-2 mt-8">
         {ctaText && (
           <a
             href={`tel:${phone.replace(/\D/g, "")}`}
