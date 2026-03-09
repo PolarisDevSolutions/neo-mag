@@ -302,7 +302,7 @@ function CTABlock({ block, globalPhone, isRoot = true, isHomepage = false, isAbo
   const isBoxed = isDiagnosticsPage || isKontaktPage || isCenovnikPage || isPracticePage;
 
   return (
-    <div className={`${((isHomepage || isAboutPage) && !isRoot) ? 'py-3' : 'max-w-[1200px] mx-auto w-[90%] py-10'} ${alignmentClass}`}>
+    <div className={`${((isHomepage || isAboutPage) && !isRoot) ? 'py-3' : isAboutPage ? 'max-w-[1200px] mx-auto w-[90%] py-4' : 'max-w-[1200px] mx-auto w-[90%] py-10'} ${alignmentClass}`}>
       <div className={`${isBoxed ? 'bg-neo-blue/5 border border-neo-blue/10 p-10 rounded-3xl shadow-sm text-center' : ''}`}>
         {(block.heading || ((isDiagnosticsPage || isCenovnikPage || isPracticePage) && !block.heading)) && (
           <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-6">
@@ -315,7 +315,7 @@ function CTABlock({ block, globalPhone, isRoot = true, isHomepage = false, isAbo
             dangerouslySetInnerHTML={{ __html: block.description }}
           />
         )}
-        <div className={`flex flex-col sm:flex-row gap-4 ${isBoxed || block.align === 'center' ? 'justify-center' : block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
+        <div className={`flex flex-col sm:flex-row gap-2 ${isBoxed || block.align === 'center' ? 'justify-center' : block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
           <a
             href={`tel:${phone.replace(/\D/g, "")}`}
             className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-outfit font-bold text-base transition-all hover:scale-105 active:scale-95 ${
