@@ -1,9 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
-import type { Page, ContentBlock } from "@/lib/database.types";
-import { defaultHomeContent } from "@site/lib/cms/homePageTypes";
-import type { HomePageContent } from "@site/lib/cms/homePageTypes";
+import type { Page } from "@/lib/database.types";
+import type { ContentBlock } from "@site/lib/blocks";
 import { defaultAboutContent } from "@site/lib/cms/aboutPageTypes";
 import type { AboutPageContent } from "@site/lib/cms/aboutPageTypes";
 import { defaultContactContent } from "@site/lib/cms/contactPageTypes";
@@ -36,8 +35,7 @@ import BlockEditor from "../../components/admin/BlockEditor";
 import BlockRenderer from "@site/components/BlockRenderer";
 import PageContentEditor from "../../components/admin/PageContentEditor";
 import ImageUploader from "../../components/admin/ImageUploader";
-import { clearPageCache } from "../../hooks/usePageContent";
-import type { PageKey } from "../../lib/pageContentTypes";
+import { clearCmsPageCache } from "@site/hooks/useCmsPage";
 import RevisionPanel, { createPageRevision } from "../../components/admin/RevisionPanel";
 import URLChangeRedirectModal from "../../components/admin/URLChangeRedirectModal";
 import type { PageRevision } from "@/lib/database.types";
@@ -74,6 +72,124 @@ function mergeWithDefaults<T extends Record<string, any>>(
   }
 
   return result as T;
+}
+
+/**
+ * Normalizes legacy content keys to the current structure.
+ * This ensures that existing CMS data is not lost when keys are renamed.
+ */
+function normalizeLegacyContent(pageKey: string, content: any): any {
+  if (!content) return content;
+
+  let normalized: any;
+
+  // Handle case where content is an array of blocks (legacy)
+  if (Array.isArray(content)) {
+    normalized = {};
+
+    // Map blocks to structured fields
+    content.forEach(block => {
+      if (block.type === 'hero') {
+        normalized.hero = {
+          h1Title: block.title || "",
+          headline: block.subtitle || "",
+          highlightedText: "",
+          phone: block.phone || "",
+          phoneLabel: "Pozovite nas"
+        };
+      } else if (block.type === 'services-grid' || block.type === 'practice-areas-grid') {
+        const items = block.services || block.areas || [];
+        normalized.practiceAreas = items.map((item: any) => ({
+          title: item.title || "",
+          image: item.image || item.src || "",
+          link: item.link || "/practice-areas"
+        }));
+      } else if (block.type === 'testimonials') {
+        normalized.testimonials = {
+          sectionLabel: "– Utisci",
+          heading: block.heading || "Šta kažu naši pacijenti",
+          items: (block.testimonials || []).map((t: any) => ({
+            text: t.text || "",
+            author: t.author || t.initials || "",
+            ratingImage: "/images/logos/rating-stars.png"
+          }))
+        };
+      } else if (block.type === 'google-reviews') {
+        normalized.googleReviews = {
+          sectionLabel: "– Google recenzije",
+          heading: block.heading || "Vaše mišljenje nam je važno",
+          reviews: (block.reviews || []).map((r: any) => ({
+            text: r.text || "",
+            author: r.author || "",
+            ratingImage: "/images/logos/rating-stars.png"
+          }))
+        };
+      } else if (block.type === 'faq') {
+        normalized.faq = {
+          heading: block.heading || "Često postavljana pitanja",
+          items: block.items || []
+        };
+      }
+    });
+  } else {
+    normalized = JSON.parse(JSON.stringify(content)); // Deep clone
+  }
+
+  if (pageKey === '/') {
+    // Hero mapping
+    if (normalized.hero) {
+      if (normalized.hero.title && !normalized.hero.h1Title) {
+        normalized.hero.h1Title = normalized.hero.title;
+      }
+      if (normalized.hero.subtitle && !normalized.hero.headline) {
+        normalized.hero.headline = normalized.hero.subtitle;
+      }
+    }
+
+    // Mission -> About mapping
+    if (normalized.mission && !normalized.about) {
+      normalized.about = {
+        heading: normalized.mission.heading || "",
+        description: Array.isArray(normalized.mission.paragraphs)
+          ? normalized.mission.paragraphs.join('\n\n')
+          : (typeof normalized.mission.paragraphs === 'string' ? normalized.mission.paragraphs : ""),
+        attorneyImage: normalized.mission.image || "",
+        features: [],
+        stats: []
+      };
+    }
+
+    // Services -> PracticeAreas mapping
+    if (normalized.services && !normalized.practiceAreas) {
+      normalized.practiceAreas = (normalized.services.items || []).map((item: any) => ({
+        title: item.title || "",
+        icon: item.icon || "Car",
+        image: "",
+        link: "/practice-areas"
+      }));
+    }
+  }
+
+  if (pageKey === '/about') {
+    if (normalized.hero) {
+      if (normalized.hero.title && !normalized.hero.sectionLabel) {
+        normalized.hero.sectionLabel = normalized.hero.title;
+      }
+    }
+    if (normalized.story && !normalized.story.paragraphs && normalized.story.content) {
+       normalized.story.paragraphs = [normalized.story.content];
+    }
+  }
+
+  if (pageKey === '/contact' || pageKey === '/practice-areas') {
+    if (normalized.hero) {
+      if (normalized.hero.title && !normalized.hero.sectionLabel) {
+        normalized.hero.sectionLabel = normalized.hero.title;
+      }
+    }
+  }
+
+  return normalized;
 }
 
 export default function AdminPageEdit() {
@@ -164,10 +280,8 @@ export default function AdminPageEdit() {
       console.error("Error saving page:", error);
       alert("Failed to save page: " + error.message);
     } else {
-      // Clear the page cache so the frontend fetches fresh content
-      if (page.url_path === "/" || page.url_path === "/about" || page.url_path === "/contact" || page.url_path === "/practice-areas") {
-        clearPageCache(page.url_path as PageKey);
-      }
+      // Clear the frontend page cache so the next visit fetches fresh content
+      clearCmsPageCache(page.url_path);
       // Update tracking state after successful save
       setOriginalUrlPath(page.url_path);
       setPreviousStatus(page.status);
@@ -183,7 +297,7 @@ export default function AdminPageEdit() {
   };
 
   const handleContentChange = (content: ContentBlock[]) => {
-    updatePage({ content });
+    updatePage({ content: content as unknown as ContentBlock[] });
   };
 
   const handleRestoreRevision = (revision: PageRevision) => {
@@ -218,37 +332,35 @@ export default function AdminPageEdit() {
   };
 
   // Check if this is a structured page (main site pages)
+  // Note: "/" (homepage) uses BlockEditor via ContentBlock[] format, not HomePageEditor
   const isStructuredPage =
     page?.url_path &&
-    ["/", "/about", "/contact", "/practice-areas"].includes(page.url_path);
+    ["/about", "/contact", "/practice-areas"].includes(page.url_path);
 
   // Normalize content by merging with defaults based on page type
   const normalizedContent = useMemo(() => {
     if (!isStructuredPage || !page?.content) return page?.content;
 
+    const legacyNormalized = normalizeLegacyContent(page.url_path, page.content);
+
     switch (page.url_path) {
-      case '/':
-        return mergeWithDefaults(
-          page.content as unknown as Partial<HomePageContent>,
-          defaultHomeContent
-        );
       case '/about':
         return mergeWithDefaults(
-          page.content as unknown as Partial<AboutPageContent>,
+          legacyNormalized as Partial<AboutPageContent>,
           defaultAboutContent
         );
       case '/contact':
         return mergeWithDefaults(
-          page.content as unknown as Partial<ContactPageContent>,
+          legacyNormalized as Partial<ContactPageContent>,
           defaultContactContent
         );
       case '/practice-areas':
         return mergeWithDefaults(
-          page.content as unknown as Partial<PracticeAreasPageContent>,
+          legacyNormalized as Partial<PracticeAreasPageContent>,
           defaultPracticeAreasContent
         );
       default:
-        return page.content;
+        return legacyNormalized;
     }
   }, [page?.content, page?.url_path, isStructuredPage]);
 
@@ -357,7 +469,7 @@ export default function AdminPageEdit() {
                 </CardHeader>
                 <CardContent>
                   <BlockEditor
-                    content={page.content}
+                    content={(page.content as ContentBlock[]) || []}
                     onChange={handleContentChange}
                   />
                 </CardContent>
@@ -381,7 +493,7 @@ export default function AdminPageEdit() {
                   id="metaTitle"
                   value={page.meta_title || ""}
                   onChange={(e) => updatePage({ meta_title: e.target.value })}
-                  placeholder="Page Title | Silva Trial Lawyers"
+                  placeholder="Page Title | NEO MAG"
                 />
                 <p className="text-sm text-gray-500">
                   {(page.meta_title || "").length}/60 characters recommended
@@ -413,7 +525,7 @@ export default function AdminPageEdit() {
                   onChange={(e) =>
                     updatePage({ canonical_url: e.target.value })
                   }
-                  placeholder="https://silvatriallawyers.com/page"
+                  placeholder="https://neo-mag.rs/page"
                 />
               </div>
 
@@ -489,11 +601,11 @@ export default function AdminPageEdit() {
                     <SelectValue placeholder="Select schema type..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="LocalBusiness">
-                      Local Business
+                    <SelectItem value="MedicalClinic">
+                      Medical Clinic
                     </SelectItem>
-                    <SelectItem value="Attorney">Attorney</SelectItem>
-                    <SelectItem value="LegalService">Legal Service</SelectItem>
+                    <SelectItem value="Physician">Physician</SelectItem>
+                    <SelectItem value="MedicalService">Medical Service</SelectItem>
                     <SelectItem value="WebPage">Web Page</SelectItem>
                     <SelectItem value="AboutPage">About Page</SelectItem>
                     <SelectItem value="ContactPage">Contact Page</SelectItem>
@@ -522,7 +634,7 @@ export default function AdminPageEdit() {
                         // Allow typing invalid JSON temporarily
                       }
                     }}
-                    placeholder='{"name": "Silva Trial Lawyers", "telephone": "404-905-7742"}'
+                    placeholder='{"name": "NEO MAG Niš", "telephone": "+381 18 520 640"}'
                     rows={6}
                     className="font-mono text-sm"
                   />
@@ -635,7 +747,7 @@ export default function AdminPageEdit() {
             </CardHeader>
             <CardContent>
               <div className="border rounded-lg overflow-hidden bg-white">
-                <BlockRenderer content={page.content} isPreview={true} />
+                <BlockRenderer content={page.content as ContentBlock[]} isPreview={true} />
               </div>
             </CardContent>
           </Card>

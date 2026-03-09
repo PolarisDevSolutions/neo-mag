@@ -1,10 +1,16 @@
 // TypeScript interfaces for global site settings (Header/Footer CMS)
 
+export interface NavigationChildItem {
+  label: string;
+  href: string;
+}
+
 export interface NavigationItem {
   label: string;
   href: string;
   order?: number;
   openInNewTab?: boolean;
+  children?: NavigationChildItem[];
 }
 
 export interface FooterLink {
@@ -104,12 +110,12 @@ export interface SiteSettingsRow {
 
 // Default values matching current hardcoded content
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  siteName: "Silva Trial Lawyers",
+  siteName: "Neo Mag",
   logoUrl:
     "",
   logoAlt: "",
-  phoneNumber: "4049057742",
-  phoneDisplay: "404-905-7742",
+  phoneNumber: "018520640",
+  phoneDisplay: "018 520 640",
   phoneAvailability: "Available 24/7",
   applyPhoneGlobally: true,
   headerCtaText: "",
@@ -117,13 +123,13 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   navigationItems: [
   ],
   footerAboutLinks: [
-    
+
   ],
   footerPracticeLinks: [
-   
+
   ],
-  addressLine1: "4120 Presidential Parkway, Suite 200",
-  addressLine2: "Atlanta, Georgia 30340",
+  addressLine1: "Bulevar Nemanjića 14a",
+  addressLine2: "Niš, Srbija",
   mapEmbedUrl:
     "",
   socialLinks: [

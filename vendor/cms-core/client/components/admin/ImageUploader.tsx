@@ -181,7 +181,26 @@ try {
   )}
 
   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-    ...
+    <Button
+      type="button"
+      variant="secondary"
+      size="sm"
+      onClick={() => inputRef.current?.click()}
+      className="h-8"
+    >
+      <Upload className="h-4 w-4 mr-2" />
+      Replace
+    </Button>
+    <Button
+      type="button"
+      variant="destructive"
+      size="sm"
+      onClick={handleRemove}
+      className="h-8"
+    >
+      <X className="h-4 w-4 mr-2" />
+      Remove
+    </Button>
   </div>
 </div>
           <p className="text-xs text-gray-500 mt-1 truncate">{value}</p>

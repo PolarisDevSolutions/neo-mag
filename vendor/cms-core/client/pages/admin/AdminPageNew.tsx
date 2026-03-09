@@ -72,7 +72,7 @@ export default function AdminPageNew() {
       url_path: urlPath,
       page_type: pageType,
       content: selectedTemplate?.default_content || [],
-      meta_title: selectedTemplate?.default_meta_title?.replace('[Page Title]', title) || `${title} | Silva Trial Lawyers`,
+      meta_title: selectedTemplate?.default_meta_title?.replace('[Page Title]', title) || `${title} | NEO MAG`,
       meta_description: selectedTemplate?.default_meta_description || '',
       status: 'draft' as const,
       noindex: false,
@@ -135,7 +135,7 @@ export default function AdminPageNew() {
                 id="title"
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder="e.g., Car Accident Lawyers"
+                placeholder="e.g., Magnetna Rezonanca"
                 required
               />
             </div>
@@ -146,7 +146,7 @@ export default function AdminPageNew() {
                 id="urlPath"
                 value={urlPath}
                 onChange={(e) => setUrlPath(e.target.value)}
-                placeholder="/car-accident-lawyers"
+                placeholder="/magnetna-rezonanca"
                 required
               />
               <p className="text-sm text-gray-500">

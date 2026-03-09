@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import type {
   SiteSettings,
   NavigationItem,
+  NavigationChildItem,
   FooterLink,
   SocialLink,
   SiteSettingsRow,
@@ -44,6 +45,7 @@ import {
   BarChart3,
   Code,
   AlertTriangle,
+  ChevronDown,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useUserRole } from "../../hooks/useUserRole";
@@ -68,7 +70,6 @@ export default function AdminSiteSettings() {
 
     if (error) {
       console.error("Error fetching settings:", error);
-      // Use defaults if not found
       setLoading(false);
       return;
     }
@@ -87,14 +88,12 @@ export default function AdminSiteSettings() {
 
     let error;
     if (settingsId) {
-      // Update existing
       const result = await supabase
         .from("site_settings")
         .update(rowData)
         .eq("id", settingsId);
       error = result.error;
     } else {
-      // Insert new
       const result = await supabase
         .from("site_settings")
         .insert({ ...rowData, settings_key: "global" });
@@ -105,7 +104,6 @@ export default function AdminSiteSettings() {
       console.error("Error saving settings:", error);
       alert("Failed to save settings: " + error.message);
     } else {
-      // Clear the cache so components refetch
       clearSiteSettingsCache();
       alert("Settings saved successfully!");
     }
@@ -135,6 +133,41 @@ export default function AdminSiteSettings() {
 
   const removeNavItem = (index: number) => {
     const items = settings.navigationItems.filter((_, i) => i !== index);
+    updateSettings({ navigationItems: items });
+  };
+
+  // Dropdown child handlers
+  const addChildItem = (parentIndex: number) => {
+    const items = [...settings.navigationItems];
+    const existing = items[parentIndex].children || [];
+    items[parentIndex] = {
+      ...items[parentIndex],
+      children: [...existing, { label: "", href: "/" }],
+    };
+    updateSettings({ navigationItems: items });
+  };
+
+  const updateChildItem = (
+    parentIndex: number,
+    childIndex: number,
+    updates: Partial<NavigationChildItem>,
+  ) => {
+    const items = [...settings.navigationItems];
+    const children = [...(items[parentIndex].children || [])];
+    children[childIndex] = { ...children[childIndex], ...updates };
+    items[parentIndex] = { ...items[parentIndex], children };
+    updateSettings({ navigationItems: items });
+  };
+
+  const removeChildItem = (parentIndex: number, childIndex: number) => {
+    const items = [...settings.navigationItems];
+    const children = (items[parentIndex].children || []).filter(
+      (_, i) => i !== childIndex,
+    );
+    items[parentIndex] = {
+      ...items[parentIndex],
+      children: children.length > 0 ? children : undefined,
+    };
     updateSettings({ navigationItems: items });
   };
 
@@ -367,49 +400,112 @@ export default function AdminSiteSettings() {
             <CardHeader>
               <CardTitle>Navigation Menu</CardTitle>
               <CardDescription>
-                Links displayed in the header navigation bar
+                Links displayed in the header navigation bar. Use "Add dropdown
+                item" to create nested dropdown menus under any nav item.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {settings.navigationItems.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                  className="border border-gray-200 rounded-lg overflow-hidden"
                 >
-                  <GripVertical className="h-5 w-5 text-gray-400 cursor-move" />
-                  <div className="flex-1 grid grid-cols-3 gap-3">
-                    <Input
-                      value={item.label}
-                      onChange={(e) =>
-                        updateNavItem(index, { label: e.target.value })
-                      }
-                      placeholder="Label"
-                    />
-                    <Input
-                      value={item.href}
-                      onChange={(e) =>
-                        updateNavItem(index, { href: e.target.value })
-                      }
-                      placeholder="/page-url"
-                    />
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={item.openInNewTab || false}
-                        onCheckedChange={(checked) =>
-                          updateNavItem(index, { openInNewTab: checked })
+                  {/* Parent nav item row */}
+                  <div className="flex items-center gap-3 p-3 bg-gray-50">
+                    <GripVertical className="h-5 w-5 text-gray-400 cursor-move flex-shrink-0" />
+                    <div className="flex-1 grid grid-cols-3 gap-3">
+                      <Input
+                        value={item.label}
+                        onChange={(e) =>
+                          updateNavItem(index, { label: e.target.value })
                         }
+                        placeholder="Label"
                       />
-                      <span className="text-sm text-gray-500">New tab</span>
+                      <Input
+                        value={item.href}
+                        onChange={(e) =>
+                          updateNavItem(index, { href: e.target.value })
+                        }
+                        placeholder="/page-url"
+                      />
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={item.openInNewTab || false}
+                          onCheckedChange={(checked) =>
+                            updateNavItem(index, { openInNewTab: checked })
+                          }
+                        />
+                        <span className="text-sm text-gray-500">New tab</span>
+                      </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeNavItem(index)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeNavItem(index)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+
+                  {/* Dropdown children */}
+                  {(item.children && item.children.length > 0) && (
+                    <div className="bg-white border-t border-gray-200 px-4 py-3 space-y-2">
+                      <div className="flex items-center gap-1 text-xs font-medium text-gray-500 mb-2">
+                        <ChevronDown className="h-3 w-3" />
+                        Dropdown items
+                      </div>
+                      {item.children.map((child, childIndex) => (
+                        <div
+                          key={childIndex}
+                          className="flex items-center gap-2 pl-4"
+                        >
+                          <div className="grid grid-cols-2 gap-2 flex-1">
+                            <Input
+                              value={child.label}
+                              onChange={(e) =>
+                                updateChildItem(index, childIndex, {
+                                  label: e.target.value,
+                                })
+                              }
+                              placeholder="Label"
+                              className="text-sm h-8"
+                            />
+                            <Input
+                              value={child.href}
+                              onChange={(e) =>
+                                updateChildItem(index, childIndex, {
+                                  href: e.target.value,
+                                })
+                              }
+                              placeholder="/page-url"
+                              className="text-sm h-8"
+                            />
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeChildItem(index, childIndex)}
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50 h-8 w-8 p-0 flex-shrink-0"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add dropdown item button */}
+                  <div className={`px-4 py-2 bg-white ${item.children && item.children.length > 0 ? "border-t border-gray-100" : "border-t border-gray-200"}`}>
+                    <button
+                      type="button"
+                      onClick={() => addChildItem(index)}
+                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium py-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Add dropdown item
+                    </button>
+                  </div>
                 </div>
               ))}
               <Button variant="outline" onClick={addNavItem} className="w-full">

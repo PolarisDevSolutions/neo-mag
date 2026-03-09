@@ -6,10 +6,9 @@ import type {
   PageRow,
 } from "../lib/pageContentTypes";
 
-// Supabase configuration
-const SUPABASE_URL = "https://frncxsyzrtzwswnmbvtn.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZybmN4c3l6cnR6d3N3bm1idnRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNDQ3MjYsImV4cCI6MjA4NTYyMDcyNn0.0qim3QrVOvjxTioWxzV1haFwWaM4TWLrplMOQ86dH0U";
+// Use environment variables — the vendor file hardcoded a different Supabase project
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 interface UsePageContentResult<T> {
   content: T | null;

@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import type { ContentBlock } from '../../lib/database.types';
+import type { ContentBlock } from '@site/lib/blocks';
+import RichTextEditor from './RichTextEditor';
+import ImageUploader from './ImageUploader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +32,12 @@ import {
   MapPin,
   Columns,
   FileText,
+  Star,
+  BarChart2,
+  Search,
+  HelpCircle,
+  Info,
+  Layers,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -57,6 +65,14 @@ const BLOCK_TYPES = [
   { type: 'map', label: 'Map', icon: MapPin },
   { type: 'two-column', label: 'Two Columns', icon: Columns },
   { type: 'practice-areas-grid', label: 'Practice Areas Grid', icon: Grid },
+  { type: 'google-reviews', label: 'Google Reviews', icon: Star },
+  { type: 'stats', label: 'Stats', icon: BarChart2 },
+  { type: 'reviews-slider', label: 'Reviews Slider', icon: MessageSquare },
+  { type: 'tabs-section', label: 'Tabs Section', icon: Layers },
+  { type: 'seo-text', label: 'SEO Text', icon: Search },
+  { type: 'faq', label: 'FAQ', icon: HelpCircle },
+  { type: 'logo-grid', label: 'Logo Grid', icon: Grid },
+  { type: 'info-section', label: 'Info Section', icon: Info },
 ] as const;
 
 function getDefaultBlock(type: string): ContentBlock {
@@ -70,11 +86,11 @@ function getDefaultBlock(type: string): ContentBlock {
     case 'bullets':
       return { type: 'bullets', items: ['Item 1', 'Item 2', 'Item 3'] };
     case 'cta':
-      return { type: 'cta', text: 'Call Us Today', phone: '404-905-7742', variant: 'primary' };
+      return { type: 'cta', text: 'Call Us Today', variant: 'primary' };
     case 'image':
       return { type: 'image', src: '/placeholder.svg', alt: 'Image description' };
     case 'attorney-bio':
-      return { type: 'attorney-bio', name: 'Attorney Name', title: 'Title', image: '/placeholder.svg', bio: 'Attorney bio...', phone: '404-905-7742' };
+      return { type: 'attorney-bio', name: 'Attorney Name', title: 'Title', image: '/placeholder.svg', bio: 'Attorney bio...' };
     case 'services-grid':
       return { type: 'services-grid', services: [{ icon: 'Car', title: 'Service Title', description: 'Service description' }] };
     case 'testimonials':
@@ -87,6 +103,22 @@ function getDefaultBlock(type: string): ContentBlock {
       return { type: 'two-column', left: [], right: [] };
     case 'practice-areas-grid':
       return { type: 'practice-areas-grid', areas: [{ icon: 'Car', title: 'Practice Area', description: 'Description' }] };
+    case 'google-reviews':
+      return { type: 'google-reviews', heading: 'What Our Clients Say', reviews: [{ author: 'John Doe', rating: 5, text: 'Excellent service!' }] };
+    case 'stats':
+      return { type: 'stats', stats: [{ value: '100+', label: 'Cases Won' }] };
+    case 'reviews-slider':
+      return { type: 'reviews-slider', heading: 'Our Reviews' };
+    case 'tabs-section':
+      return { type: 'tabs-section', heading: 'More Information', tabs: [{ label: 'Tab 1', contentHeading: 'Tab Heading', paragraphs: 'Tab content...' }] };
+    case 'seo-text':
+      return { type: 'seo-text', heading: 'SEO Heading', paragraphs: 'SEO content...' };
+    case 'faq':
+      return { type: 'faq', heading: 'Frequently Asked Questions', items: [{ question: 'Question?', answer: 'Answer.' }] };
+    case 'logo-grid':
+      return { type: 'logo-grid', heading: 'Our Partners', logos: [{ src: '/placeholder.svg', alt: 'Partner Logo' }] };
+    case 'info-section':
+      return { type: 'info-section', heading: 'Info Heading', text: 'Info text...' };
     default:
       return { type: 'paragraph', content: '' };
   }
@@ -227,16 +259,26 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </div>
           <div>
             <Label>Subtitle</Label>
-            <Input value={block.subtitle || ''} onChange={(e) => onUpdate({ subtitle: e.target.value })} />
+            <RichTextEditor
+              content={block.subtitle || ''}
+              onChange={(val) => onUpdate({ subtitle: val })}
+              placeholder="Hero subtitle text..."
+            />
           </div>
           <div>
-            <Label>Background Image URL</Label>
-            <Input value={block.backgroundImage || ''} onChange={(e) => onUpdate({ backgroundImage: e.target.value })} />
+            <Label>Background Image</Label>
+            <ImageUploader value={block.backgroundImage || ''} onChange={(url) => onUpdate({ backgroundImage: url })} />
           </div>
           <div className="flex items-center gap-2">
             <Switch checked={block.showCTA || false} onCheckedChange={(checked) => onUpdate({ showCTA: checked })} />
             <Label>Show Call-to-Action Button</Label>
           </div>
+          {block.showCTA && (
+            <div>
+              <Label>CTA Button Text</Label>
+              <Input value={block.ctaText || ''} onChange={(e) => onUpdate({ ctaText: e.target.value })} />
+            </div>
+          )}
         </div>
       );
 
@@ -265,12 +307,12 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
 
     case 'paragraph':
       return (
-        <div>
-          <Label>Content (HTML supported)</Label>
-          <Textarea
-            value={block.content}
-            onChange={(e) => onUpdate({ content: e.target.value })}
-            rows={4}
+        <div className="space-y-2">
+          <Label>Content</Label>
+          <RichTextEditor
+            content={block.content}
+            onChange={(content) => onUpdate({ content })}
+            placeholder="Enter paragraph content..."
           />
         </div>
       );
@@ -295,8 +337,15 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
             <Input value={block.text} onChange={(e) => onUpdate({ text: e.target.value })} />
           </div>
           <div>
-            <Label>Phone Number</Label>
-            <Input value={block.phone} onChange={(e) => onUpdate({ phone: e.target.value })} />
+            <Label>Phone Type</Label>
+            <Select value={block.phoneType || 'primary'} onValueChange={(v) => onUpdate({ phoneType: v as 'primary' | 'secondary' })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="primary">Primary Phone</SelectItem>
+                <SelectItem value="secondary">Secondary Phone</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-400 mt-1">Phone numbers are managed in Site Settings</p>
           </div>
           <div>
             <Label>Style</Label>
@@ -317,8 +366,8 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
       return (
         <div className="space-y-4">
           <div>
-            <Label>Image URL</Label>
-            <Input value={block.src} onChange={(e) => onUpdate({ src: e.target.value })} />
+            <Label>Image</Label>
+            <ImageUploader value={block.src} onChange={(url) => onUpdate({ src: url })} />
           </div>
           <div>
             <Label>Alt Text</Label>
@@ -339,25 +388,35 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
             <Input value={block.title} onChange={(e) => onUpdate({ title: e.target.value })} />
           </div>
           <div>
-            <Label>Image URL</Label>
-            <Input value={block.image} onChange={(e) => onUpdate({ image: e.target.value })} />
+            <Label>Image</Label>
+            <ImageUploader value={block.image} onChange={(url) => onUpdate({ image: url })} />
           </div>
           <div>
             <Label>Bio</Label>
-            <Textarea value={block.bio} onChange={(e) => onUpdate({ bio: e.target.value })} rows={4} />
-          </div>
-          <div>
-            <Label>Phone</Label>
-            <Input value={block.phone} onChange={(e) => onUpdate({ phone: e.target.value })} />
+            <RichTextEditor
+              content={block.bio}
+              onChange={(bio) => onUpdate({ bio })}
+              placeholder="Attorney biography..."
+            />
           </div>
         </div>
       );
 
     case 'contact-form':
       return (
-        <div>
-          <Label>Heading</Label>
-          <Input value={block.heading ?? ""} onChange={(e) => onUpdate({ heading: e.target.value })} />
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading ?? ""} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          <div>
+            <Label>Description</Label>
+            <Input value={block.description ?? ""} onChange={(e) => onUpdate({ description: e.target.value })} />
+          </div>
+          <div>
+            <Label>Form Image</Label>
+            <ImageUploader value={block.image || ''} onChange={(url) => onUpdate({ image: url })} />
+          </div>
         </div>
       );
 
@@ -370,11 +429,23 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
       );
 
     case 'services-grid':
-    case 'practice-areas-grid':
+    case 'practice-areas-grid': {
       const items = block.type === 'services-grid' ? block.services : block.areas;
       const itemKey = block.type === 'services-grid' ? 'services' : 'areas';
       return (
         <div className="space-y-4">
+          {block.type === 'services-grid' && (
+            <>
+              <div>
+                <Label>Heading</Label>
+                <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+              </div>
+              <div>
+                <Label>Subtext</Label>
+                <Input value={(block as any).subtext || ''} onChange={(e) => onUpdate({ subtext: e.target.value } as any)} />
+              </div>
+            </>
+          )}
           {items.map((item, idx) => (
             <div key={idx} className="p-4 border rounded-lg space-y-2">
               <div className="flex justify-between items-center">
@@ -406,15 +477,29 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
                   onUpdate({ [itemKey]: newItems });
                 }}
               />
-              <Textarea
-                placeholder="Description"
-                value={item.description}
-                onChange={(e) => {
-                  const newItems = [...items];
-                  newItems[idx] = { ...newItems[idx], description: e.target.value };
-                  onUpdate({ [itemKey]: newItems });
-                }}
-              />
+              {block.type === 'services-grid' && (
+                <Input
+                  placeholder="Link (e.g., /services/example)"
+                  value={(item as any).link || ''}
+                  onChange={(e) => {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], link: e.target.value };
+                    onUpdate({ [itemKey]: newItems });
+                  }}
+                />
+              )}
+              <div className="space-y-1">
+                <Label className="text-xs text-gray-400 uppercase tracking-wider">Description</Label>
+                <RichTextEditor
+                  placeholder="Description"
+                  content={item.description}
+                  onChange={(desc) => {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], description: desc };
+                    onUpdate({ [itemKey]: newItems });
+                  }}
+                />
+              </div>
             </div>
           ))}
           <Button
@@ -426,66 +511,373 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </Button>
         </div>
       );
+    }
+
+    case 'google-reviews':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          {block.reviews.map((review, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Review {idx + 1}</Label>
+                <Button variant="ghost" size="sm" onClick={() => onUpdate({ reviews: block.reviews.filter((_, i) => i !== idx) })} className="text-red-500">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input placeholder="Author" value={review.author} onChange={(e) => {
+                const newReviews = [...block.reviews];
+                newReviews[idx] = { ...newReviews[idx], author: e.target.value };
+                onUpdate({ reviews: newReviews });
+              }} />
+              <Input type="number" min="1" max="5" placeholder="Rating" value={review.rating} onChange={(e) => {
+                const newReviews = [...block.reviews];
+                newReviews[idx] = { ...newReviews[idx], rating: Number(e.target.value) };
+                onUpdate({ reviews: newReviews });
+              }} />
+              <Textarea placeholder="Review text" value={review.text} onChange={(e) => {
+                const newReviews = [...block.reviews];
+                newReviews[idx] = { ...newReviews[idx], text: e.target.value };
+                onUpdate({ reviews: newReviews });
+              }} />
+            </div>
+          ))}
+          <Button variant="outline" onClick={() => onUpdate({ reviews: [...block.reviews, { author: '', rating: 5, text: '' }] })}>
+            <Plus className="h-4 w-4 mr-2" /> Add Review
+          </Button>
+        </div>
+      );
+
+    case 'stats':
+      return (
+        <div className="space-y-4">
+          {block.stats.map((stat, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Stat {idx + 1}</Label>
+                <Button variant="ghost" size="sm" onClick={() => onUpdate({ stats: block.stats.filter((_, i) => i !== idx) })} className="text-red-500">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input placeholder="Value (e.g. 100+)" value={stat.value} onChange={(e) => {
+                const newStats = [...block.stats];
+                newStats[idx] = { ...newStats[idx], value: e.target.value };
+                onUpdate({ stats: newStats });
+              }} />
+              <Input placeholder="Label (e.g. Cases Won)" value={stat.label} onChange={(e) => {
+                const newStats = [...block.stats];
+                newStats[idx] = { ...newStats[idx], label: e.target.value };
+                onUpdate({ stats: newStats });
+              }} />
+            </div>
+          ))}
+          <Button variant="outline" onClick={() => onUpdate({ stats: [...block.stats, { value: '', label: '' }] })}>
+            <Plus className="h-4 w-4 mr-2" /> Add Stat
+          </Button>
+        </div>
+      );
+
+    case 'reviews-slider':
+      return (
+        <div>
+          <Label>Heading</Label>
+          <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+        </div>
+      );
+
+    case 'tabs-section':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          {block.tabs.map((tab, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Tab {idx + 1}</Label>
+                <Button variant="ghost" size="sm" onClick={() => onUpdate({ tabs: block.tabs.filter((_, i) => i !== idx) })} className="text-red-500">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input placeholder="Tab Label" value={tab.label} onChange={(e) => {
+                const newTabs = [...block.tabs];
+                newTabs[idx] = { ...newTabs[idx], label: e.target.value };
+                onUpdate({ tabs: newTabs });
+              }} />
+              <Input placeholder="Content Heading" value={tab.contentHeading} onChange={(e) => {
+                const newTabs = [...block.tabs];
+                newTabs[idx] = { ...newTabs[idx], contentHeading: e.target.value };
+                onUpdate({ tabs: newTabs });
+              }} />
+              <RichTextEditor content={tab.paragraphs} onChange={(val) => {
+                const newTabs = [...block.tabs];
+                newTabs[idx] = { ...newTabs[idx], paragraphs: val };
+                onUpdate({ tabs: newTabs });
+              }} />
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-wider">Bullet Points (one per line)</Label>
+                <Textarea
+                  value={(tab.bullets || []).join('\n')}
+                  onChange={(e) => {
+                    const newTabs = [...block.tabs];
+                    newTabs[idx] = { ...newTabs[idx], bullets: e.target.value.split('\n') };
+                    onUpdate({ tabs: newTabs });
+                  }}
+                  rows={3}
+                  placeholder="Enter each bullet point on a new line"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-gray-400 uppercase tracking-wider">CTA Text</Label>
+                  <Input placeholder="Button text" value={tab.ctaText || ''} onChange={(e) => {
+                    const newTabs = [...block.tabs];
+                    newTabs[idx] = { ...newTabs[idx], ctaText: e.target.value };
+                    onUpdate({ tabs: newTabs });
+                  }} />
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-400 uppercase tracking-wider">CTA URL</Label>
+                  <Input placeholder="/page-link" value={tab.ctaUrl || ''} onChange={(e) => {
+                    const newTabs = [...block.tabs];
+                    newTabs[idx] = { ...newTabs[idx], ctaUrl: e.target.value };
+                    onUpdate({ tabs: newTabs });
+                  }} />
+                </div>
+              </div>
+            </div>
+          ))}
+          <Button variant="outline" onClick={() => onUpdate({ tabs: [...block.tabs, { label: '', contentHeading: '', paragraphs: '' }] })}>
+            <Plus className="h-4 w-4 mr-2" /> Add Tab
+          </Button>
+        </div>
+      );
+
+    case 'seo-text':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          <div>
+            <Label>Content</Label>
+            <RichTextEditor content={block.paragraphs} onChange={(val) => onUpdate({ paragraphs: val })} />
+          </div>
+          <div>
+            <Label>Bullet Points (one per line)</Label>
+            <Textarea
+              value={(block.bullets || []).join('\n')}
+              onChange={(e) => onUpdate({ bullets: e.target.value.split('\n') })}
+              rows={4}
+              placeholder="Enter each bullet point on a new line"
+            />
+          </div>
+          <div>
+            <Label>Image</Label>
+            <ImageUploader value={block.imageUrl || ''} onChange={(url) => onUpdate({ imageUrl: url })} />
+          </div>
+          <div>
+            <Label>Image Alt</Label>
+            <Input value={block.imageAlt || ''} onChange={(e) => onUpdate({ imageAlt: e.target.value })} />
+          </div>
+          <div>
+            <Label>Image Position</Label>
+            <Select value={block.imagePosition || 'right'} onValueChange={(v) => onUpdate({ imagePosition: v as 'left' | 'right' })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Left</SelectItem>
+                <SelectItem value="right">Right</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      );
+
+    case 'faq':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          {block.items.map((item, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>FAQ Item {idx + 1}</Label>
+                <Button variant="ghost" size="sm" onClick={() => onUpdate({ items: block.items.filter((_, i) => i !== idx) })} className="text-red-500">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input placeholder="Question" value={item.question} onChange={(e) => {
+                const newItems = [...block.items];
+                newItems[idx] = { ...newItems[idx], question: e.target.value };
+                onUpdate({ items: newItems });
+              }} />
+              <RichTextEditor content={item.answer} onChange={(val) => {
+                const newItems = [...block.items];
+                newItems[idx] = { ...newItems[idx], answer: val };
+                onUpdate({ items: newItems });
+              }} />
+            </div>
+          ))}
+          <Button variant="outline" onClick={() => onUpdate({ items: [...block.items, { question: '', answer: '' }] })}>
+            <Plus className="h-4 w-4 mr-2" /> Add FAQ
+          </Button>
+        </div>
+      );
+
+    case 'logo-grid':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          {block.logos.map((logo, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Logo {idx + 1}</Label>
+                <Button variant="ghost" size="sm" onClick={() => onUpdate({ logos: block.logos.filter((_, i) => i !== idx) })} className="text-red-500">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <ImageUploader value={logo.src} onChange={(url) => {
+                const newLogos = [...block.logos];
+                newLogos[idx] = { ...newLogos[idx], src: url };
+                onUpdate({ logos: newLogos });
+              }} />
+              <Input placeholder="Alt Text" value={logo.alt || ''} onChange={(e) => {
+                const newLogos = [...block.logos];
+                newLogos[idx] = { ...newLogos[idx], alt: e.target.value };
+                onUpdate({ logos: newLogos });
+              }} />
+            </div>
+          ))}
+          <Button variant="outline" onClick={() => onUpdate({ logos: [...block.logos, { src: '', alt: '' }] })}>
+            <Plus className="h-4 w-4 mr-2" /> Add Logo
+          </Button>
+        </div>
+      );
+
+    case 'info-section':
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          <div>
+            <Label>Text</Label>
+            <RichTextEditor content={block.text || ''} onChange={(val) => onUpdate({ text: val })} />
+          </div>
+          <div>
+            <Label>Image</Label>
+            <ImageUploader value={block.image || ''} onChange={(url) => onUpdate({ image: url })} />
+          </div>
+          <div>
+            <Label>Image Position</Label>
+            <Select value={block.imagePosition || 'right'} onValueChange={(v) => onUpdate({ imagePosition: v as 'left' | 'right' })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Left</SelectItem>
+                <SelectItem value="right">Right</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>CTA Text</Label>
+              <Input value={block.ctaText || ''} onChange={(e) => onUpdate({ ctaText: e.target.value })} />
+            </div>
+            <div>
+              <Label>CTA Variant</Label>
+              <Select value={block.ctaVariant || 'primary'} onValueChange={(v) => onUpdate({ ctaVariant: v as 'primary' | 'outline' | 'solid' })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="primary">Primary</SelectItem>
+                  <SelectItem value="outline">Outline</SelectItem>
+                  <SelectItem value="solid">Solid</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      );
+
+    case 'two-column':
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4 border rounded-lg bg-gray-50/50">
+          <div className="space-y-4">
+            <Label className="text-lg font-bold">Left Column</Label>
+            <BlockEditor
+              content={block.left}
+              onChange={(left) => onUpdate({ left })}
+            />
+          </div>
+          <div className="space-y-4">
+            <Label className="text-lg font-bold">Right Column</Label>
+            <BlockEditor
+              content={block.right}
+              onChange={(right) => onUpdate({ right })}
+            />
+          </div>
+        </div>
+      );
 
     case 'testimonials':
       return (
         <div className="space-y-4">
-          {block.testimonials.map((testimonial, idx) => (
+          <div>
+            <Label>Heading</Label>
+            <Input value={block.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value })} />
+          </div>
+          <div>
+            <Label>Display Variant</Label>
+            <Select value={block.variant || 'slider'} onValueChange={(v) => onUpdate({ variant: v as 'grid' | 'slider' })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="slider">Slider</SelectItem>
+                <SelectItem value="grid">Grid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {block.testimonials.map((t, idx) => (
             <div key={idx} className="p-4 border rounded-lg space-y-2">
               <div className="flex justify-between items-center">
                 <Label>Testimonial {idx + 1}</Label>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onUpdate({ testimonials: block.testimonials.filter((_, i) => i !== idx) })}
-                  className="text-red-500"
-                >
+                <Button variant="ghost" size="sm" onClick={() => onUpdate({ testimonials: block.testimonials.filter((_, i) => i !== idx) })} className="text-red-500">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <Input
-                placeholder="Initials (e.g., JD)"
-                value={testimonial.initials}
-                onChange={(e) => {
-                  const newTestimonials = [...block.testimonials];
-                  newTestimonials[idx] = { ...newTestimonials[idx], initials: e.target.value };
-                  onUpdate({ testimonials: newTestimonials });
-                }}
-              />
-              <Textarea
-                placeholder="Testimonial text"
-                value={testimonial.text}
-                onChange={(e) => {
-                  const newTestimonials = [...block.testimonials];
-                  newTestimonials[idx] = { ...newTestimonials[idx], text: e.target.value };
-                  onUpdate({ testimonials: newTestimonials });
-                }}
-              />
-              <Select
-                value={String(testimonial.rating)}
-                onValueChange={(v) => {
-                  const newTestimonials = [...block.testimonials];
-                  newTestimonials[idx] = { ...newTestimonials[idx], rating: Number(v) };
-                  onUpdate({ testimonials: newTestimonials });
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5].map(n => (
-                    <SelectItem key={n} value={String(n)}>{n} Stars</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input placeholder="Initials (e.g. AR)" value={t.initials} onChange={(e) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], initials: e.target.value };
+                onUpdate({ testimonials: newT });
+              }} />
+              <Input placeholder="Author name" value={t.author || ''} onChange={(e) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], author: e.target.value };
+                onUpdate({ testimonials: newT });
+              }} />
+              <Input type="number" min="1" max="5" placeholder="Rating" value={t.rating} onChange={(e) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], rating: Number(e.target.value) };
+                onUpdate({ testimonials: newT });
+              }} />
+              <RichTextEditor content={t.text} onChange={(val) => {
+                const newT = [...block.testimonials];
+                newT[idx] = { ...newT[idx], text: val };
+                onUpdate({ testimonials: newT });
+              }} />
             </div>
           ))}
-          <Button
-            variant="outline"
-            onClick={() => onUpdate({ testimonials: [...block.testimonials, { initials: '', text: '', rating: 5 }] })}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Testimonial
+          <Button variant="outline" onClick={() => onUpdate({ testimonials: [...block.testimonials, { initials: '', text: '', rating: 5 }] })}>
+            <Plus className="h-4 w-4 mr-2" /> Add Testimonial
           </Button>
         </div>
       );

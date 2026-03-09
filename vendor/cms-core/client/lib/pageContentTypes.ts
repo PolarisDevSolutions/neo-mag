@@ -6,64 +6,102 @@
 // ============================================
 export interface HomePageContent {
   hero: {
-    title: string;
-    subtitle: string;
-    backgroundImage: string;
-    ctaText: string;
-    ctaUrl: string;
-    attorneyImage: string;
-    badgeImage: string;
-  };
-  features: Array<{
-    icon: string; // SVG path or icon name
-    title: string;
-    description: string;
-  }>;
-  mission: {
-    heading: string;
-    paragraphs: string[];
-    image: string;
-    ctaPrimaryText: string;
-    ctaPrimaryUrl: string;
-    ctaSecondaryText: string;
-    ctaSecondaryUrl: string;
-  };
-  attorney: {
-    name: string;
-    title: string;
-    photo: string;
-    bio: string;
-    bullets: string[];
+    h1Title: string;
+    headline: string;
+    highlightedText: string;
     phone: string;
+    phoneLabel: string;
   };
-  speakWithUs: {
+  partnerLogos: Array<{
+    src: string;
+    alt: string;
+  }>;
+  about: {
+    sectionLabel: string;
     heading: string;
     description: string;
-    image: string;
-    ctaText: string;
-    ctaUrl: string;
-  };
-  clientStories: {
-    heading: string;
-    subtitle: string;
-    videos: Array<{
-      embedUrl: string;
-      thumbnail: string;
-    }>;
-  };
-  contactForm: {
-    heading: string;
-    image: string;
-    badgeImage: string;
-  };
-  services: {
-    heading: string;
-    description: string;
-    items: Array<{
+    phone: string;
+    phoneLabel: string;
+    contactLabel: string;
+    contactText: string;
+    attorneyImage: string;
+    attorneyImageAlt: string;
+    features: Array<{
+      number: string;
       title: string;
-      icon: string; // Lucide icon name
+      description: string;
     }>;
-    closingText: string;
+    stats: Array<{
+      value: string;
+      label: string;
+    }>;
+  };
+  practiceAreasIntro: {
+    sectionLabel: string;
+    heading: string;
+    description: string;
+  };
+  practiceAreas: Array<{
+    title: string;
+    image: string;
+    link: string;
+    description?: string;
+    icon?: string;
+  }>;
+  awards: {
+    sectionLabel: string;
+    heading: string;
+    description: string;
+    logos: Array<{ src: string; alt: string }>;
+  };
+  testimonials: {
+    sectionLabel: string;
+    heading: string;
+    backgroundImage: string;
+    items: Array<{
+      text: string;
+      author: string;
+      ratingImage: string;
+    }>;
+  };
+  process: {
+    sectionLabel: string;
+    headingLine1: string;
+    headingLine2: string;
+    steps: Array<{
+      number: string;
+      title: string;
+      description: string;
+    }>;
+  };
+  googleReviews: {
+    sectionLabel: string;
+    heading: string;
+    description: string;
+    reviews: Array<{
+      text: string;
+      author: string;
+      ratingImage: string;
+    }>;
+  };
+  faq: {
+    heading: string;
+    description: string;
+    videoThumbnail: string;
+    videoUrl: string;
+    items: Array<{
+      question: string;
+      answer: string;
+    }>;
+  };
+  contact: {
+    sectionLabel: string;
+    heading: string;
+    description: string;
+    phone: string;
+    phoneLabel: string;
+    address: string;
+    formHeading: string;
   };
 }
 
@@ -72,40 +110,78 @@ export interface HomePageContent {
 // ============================================
 export interface AboutPageContent {
   hero: {
-    title: string;
-    backgroundImage: string;
+    sectionLabel: string;
+    tagline: string;
+    description: string;
+    phone: string;
+    phoneLabel: string;
   };
   story: {
+    sectionLabel: string;
+    heading: string;
     paragraphs: string[];
-    ctaPrimaryText: string;
-    ctaPrimaryUrl: string;
-    ctaSecondaryText: string;
-    ctaSecondaryUrl: string;
     image: string;
+    imageAlt: string;
   };
-  attorney: {
-    name: string;
-    title: string;
-    photo: string;
-    bio: string[];
-    phone: string;
+  missionVision: {
+    mission: {
+      heading: string;
+      text: string;
+    };
+    vision: {
+      heading: string;
+      text: string;
+    };
   };
-  approach: Array<{
-    icon: string; // Lucide icon name
-    title: string;
+  team: {
+    sectionLabel: string;
+    heading: string;
+    members: Array<{
+      name: string;
+      title: string;
+      bio: string;
+      image: string;
+      specialties: string[];
+    }>;
+  };
+  values: {
+    sectionLabel: string;
+    heading: string;
+    subtitle: string;
+    items: Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>;
+  };
+  stats: {
+    stats: Array<{
+      value: string;
+      label: string;
+    }>;
+  };
+  whyChooseUs: {
+    sectionLabel: string;
+    heading: string;
     description: string;
-  }>;
-  testimonials: Array<{
-    quote: string;
-    name: string;
-    initials: string;
-    caseType: string;
-    rating: number;
-  }>;
+    items: Array<{
+      number: string;
+      title: string;
+      description: string;
+    }>;
+  };
   cta: {
     heading: string;
     description: string;
-    phone: string;
+    primaryButton: {
+      label: string;
+      phone: string;
+    };
+    secondaryButton: {
+      label: string;
+      sublabel: string;
+      link: string;
+    };
   };
 }
 
@@ -114,31 +190,57 @@ export interface AboutPageContent {
 // ============================================
 export interface ContactPageContent {
   hero: {
-    title: string;
-    subtitle: string;
-    backgroundImage: string;
+    sectionLabel: string;
+    tagline: string;
+    description: string;
   };
-  info: {
-    phone: string;
-    phoneNote: string;
-    address: string[];
-    addressLabel: string;
+  contactMethods: {
+    methods: Array<{
+      icon: string;
+      title: string;
+      detail: string;
+      subDetail: string;
+    }>;
   };
   form: {
     heading: string;
-    image: string;
-    badgeImage: string;
+    subtext: string;
   };
-  officeHours: Array<{
-    label: string;
-    hours: string;
-  }>;
-  hoursNote: string;
-  mapEmbedUrl: string;
+  officeHours: {
+    heading: string;
+    items: Array<{
+      day: string;
+      hours: string;
+    }>;
+    note: string;
+  };
+  process: {
+    sectionLabel: string;
+    heading: string;
+    subtitle: string;
+    steps: Array<{
+      number: string;
+      title: string;
+      description: string;
+    }>;
+  };
+  visitOffice: {
+    heading: string;
+    subtext: string;
+    mapEmbedUrl: string;
+  };
   cta: {
     heading: string;
     description: string;
-    phone: string;
+    primaryButton: {
+      label: string;
+      phone: string;
+    };
+    secondaryButton: {
+      label: string;
+      sublabel: string;
+      link: string;
+    };
   };
 }
 
@@ -147,28 +249,46 @@ export interface ContactPageContent {
 // ============================================
 export interface PracticeAreasPageContent {
   hero: {
-    title: string;
-    backgroundImage: string;
-  };
-  intro: string;
-  areas: Array<{
-    name: string;
-    icon: string; // Lucide icon name
+    sectionLabel: string;
+    tagline: string;
     description: string;
-  }>;
-  options: {
+    phone: string;
+    phoneLabel: string;
+  };
+  grid: {
     heading: string;
-    text: string;
-    image: string;
-    ctaPrimaryText: string;
-    ctaPrimaryUrl: string;
-    ctaSecondaryText: string;
-    ctaSecondaryUrl: string;
+    description: string;
+    areas: Array<{
+      icon: string;
+      title: string;
+      description: string;
+      image: string;
+      link: string;
+    }>;
+  };
+  whyChoose: {
+    sectionLabel: string;
+    heading: string;
+    subtitle: string;
+    description: string;
+    items: Array<{
+      number: string;
+      title: string;
+      description: string;
+    }>;
   };
   cta: {
     heading: string;
     description: string;
-    phone: string;
+    primaryButton: {
+      label: string;
+      phone: string;
+    };
+    secondaryButton: {
+      label: string;
+      sublabel: string;
+      link: string;
+    };
   };
 }
 
