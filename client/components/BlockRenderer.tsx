@@ -1060,13 +1060,13 @@ function LogoStripRenderer({ block }: { block: Extract<ContentBlock, { type: "lo
           </p>
         )}
         {logos.length > 0 && (
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-8 items-center">
             {logos.map((logo: { src: string; alt?: string }, i: number) => (
-              <div key={i} className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300">
+              <div key={i} className="flex items-center justify-center h-16 px-4 grayscale hover:grayscale-0 transition-all duration-300">
                 <img
                   src={logo.src}
                   alt={logo.alt || ""}
-                  className="max-h-14 w-auto object-contain"
+                  className="max-h-full w-full object-contain"
                   loading="lazy"
                 />
               </div>
