@@ -38,6 +38,7 @@ import {
   HelpCircle,
   Info,
   Layers,
+  Link2,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -76,6 +77,7 @@ const BLOCK_TYPES = [
   { type: 'logo-strip', label: 'Logo Strip (5 logos)', icon: Grid },
   { type: 'shared-logo-strip', label: 'Partner Logos (Shared from Homepage)', icon: Grid },
   { type: 'gallery', label: 'Media Gallery (Instagram Style)', icon: Grid },
+  { type: 'related-pages', label: 'Related Pages', icon: Link2 },
 ] as const;
 
 function getDefaultBlock(type: string): ContentBlock {
@@ -139,6 +141,12 @@ function getDefaultBlock(type: string): ContentBlock {
       return { type: 'shared-logo-strip' };
     case 'gallery':
       return { type: 'gallery', heading: 'Galerija', subtext: '', items: [] };
+    case 'related-pages':
+      return {
+        type: 'related-pages',
+        heading: 'Pogledajte i naše druge usluge',
+        items: [{ title: '', description: '', href: '' }],
+      };
     default:
       return { type: 'paragraph', content: '' };
   }
@@ -1080,6 +1088,67 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
               />
             </div>
           ))}
+        </div>
+      );
+    }
+
+    case 'related-pages': {
+      const rpBlock = block as any;
+      const rpItems: Array<{ title: string; description?: string; href: string }> = rpBlock.items || [];
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={rpBlock.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value } as any)} />
+          </div>
+          {rpItems.map((item, idx) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Page {idx + 1}</Label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onUpdate({ items: rpItems.filter((_, i) => i !== idx) } as any)}
+                  className="text-red-500"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input
+                placeholder="Page title"
+                value={item.title}
+                onChange={(e) => {
+                  const newItems = [...rpItems];
+                  newItems[idx] = { ...newItems[idx], title: e.target.value };
+                  onUpdate({ items: newItems } as any);
+                }}
+              />
+              <Input
+                placeholder="Short description (optional)"
+                value={item.description || ''}
+                onChange={(e) => {
+                  const newItems = [...rpItems];
+                  newItems[idx] = { ...newItems[idx], description: e.target.value };
+                  onUpdate({ items: newItems } as any);
+                }}
+              />
+              <Input
+                placeholder="URL (e.g. /dijagnostika/mri)"
+                value={item.href}
+                onChange={(e) => {
+                  const newItems = [...rpItems];
+                  newItems[idx] = { ...newItems[idx], href: e.target.value };
+                  onUpdate({ items: newItems } as any);
+                }}
+              />
+            </div>
+          ))}
+          <Button
+            variant="outline"
+            onClick={() => onUpdate({ items: [...rpItems, { title: '', description: '', href: '' }] } as any)}
+          >
+            <Plus className="h-4 w-4 mr-2" /> Add Page Link
+          </Button>
         </div>
       );
     }
