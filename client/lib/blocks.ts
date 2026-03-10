@@ -24,7 +24,8 @@ export type ContentBlock =
   | InfoSectionBlock
   | LogoStripBlock
   | SharedLogoStripBlock
-  | GalleryBlock;
+  | GalleryBlock
+  | RelatedPagesBlock;
 
 export interface HeroBlock {
   type: "hero";
@@ -238,5 +239,15 @@ export interface GalleryBlock {
     thumbnail?: string;
     alt?: string;
     caption?: string;
+  }>;
+}
+
+export interface RelatedPagesBlock {
+  type: "related-pages";
+  heading?: string;
+  items: Array<{
+    title: string;
+    description?: string;
+    href: string;
   }>;
 }

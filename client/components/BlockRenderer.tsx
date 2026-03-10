@@ -148,6 +148,7 @@ function RenderBlock({
     case "logo-strip":          return <LogoStripRenderer block={block} />;
     case "shared-logo-strip":   return <SharedLogoStripRenderer />;
     case "gallery":             return <GalleryRenderer block={block} />;
+    case "related-pages":       return <RelatedPagesRenderer block={block} />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -1253,6 +1254,43 @@ function GalleryRenderer({ block }: { block: Extract<ContentBlock, { type: "gall
           </div>
         </div>
       )}
+    </section>
+  );
+}
+
+// ── Related Pages ─────────────────────────────────────────────────────────
+function RelatedPagesRenderer({ block }: { block: Extract<ContentBlock, { type: "related-pages" }> }) {
+  const items = block.items || [];
+  if (items.length === 0) return null;
+
+  return (
+    <section className="bg-gray-50 border-t border-gray-200 py-12">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        {block.heading && (
+          <h2 className="font-outfit font-bold text-xl md:text-2xl text-gray-900 mb-6">
+            {block.heading}
+          </h2>
+        )}
+        <div className={`grid gap-4 grid-cols-1 sm:grid-cols-2 ${items.length >= 3 ? 'lg:grid-cols-3' : ''} ${items.length >= 4 ? 'xl:grid-cols-4' : ''}`.trim()}>
+          {items.map((item, i) => (
+            <a
+              key={i}
+              href={item.href}
+              className="group flex flex-col gap-1 bg-white border border-gray-200 rounded-xl p-5 hover:border-neo-blue hover:shadow-md transition-all duration-200"
+            >
+              <span className="font-outfit font-semibold text-gray-900 group-hover:text-neo-blue transition-colors flex items-center justify-between">
+                {item.title}
+                <svg className="w-4 h-4 text-neo-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+              {item.description && (
+                <span className="font-outfit text-sm text-gray-500 leading-relaxed">{item.description}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
