@@ -265,6 +265,7 @@ export default function AdminPageEdit() {
         og_title: page.og_title,
         og_description: page.og_description,
         og_image: page.og_image,
+        og_image_alt: page.og_image_alt,
         noindex: page.noindex,
         schema_type: page.schema_type,
         schema_data: page.schema_data,
@@ -568,6 +569,8 @@ export default function AdminPageEdit() {
                   onChange={(url) => updatePage({ og_image: url })}
                   folder="og-images"
                   placeholder="Upload a featured image for social sharing"
+                  altValue={page.og_image_alt || ""}
+                  onAltChange={(alt) => updatePage({ og_image_alt: alt })}
                 />
               </div>
 

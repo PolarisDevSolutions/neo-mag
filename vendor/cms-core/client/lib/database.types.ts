@@ -55,6 +55,7 @@ export interface Page {
   og_title: string | null;
   og_description: string | null;
   og_image: string | null;
+  og_image_alt: string | null;
   noindex: boolean;
   schema_type: string | null;
   schema_data: Record<string, unknown> | null;
@@ -117,6 +118,7 @@ export interface PageRevision {
   og_title: string | null;
   og_description: string | null;
   og_image: string | null;
+  og_image_alt: string | null;
   noindex: boolean;
   status: PageStatus;
   created_at: string;

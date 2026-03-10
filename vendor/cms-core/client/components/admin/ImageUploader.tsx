@@ -14,6 +14,8 @@ interface ImageUploaderProps {
   folder?: string;
   className?: string;
   placeholder?: string;
+  altValue?: string;
+  onAltChange?: (alt: string) => void;
 }
 
 export default function ImageUploader({
@@ -24,6 +26,8 @@ export default function ImageUploader({
   folder = "uploads",
   className,
   placeholder = "Drop an image here or click to upload",
+  altValue,
+  onAltChange,
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -252,6 +256,19 @@ try {
           className="text-xs h-8"
         />
       </div>
+
+      {onAltChange !== undefined && (
+        <div>
+          <label className="text-xs font-medium text-gray-600 block mb-1">Alt Text</label>
+          <Input
+            type="text"
+            value={altValue || ""}
+            onChange={(e) => onAltChange(e.target.value)}
+            placeholder="Describe the image for accessibility"
+            className="text-xs h-8"
+          />
+        </div>
+      )}
     </div>
   );
 }

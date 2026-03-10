@@ -299,7 +299,12 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </div>
           <div>
             <Label>Background Image</Label>
-            <ImageUploader value={block.backgroundImage || ''} onChange={(url) => onUpdate({ backgroundImage: url })} />
+            <ImageUploader
+              value={block.backgroundImage || ''}
+              onChange={(url) => onUpdate({ backgroundImage: url })}
+              altValue={block.backgroundImageAlt || ''}
+              onAltChange={(alt) => onUpdate({ backgroundImageAlt: alt })}
+            />
           </div>
           <div className="flex items-center gap-2">
             <Switch checked={block.showCTA || false} onCheckedChange={(checked) => onUpdate({ showCTA: checked })} />
@@ -421,7 +426,12 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </div>
           <div>
             <Label>Image</Label>
-            <ImageUploader value={block.image} onChange={(url) => onUpdate({ image: url })} />
+            <ImageUploader
+              value={block.image}
+              onChange={(url) => onUpdate({ image: url })}
+              altValue={block.imageAlt || ''}
+              onAltChange={(alt) => onUpdate({ imageAlt: alt })}
+            />
           </div>
           <div>
             <Label>Bio</Label>
@@ -447,7 +457,12 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </div>
           <div>
             <Label>Form Image</Label>
-            <ImageUploader value={block.image || ''} onChange={(url) => onUpdate({ image: url })} />
+            <ImageUploader
+              value={block.image || ''}
+              onChange={(url) => onUpdate({ image: url })}
+              altValue={block.imageAlt || ''}
+              onAltChange={(alt) => onUpdate({ imageAlt: alt })}
+            />
           </div>
         </div>
       );
@@ -809,7 +824,12 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </div>
           <div>
             <Label>Image</Label>
-            <ImageUploader value={block.image || ''} onChange={(url) => onUpdate({ image: url })} />
+            <ImageUploader
+              value={block.image || ''}
+              onChange={(url) => onUpdate({ image: url })}
+              altValue={block.imageAlt || ''}
+              onAltChange={(alt) => onUpdate({ imageAlt: alt })}
+            />
           </div>
           <div>
             <Label>Image Position</Label>
