@@ -176,19 +176,19 @@ function generatePageHTML(template: string, page: Page, siteSettings: SiteSettin
   const ogDescription = page.og_description || description;
   
   const metaTags = `
-    <title>${escapeHtml(title)}</title>
-    <meta name="description" content="${escapeHtml(description)}">
-    <link rel="canonical" href="${escapeHtml(canonical)}">
-    <meta property="og:title" content="${escapeHtml(ogTitle)}">
-    <meta property="og:description" content="${escapeHtml(ogDescription)}">
-    <meta property="og:url" content="${escapeHtml(canonical)}">
-    <meta property="og:type" content="website">
-    ${page.og_image ? `<meta property="og:image" content="${escapeHtml(page.og_image)}">` : ''}
-    ${page.noindex || siteSettings.site_noindex ? '<meta name="robots" content="noindex, nofollow">' : ''}
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${escapeHtml(ogTitle)}">
-    <meta name="twitter:description" content="${escapeHtml(ogDescription)}">
-    ${page.og_image ? `<meta name="twitter:image" content="${escapeHtml(page.og_image)}">` : ''}
+    <title data-react-helmet="true">${escapeHtml(title)}</title>
+    <meta data-react-helmet="true" name="description" content="${escapeHtml(description)}">
+    <link data-react-helmet="true" rel="canonical" href="${escapeHtml(canonical)}">
+    <meta data-react-helmet="true" property="og:title" content="${escapeHtml(ogTitle)}">
+    <meta data-react-helmet="true" property="og:description" content="${escapeHtml(ogDescription)}">
+    <meta data-react-helmet="true" property="og:url" content="${escapeHtml(canonical)}">
+    <meta data-react-helmet="true" property="og:type" content="website">
+    ${page.og_image ? `<meta data-react-helmet="true" property="og:image" content="${escapeHtml(page.og_image)}">` : ''}
+    ${page.noindex || siteSettings.site_noindex ? '<meta data-react-helmet="true" name="robots" content="noindex, nofollow">' : ''}
+    <meta data-react-helmet="true" name="twitter:card" content="summary_large_image">
+    <meta data-react-helmet="true" name="twitter:title" content="${escapeHtml(ogTitle)}">
+    <meta data-react-helmet="true" name="twitter:description" content="${escapeHtml(ogDescription)}">
+    ${page.og_image ? `<meta data-react-helmet="true" name="twitter:image" content="${escapeHtml(page.og_image)}">` : ''}
   `;
 
   // Generate analytics scripts
