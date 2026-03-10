@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import Layout from "@site/components/layout/Layout";
 import Seo from "@site/components/Seo";
 import BlockRenderer from "@site/components/BlockRenderer";
@@ -30,6 +31,61 @@ export default function StandardPageRenderer({ page }: Props) {
 
   if (firstBlockIsHero) {
     // Hero-first: render full content
+    // For practice pages, split hero + breadcrumb + rest
+    if (isPracticePage) {
+      const isDijagnostika = page.url_path?.startsWith("/dijagnostika/");
+      return (
+        <Layout>
+          <Seo
+            title={page.meta_title || page.title}
+            description={page.meta_description || ""}
+            canonical={page.canonical_url || undefined}
+            image={page.og_image || undefined}
+            noindex={page.noindex}
+            page={page}
+          />
+          {/* Hero block only */}
+          <BlockRenderer
+            content={[content[0]]}
+            isHomepage={false}
+            isAboutPage={false}
+            isDiagnosticsPage={false}
+            isKontaktPage={false}
+            isCenovnikPage={false}
+            isPracticePage={true}
+          />
+          {/* Breadcrumb strip — visually attached to bottom of hero */}
+          <div className="bg-[#013fbd] border-t border-white/10 py-2.5">
+            <div className="max-w-[1200px] mx-auto w-[90%] flex justify-center">
+              <nav aria-label="breadcrumb" className="flex items-center gap-1.5 text-[13px] text-white/70 flex-wrap justify-center">
+                <a href="/" className="hover:text-white transition-colors whitespace-nowrap">Početna</a>
+                {isDijagnostika && (
+                  <>
+                    <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+                    <a href="/dijagnostika/" className="hover:text-white transition-colors whitespace-nowrap">Dijagnostika</a>
+                  </>
+                )}
+                <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="text-white font-medium whitespace-nowrap">{page.title}</span>
+              </nav>
+            </div>
+          </div>
+          {/* Remaining content blocks */}
+          {content.length > 1 && (
+            <BlockRenderer
+              content={content.slice(1)}
+              isHomepage={false}
+              isAboutPage={false}
+              isDiagnosticsPage={false}
+              isKontaktPage={false}
+              isCenovnikPage={false}
+              isPracticePage={true}
+            />
+          )}
+        </Layout>
+      );
+    }
+
     return (
       <Layout>
         <Seo
@@ -74,6 +130,23 @@ export default function StandardPageRenderer({ page }: Props) {
           </h1>
         </div>
       </div>
+      {isPracticePage && (
+        <div className="bg-[#013fbd] border-t border-white/10 py-2.5">
+          <div className="max-w-[1200px] mx-auto w-[90%] flex justify-center">
+            <nav aria-label="breadcrumb" className="flex items-center gap-1.5 text-[13px] text-white/70 flex-wrap justify-center">
+              <a href="/" className="hover:text-white transition-colors whitespace-nowrap">Početna</a>
+              {page.url_path?.startsWith("/dijagnostika/") && (
+                <>
+                  <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+                  <a href="/dijagnostika/" className="hover:text-white transition-colors whitespace-nowrap">Dijagnostika</a>
+                </>
+              )}
+              <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="text-white font-medium whitespace-nowrap">{page.title}</span>
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* Page content blocks */}
       {content.length > 0 ? (
