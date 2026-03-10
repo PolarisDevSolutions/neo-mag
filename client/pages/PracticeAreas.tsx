@@ -119,6 +119,8 @@ export default function PracticeAreas() {
                 <img
                   src="/images/stock/mri-machine.jpg"
                   alt="Aparat za magnetnu rezonancu"
+                  width={400}
+                  height={300}
                   className="w-full max-w-[400px] h-auto object-cover rounded-xl"
                   loading="lazy"
                 />

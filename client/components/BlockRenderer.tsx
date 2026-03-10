@@ -1070,6 +1070,8 @@ function LogoStripRenderer({ block }: { block: Extract<ContentBlock, { type: "lo
                 <img
                   src={logo.src}
                   alt={logo.alt || ""}
+                  width={160}
+                  height={60}
                   className="max-h-full w-full object-contain"
                   loading="lazy"
                 />
@@ -1133,6 +1135,8 @@ function GalleryRenderer({ block }: { block: Extract<ContentBlock, { type: "gall
                         <img
                           src={item.thumbnail}
                           alt={item.alt || "Video thumbnail"}
+                          width={400}
+                          height={400}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
                         />
@@ -1151,6 +1155,8 @@ function GalleryRenderer({ block }: { block: Extract<ContentBlock, { type: "gall
                     <img
                       src={item.src}
                       alt={item.alt || ""}
+                      width={400}
+                      height={400}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
@@ -1220,6 +1226,8 @@ function GalleryRenderer({ block }: { block: Extract<ContentBlock, { type: "gall
                 <img
                   src={items[openIndex].src}
                   alt={items[openIndex].alt || ""}
+                  width={800}
+                  height={600}
                   className="max-w-full max-h-[80vh] rounded-xl object-contain"
                 />
               )}

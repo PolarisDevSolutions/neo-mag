@@ -59,6 +59,8 @@ export default function TestimonialsSection({ content }: TestimonialsSectionProp
             <img
               src={data.backgroundImage}
               alt="Testimonials"
+              width={600}
+              height={450}
               className="w-full h-auto object-cover rounded-xl"
               loading="lazy"
             />
