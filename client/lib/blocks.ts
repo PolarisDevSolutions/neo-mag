@@ -32,6 +32,7 @@ export interface HeroBlock {
   title: string;
   subtitle?: string;
   backgroundImage?: string;
+  backgroundImageAlt?: string;
   showCTA?: boolean;
   ctaText?: string;
 }
@@ -118,6 +119,7 @@ export interface ContactFormBlock {
   heading: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
   services?: string[];
 }
 
@@ -147,6 +149,7 @@ export interface AttorneyBioBlock {
   name: string;
   title: string;
   image: string;
+  imageAlt?: string;
   bio: string;
 }
 
@@ -209,6 +212,7 @@ export interface InfoSectionBlock {
   heading?: string;
   text?: string;
   image?: string;
+  imageAlt?: string;
   imagePosition?: "left" | "right";
   ctaText?: string;
   ctaVariant?: "primary" | "outline" | "solid";
