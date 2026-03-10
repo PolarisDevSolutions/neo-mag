@@ -1093,7 +1093,9 @@ function SharedLogoStripRenderer() {
 // ── Gallery ────────────────────────────────────────────────────────────────
 function GalleryRenderer({ block }: { block: Extract<ContentBlock, { type: "gallery" }> }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(6);
   const items = block.items || [];
+  const visibleItems = items.slice(0, visibleCount);
 
   const isYouTube = (url: string) => /youtube\.com|youtu\.be/.test(url);
   const isVimeo = (url: string) => /vimeo\.com/.test(url);
@@ -1116,44 +1118,59 @@ function GalleryRenderer({ block }: { block: Extract<ContentBlock, { type: "gall
           </p>
         )}
         {items.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {items.map((item, i) => (
-              <button
-                key={i}
-                onClick={() => setOpenIndex(i)}
-                className="relative aspect-square overflow-hidden rounded-xl bg-gray-100 group focus:outline-none focus:ring-2 focus:ring-neo-blue"
-              >
-                {item.mediaType === "video" ? (
-                  <>
-                    {item.thumbnail ? (
-                      <img
-                        src={item.thumbnail}
-                        alt={item.alt || "Video thumbnail"}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-900 flex items-center justify-center" />
-                    )}
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                      <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                        <svg className="w-6 h-6 text-neo-blue ml-1" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {visibleItems.map((item, i) => (
+                <button
+                  key={i}
+                  onClick={() => setOpenIndex(i)}
+                  className="relative aspect-square overflow-hidden rounded-xl bg-gray-100 group focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                >
+                  {item.mediaType === "video" ? (
+                    <>
+                      {item.thumbnail ? (
+                        <img
+                          src={item.thumbnail}
+                          alt={item.alt || "Video thumbnail"}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-900 flex items-center justify-center" />
+                      )}
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                          <svg className="w-6 h-6 text-neo-blue ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
                       </div>
-                    </div>
-                  </>
-                ) : (
-                  <img
-                    src={item.src}
-                    alt={item.alt || ""}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+                    </>
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={item.alt || ""}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+            {visibleCount < items.length && (
+              <div className="text-center mt-8">
+                <button
+                  onClick={() => setVisibleCount(prev => prev + 6)}
+                  className="inline-flex items-center gap-2 font-outfit font-medium text-neo-blue border border-neo-blue rounded-full px-8 py-2.5 hover:bg-neo-blue hover:text-white transition-colors duration-200"
+                >
+                  Prikaži još
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <p className="text-center text-gray-400 font-outfit py-8">No media items yet.</p>
         )}
