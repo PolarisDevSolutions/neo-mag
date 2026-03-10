@@ -23,7 +23,8 @@ export type ContentBlock =
   | LogoGridBlock
   | InfoSectionBlock
   | LogoStripBlock
-  | SharedLogoStripBlock;
+  | SharedLogoStripBlock
+  | GalleryBlock;
 
 export interface HeroBlock {
   type: "hero";
@@ -225,4 +226,17 @@ export interface LogoStripBlock {
 
 export interface SharedLogoStripBlock {
   type: "shared-logo-strip";
+}
+
+export interface GalleryBlock {
+  type: "gallery";
+  heading?: string;
+  subtext?: string;
+  items: Array<{
+    mediaType: "image" | "video";
+    src: string;
+    thumbnail?: string;
+    alt?: string;
+    caption?: string;
+  }>;
 }

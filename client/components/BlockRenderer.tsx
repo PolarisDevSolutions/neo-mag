@@ -147,6 +147,7 @@ function RenderBlock({
     case "info-section":        return <InfoSectionBlock block={block} />;
     case "logo-strip":          return <LogoStripRenderer block={block} />;
     case "shared-logo-strip":   return <SharedLogoStripRenderer />;
+    case "gallery":             return <GalleryRenderer block={block} />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -1087,6 +1088,156 @@ function SharedLogoStripRenderer() {
   const logoBlock = (page.content as ContentBlock[]).find(b => b.type === 'logo-strip');
   if (!logoBlock || logoBlock.type !== 'logo-strip') return null;
   return <LogoStripRenderer block={logoBlock} />;
+}
+
+// ── Gallery ────────────────────────────────────────────────────────────────
+function GalleryRenderer({ block }: { block: Extract<ContentBlock, { type: "gallery" }> }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const items = block.items || [];
+
+  const isYouTube = (url: string) => /youtube\.com|youtu\.be/.test(url);
+  const isVimeo = (url: string) => /vimeo\.com/.test(url);
+
+  function closeModal() { setOpenIndex(null); }
+  function prev() { if (openIndex !== null) setOpenIndex((openIndex - 1 + items.length) % items.length); }
+  function next() { if (openIndex !== null) setOpenIndex((openIndex + 1) % items.length); }
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="max-w-[1200px] mx-auto w-[90%]">
+        {block.heading && (
+          <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 text-center mb-3">
+            {block.heading}
+          </h2>
+        )}
+        {block.subtext && (
+          <p className="font-outfit text-base md:text-lg text-gray-600 text-center mb-8 max-w-2xl mx-auto">
+            {block.subtext}
+          </p>
+        )}
+        {items.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {items.map((item, i) => (
+              <button
+                key={i}
+                onClick={() => setOpenIndex(i)}
+                className="relative aspect-square overflow-hidden rounded-xl bg-gray-100 group focus:outline-none focus:ring-2 focus:ring-neo-blue"
+              >
+                {item.mediaType === "video" ? (
+                  <>
+                    {item.thumbnail ? (
+                      <img
+                        src={item.thumbnail}
+                        alt={item.alt || "Video thumbnail"}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-900 flex items-center justify-center" />
+                    )}
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                        <svg className="w-6 h-6 text-neo-blue ml-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <img
+                    src={item.src}
+                    alt={item.alt || ""}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-400 font-outfit py-8">No media items yet.</p>
+        )}
+      </div>
+
+      {/* Lightbox */}
+      {openIndex !== null && items[openIndex] && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          onClick={closeModal}
+        >
+          <div
+            className="relative max-w-4xl w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={closeModal}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 font-outfit text-3xl leading-none"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+
+            {/* Media */}
+            <div className="flex items-center justify-center min-h-[300px] max-h-[80vh]">
+              {items[openIndex].mediaType === "video" ? (
+                isYouTube(items[openIndex].src) || isVimeo(items[openIndex].src) ? (
+                  <iframe
+                    src={items[openIndex].src}
+                    className="w-full aspect-video rounded-xl"
+                    allow="autoplay; fullscreen"
+                    allowFullScreen
+                    title={items[openIndex].alt || "Video"}
+                  />
+                ) : (
+                  <video
+                    src={items[openIndex].src}
+                    controls
+                    autoPlay
+                    className="max-w-full max-h-[80vh] rounded-xl"
+                    poster={items[openIndex].thumbnail}
+                  />
+                )
+              ) : (
+                <img
+                  src={items[openIndex].src}
+                  alt={items[openIndex].alt || ""}
+                  className="max-w-full max-h-[80vh] rounded-xl object-contain"
+                />
+              )}
+            </div>
+
+            {/* Caption */}
+            {items[openIndex].caption && (
+              <p className="text-center text-white/80 font-outfit mt-3 text-sm">
+                {items[openIndex].caption}
+              </p>
+            )}
+
+            {/* Prev/Next */}
+            {items.length > 1 && (
+              <>
+                <button
+                  onClick={prev}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-14 text-white hover:text-gray-300 text-5xl leading-none"
+                  aria-label="Previous"
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={next}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-14 text-white hover:text-gray-300 text-5xl leading-none"
+                  aria-label="Next"
+                >
+                  ›
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
 }
 
 // ── Logo Grid ──────────────────────────────────────────────────────────────
