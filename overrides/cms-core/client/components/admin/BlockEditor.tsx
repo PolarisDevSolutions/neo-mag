@@ -74,6 +74,7 @@ const BLOCK_TYPES = [
   { type: 'logo-grid', label: 'Logo Grid', icon: Grid },
   { type: 'info-section', label: 'Info Section', icon: Info },
   { type: 'logo-strip', label: 'Logo Strip (5 logos)', icon: Grid },
+  { type: 'shared-logo-strip', label: 'Partner Logos (Shared from Homepage)', icon: Grid },
 ] as const;
 
 function getDefaultBlock(type: string): ContentBlock {
@@ -133,6 +134,8 @@ function getDefaultBlock(type: string): ContentBlock {
           { src: '', alt: '' },
         ],
       };
+    case 'shared-logo-strip':
+      return { type: 'shared-logo-strip' };
     default:
       return { type: 'paragraph', content: '' };
   }
@@ -224,32 +227,36 @@ function BlockCard({ block, index, total, onUpdate, onRemove, onMove }: BlockCar
             {blockInfo?.label || block.type}
           </CardTitle>
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onMove('up')}
-              disabled={index === 0}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronUp className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onMove('down')}
-              disabled={index === total - 1}
-              className="h-8 w-8 p-0"
-            >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRemove}
-              className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {block.type !== 'shared-logo-strip' && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onMove('up')}
+                  disabled={index === 0}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onMove('down')}
+                  disabled={index === total - 1}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onRemove}
+                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -893,6 +900,18 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           <Button variant="outline" onClick={() => onUpdate({ testimonials: [...block.testimonials, { initials: '', text: '', rating: 5 }] })}>
             <Plus className="h-4 w-4 mr-2" /> Add Testimonial
           </Button>
+        </div>
+      );
+
+    case 'shared-logo-strip':
+      return (
+        <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 text-sm text-blue-800">
+          <strong>Partner Logos — Global Section</strong>
+          <p className="mt-1 text-blue-700">
+            This section displays the same partner logos as the homepage.
+            To edit the logos, heading, or text, go to{' '}
+            <strong>CMS &rarr; Homepage</strong> and edit the <em>Logo Strip</em> block.
+          </p>
         </div>
       );
 

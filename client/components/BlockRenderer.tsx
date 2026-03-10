@@ -11,6 +11,7 @@ import ReviewsSlider from "@site/components/ReviewsSlider";
 import TestimonialsSlider from "@site/components/TestimonialsSlider";
 import GoogleReviewsGrid from "@site/components/GoogleReviewsGrid";
 import { useSiteSettings } from "@site/contexts/SiteSettingsContext";
+import { useCmsPage } from "@site/hooks/useCmsPage";
 
 // ── Icon map ───────────────────────────────────────────────────────────────
 const iconMap: Record<string, LucideIcon> = {
@@ -145,6 +146,7 @@ function RenderBlock({
     case "map":                 return <MapBlock block={block} />;
     case "info-section":        return <InfoSectionBlock block={block} />;
     case "logo-strip":          return <LogoStripRenderer block={block} />;
+    case "shared-logo-strip":   return <SharedLogoStripRenderer />;
     default:
       if (isPreview) {
         return <div className="p-3 bg-gray-100 text-sm text-gray-500 rounded">Unknown block type</div>;
@@ -1076,6 +1078,15 @@ function LogoStripRenderer({ block }: { block: Extract<ContentBlock, { type: "lo
       </div>
     </section>
   );
+}
+
+// ── Shared Logo Strip ───────────────────────────────────────────────────────
+function SharedLogoStripRenderer() {
+  const { page, isLoading } = useCmsPage('/');
+  if (isLoading || !page?.content) return null;
+  const logoBlock = (page.content as ContentBlock[]).find(b => b.type === 'logo-strip');
+  if (!logoBlock || logoBlock.type !== 'logo-strip') return null;
+  return <LogoStripRenderer block={logoBlock} />;
 }
 
 // ── Logo Grid ──────────────────────────────────────────────────────────────
