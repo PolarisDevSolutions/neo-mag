@@ -237,7 +237,7 @@ function ParagraphBlock({ block, isDiagnosticsPage }: { block: Extract<ContentBl
   return (
     <div className={containerClass}>
       <div
-        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_strong]:text-gray-900 [&_strong]:font-semibold [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:text-neo-blue [&_a]:underline hover:[&_a]:text-neo-blue-dark"
         dangerouslySetInnerHTML={{ __html: block.content }}
       />
     </div>
@@ -315,7 +315,7 @@ function CTABlock({ block, globalPhone, isRoot = true, isHomepage = false, isAbo
         )}
         {block.description && (
           <div
-            className="font-outfit text-base md:text-lg text-gray-600 mb-8 max-w-2xl mx-auto [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+            className="font-outfit text-base md:text-lg text-gray-600 mb-8 max-w-2xl mx-auto [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:text-neo-blue [&_a]:underline hover:[&_a]:text-neo-blue-dark"
             dangerouslySetInnerHTML={{ __html: block.description }}
           />
         )}
@@ -511,7 +511,7 @@ function ContactFormBlock({ block }: { block: Extract<ContentBlock, { type: "con
             <h2 className="font-outfit font-bold text-2xl md:text-3xl text-gray-900 mb-4">{block.heading}</h2>
             {block.description && (
               <div
-                className="font-outfit text-base md:text-lg text-gray-600 mb-8 [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                className="font-outfit text-base md:text-lg text-gray-600 mb-8 [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:text-neo-blue [&_a]:underline hover:[&_a]:text-neo-blue-dark"
                 dangerouslySetInnerHTML={{ __html: block.description }}
               />
             )}
@@ -806,7 +806,7 @@ function SEOTextBlock({ block }: { block: any }) {
       <div className="space-y-4">
         {typeof paragraphs === 'string' ? (
           <div
-            className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+            className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:text-neo-blue [&_a]:underline hover:[&_a]:text-neo-blue-dark"
             dangerouslySetInnerHTML={{ __html: paragraphs }}
           />
         ) : (
@@ -897,7 +897,7 @@ function FAQBlock({ block }: { block: any }) {
                 <div className="px-6 pb-5 pt-0">
                   <div className="h-px bg-gray-100 mb-4" />
                   <div
-                    className="font-outfit text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                    className="font-outfit text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:text-neo-blue [&_a]:underline hover:[&_a]:text-neo-blue-dark"
                     dangerouslySetInnerHTML={{ __html: item.answer }}
                   />
                 </div>
@@ -973,7 +973,7 @@ function InfoSectionBlock({ block }: { block: Extract<ContentBlock, { type: "inf
       )}
       {text && (
         <div
-          className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+          className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_a]:text-neo-blue [&_a]:underline hover:[&_a]:text-neo-blue-dark"
           dangerouslySetInnerHTML={{ __html: text }}
         />
       )}
