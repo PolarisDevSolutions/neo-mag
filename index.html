@@ -37,6 +37,13 @@
       <textarea name="message"></textarea>
     </form>
 
+    <!-- Remove SSG-injected head tags before React mounts to prevent duplicates -->
+    <script>
+      (function() {
+        document.querySelectorAll('[data-react-helmet]').forEach(function(el) { el.remove(); });
+      })();
+    </script>
+
     <script type="module" src="/client/App.tsx"></script>
   </body>
 </html>
