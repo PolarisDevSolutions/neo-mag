@@ -75,6 +75,7 @@ const BLOCK_TYPES = [
   { type: 'info-section', label: 'Info Section', icon: Info },
   { type: 'logo-strip', label: 'Logo Strip (5 logos)', icon: Grid },
   { type: 'shared-logo-strip', label: 'Partner Logos (Shared from Homepage)', icon: Grid },
+  { type: 'gallery', label: 'Media Gallery (Instagram Style)', icon: Grid },
 ] as const;
 
 function getDefaultBlock(type: string): ContentBlock {
@@ -136,6 +137,8 @@ function getDefaultBlock(type: string): ContentBlock {
       };
     case 'shared-logo-strip':
       return { type: 'shared-logo-strip' };
+    case 'gallery':
+      return { type: 'gallery', heading: 'Galerija', subtext: '', items: [] };
     default:
       return { type: 'paragraph', content: '' };
   }
@@ -914,6 +917,133 @@ function BlockFields({ block, onUpdate }: { block: ContentBlock; onUpdate: (upda
           </p>
         </div>
       );
+
+    case 'gallery': {
+      const galleryBlock = block as any;
+      const items: any[] = galleryBlock.items || [];
+      return (
+        <div className="space-y-4">
+          <div>
+            <Label>Heading</Label>
+            <Input value={galleryBlock.heading || ''} onChange={(e) => onUpdate({ heading: e.target.value } as any)} />
+          </div>
+          <div>
+            <Label>Subtext</Label>
+            <Input value={galleryBlock.subtext || ''} onChange={(e) => onUpdate({ subtext: e.target.value } as any)} />
+          </div>
+          {items.map((item: any, idx: number) => (
+            <div key={idx} className="p-4 border rounded-lg space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Item {idx + 1} — {item.mediaType === 'video' ? 'Video' : 'Image'}</Label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onUpdate({ items: items.filter((_: any, i: number) => i !== idx) } as any)}
+                  className="text-red-500"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-wider">Media Type</Label>
+                <Select
+                  value={item.mediaType || 'image'}
+                  onValueChange={(v) => {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], mediaType: v };
+                    onUpdate({ items: newItems } as any);
+                  }}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="image">Image</SelectItem>
+                    <SelectItem value="video">Video</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {item.mediaType === 'video' ? (
+                <>
+                  <div>
+                    <Label className="text-xs text-gray-400 uppercase tracking-wider">Video URL</Label>
+                    <Input
+                      placeholder="Paste MP4 URL or YouTube/Vimeo embed URL"
+                      value={item.src || ''}
+                      onChange={(e) => {
+                        const newItems = [...items];
+                        newItems[idx] = { ...newItems[idx], src: e.target.value };
+                        onUpdate({ items: newItems } as any);
+                      }}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Paste a direct MP4 link or a YouTube/Vimeo embed URL</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-400 uppercase tracking-wider">Thumbnail (optional)</Label>
+                    <ImageUploader
+                      value={item.thumbnail || ''}
+                      onChange={(url) => {
+                        const newItems = [...items];
+                        newItems[idx] = { ...newItems[idx], thumbnail: url };
+                        onUpdate({ items: newItems } as any);
+                      }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <Label className="text-xs text-gray-400 uppercase tracking-wider">Image</Label>
+                  <ImageUploader
+                    value={item.src || ''}
+                    onChange={(url) => {
+                      const newItems = [...items];
+                      newItems[idx] = { ...newItems[idx], src: url };
+                      onUpdate({ items: newItems } as any);
+                    }}
+                  />
+                </div>
+              )}
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-wider">Alt Text (optional)</Label>
+                <Input
+                  placeholder="Describe the media"
+                  value={item.alt || ''}
+                  onChange={(e) => {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], alt: e.target.value };
+                    onUpdate({ items: newItems } as any);
+                  }}
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-gray-400 uppercase tracking-wider">Caption (optional)</Label>
+                <Input
+                  placeholder="Caption shown in lightbox"
+                  value={item.caption || ''}
+                  onChange={(e) => {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], caption: e.target.value };
+                    onUpdate({ items: newItems } as any);
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => onUpdate({ items: [...items, { mediaType: 'image', src: '', alt: '' }] } as any)}
+            >
+              <Plus className="h-4 w-4 mr-2" /> Add Image
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => onUpdate({ items: [...items, { mediaType: 'video', src: '', thumbnail: '' }] } as any)}
+            >
+              <Plus className="h-4 w-4 mr-2" /> Add Video
+            </Button>
+          </div>
+        </div>
+      );
+    }
 
     case 'logo-strip': {
       const logoBlock = block as Extract<typeof block, { type: 'logo-strip' }>;
