@@ -232,11 +232,79 @@ function generatePageHTML(template: string, page: Page, siteSettings: SiteSettin
   // Custom footer scripts
   const customFooterScripts = siteSettings.footer_scripts || '';
   
+  // MedicalClinic JSON-LD schema (injected on every page)
+  const medicalClinicSchema = `
+  <script type="application/ld+json">
+  ${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "MedicalClinic",
+    "@id": "https://neo-mag.rs/#medicalclinic",
+    "name": "Neo Mag Dijagnostički Centar",
+    "url": "https://neo-mag.rs",
+    "logo": "https://jphaxpojinhibagvsdmq.supabase.co/storage/v1/object/public/media/library/1771690586774-3gxybq.webp",
+    "image": "https://jphaxpojinhibagvsdmq.supabase.co/storage/v1/object/public/media/library/1771690586774-3gxybq.webp",
+    "telephone": "+38118520640",
+    "email": "neomagnis@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "9. Brigade 1",
+      "addressLocality": "Niš",
+      "postalCode": "18000",
+      "addressCountry": "RS"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 43.3171717,
+      "longitude": 21.9035082
+    },
+    "sameAs": [
+      "https://www.google.com/maps/place/Neo+Mag/@43.3171717,21.9035082,17z"
+    ],
+    "areaServed": {
+      "@type": "AdministrativeArea",
+      "name": "Niš"
+    },
+    "medicalSpecialty": [
+      "Radiology",
+      "DiagnosticImaging",
+      "Neurology",
+      "Neurosurgery",
+      "Orthopedics",
+      "Cardiology"
+    ],
+    "availableService": [
+      { "@type": "MedicalProcedure", "name": "Magnetna rezonanca" },
+      { "@type": "MedicalProcedure", "name": "Rendgen dijagnostika" },
+      { "@type": "MedicalProcedure", "name": "Ultrazvučna dijagnostika" },
+      { "@type": "MedicalProcedure", "name": "Multislajsni CT skener" },
+      { "@type": "MedicalProcedure", "name": "Specijalistički pregledi" }
+    ],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:00",
+        "closes": "21:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "09:00",
+        "closes": "15:00"
+      }
+    ],
+    "founder": [
+      { "@type": "Physician", "name": "Prof Dr Vesna Nikolov", "medicalSpecialty": "Neurosurgery" },
+      { "@type": "Physician", "name": "Dr Luka Berilažić", "medicalSpecialty": "Neurosurgery" }
+    ]
+  }, null, 2)}
+  </script>`;
+
   // Replace the existing <title> tag and inject our meta tags before </head>
   let html = template.replace(/<title>.*?<\/title>/, '');
 
-  // Inject meta tags, analytics, and custom head scripts before </head>
-  const headInjection = `${metaTags}\n${analyticsScripts}\n${customHeadScripts}\n`;
+  // Inject meta tags, schema, analytics, and custom head scripts before </head>
+  const headInjection = `${metaTags}\n${medicalClinicSchema}\n${analyticsScripts}\n${customHeadScripts}\n`;
   html = html.replace('</head>', `${headInjection}</head>`);
 
   // Inject custom footer scripts before </body>
