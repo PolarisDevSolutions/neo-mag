@@ -28,6 +28,8 @@ interface Page {
   og_image: string | null;
   noindex: boolean;
   updated_at: string;
+  schema_type: string | null;
+  schema_data: Record<string, unknown> | null;
 }
 
 interface Redirect {
@@ -75,7 +77,7 @@ async function generateSSG() {
   // 1. Fetch all published pages
   const { data: pages, error: pagesError } = await supabase
     .from('pages')
-    .select('id, title, url_path, meta_title, meta_description, canonical_url, og_title, og_description, og_image, noindex, updated_at')
+    .select('id, title, url_path, meta_title, meta_description, canonical_url, og_title, og_description, og_image, noindex, updated_at, schema_type, schema_data')
     .eq('status', 'published');
 
   if (pagesError) {
@@ -166,6 +168,30 @@ Sitemap: ${siteUrl}/sitemap.xml`;
   fs.writeFileSync(path.join(process.cwd(), 'dist/spa/robots.txt'), robotsTxt);
 
   console.log('SSG generation complete!');
+}
+
+/**
+ * Builds a <script type="application/ld+json"> tag for per-page schema.
+ * Supports:
+ *  - @graph format (multiple schemas in one block)
+ *  - single schema with @context + @type at root
+ * Does NOT use data-react-helmet so React Helmet never removes it.
+ */
+function buildPageSchemaTag(page: Page): string {
+  const data = page.schema_data;
+  if (!data || typeof data !== 'object') return '';
+
+  // @graph format — full JSON-LD wrapper with multiple schemas inside
+  if (data['@graph'] && Array.isArray(data['@graph'])) {
+    return `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n</script>`;
+  }
+
+  // Single schema — must have @context and @type at root
+  if (data['@context'] && data['@type']) {
+    return `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n</script>`;
+  }
+
+  return '';
 }
 
 function generatePageHTML(template: string, page: Page, siteSettings: SiteSettings): string {
@@ -299,11 +325,14 @@ ${JSON.stringify({
 }, null, 2)}
 </script>`;
 
+  // Per-page schema (injected before MedicalClinic site-wide schema)
+  const pageSchemaTag = buildPageSchemaTag(page);
+
   // Replace the existing <title> tag and inject our meta tags before </head>
   let html = template.replace(/<title>.*?<\/title>/, '');
 
-  // Inject meta tags, analytics, schema, and custom head scripts before </head>
-  const headInjection = `${metaTags}\n${medicalClinicSchema}\n${analyticsScripts}\n${customHeadScripts}\n`;
+  // Inject meta tags, per-page schema, site-wide schema, analytics, and custom head scripts before </head>
+  const headInjection = `${metaTags}\n${pageSchemaTag}\n${medicalClinicSchema}\n${analyticsScripts}\n${customHeadScripts}\n`;
   html = html.replace('</head>', `${headInjection}</head>`);
 
   // Inject custom footer scripts before </body>

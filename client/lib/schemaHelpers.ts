@@ -157,6 +157,12 @@ export function buildPageSchemas(page: any): any[] {
   const schemas: any[] = [];
   const customData = page.schema_data || {};
 
+  // @graph format — one block containing multiple schemas inside
+  if (customData["@graph"] && Array.isArray(customData["@graph"])) {
+    schemas.push(customData);
+    return schemas;
+  }
+
   // If we have customData but no specific types set, and it looks like a full schema, use it
   if (types.length === 0 && customData["@context"] && customData["@type"]) {
     schemas.push(customData);
