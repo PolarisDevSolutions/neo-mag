@@ -28,7 +28,12 @@ const SOCIAL_LABEL_MAP: Record<string, string> = {
 };
 
 export default function Footer() {
-  const { settings } = useSiteSettings();
+  const { settings, isLoading } = useSiteSettings();
+
+  // Do not render footer until real data is available — prevents flash of default content
+  if (isLoading) {
+    return <footer className="bg-gray-900" style={{ minHeight: "1px" }} />;
+  }
 
   const logoUrl = settings.logoUrl?.trim() || "";
   const logoAlt = settings.logoAlt?.trim() || settings.siteName?.trim() || "Logo";
@@ -52,17 +57,11 @@ export default function Footer() {
 
           {/* Tagline */}
           <div className="lg:flex-1">
-            {footerTaglineHtml ? (
+            {footerTaglineHtml && (
               <div
                 className="font-playfair text-[clamp(1.8rem,4vw,3rem)] leading-tight font-light text-white"
                 dangerouslySetInnerHTML={{ __html: footerTaglineHtml }}
               />
-            ) : (
-              <p className="font-playfair text-[clamp(1.8rem,4vw,3rem)] leading-tight font-light text-white">
-                <span className="text-neo-blue font-semibold">Your rights. Our mission.</span>
-                <br />
-                Backed by integrity and relentless representation.
-              </p>
             )}
           </div>
 
