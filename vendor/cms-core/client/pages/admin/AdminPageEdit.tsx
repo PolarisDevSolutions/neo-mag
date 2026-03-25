@@ -617,36 +617,36 @@ export default function AdminPageEdit() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="schemaData">Schema Data (JSON)</Label>
-                <p className="text-xs text-muted-foreground">
-                  Paste a complete JSON-LD object here. Must include <code>"@context"</code> and <code>"@type"</code> at the root, or use <code>"@graph"</code> for multiple schemas on one page. No Schema Type selection required when using a full JSON-LD object.
-                </p>
-                <Textarea
-                  id="schemaData"
-                  value={
-                    page.schema_data
-                      ? JSON.stringify(page.schema_data, null, 2)
-                      : ""
-                  }
-                  onChange={(e) => {
-                    try {
-                      const parsed = e.target.value
-                        ? JSON.parse(e.target.value)
-                        : null;
-                      updatePage({ schema_data: parsed });
-                    } catch {
-                      // Allow typing invalid JSON temporarily
+              {page.schema_type && (
+                <div className="space-y-2">
+                  <Label htmlFor="schemaData">Schema Data (JSON)</Label>
+                  <Textarea
+                    id="schemaData"
+                    value={
+                      page.schema_data
+                        ? JSON.stringify(page.schema_data, null, 2)
+                        : ""
                     }
-                  }}
-                  placeholder={'{\n  "@context": "https://schema.org",\n  "@type": "MedicalProcedure",\n  "name": "Magnetna rezonanca"\n}'}
-                  rows={8}
-                  className="font-mono text-sm"
-                />
-                <p className="text-sm text-gray-500">
-                  To include multiple schemas on one page, wrap them in an <code>@graph</code> array.
-                </p>
-              </div>
+                    onChange={(e) => {
+                      try {
+                        const parsed = e.target.value
+                          ? JSON.parse(e.target.value)
+                          : null;
+                        updatePage({ schema_data: parsed });
+                      } catch {
+                        // Allow typing invalid JSON temporarily
+                      }
+                    }}
+                    placeholder='{"name": "NEO MAG Niš", "telephone": "+381 18 520 640"}'
+                    rows={6}
+                    className="font-mono text-sm"
+                  />
+                  <p className="text-sm text-gray-500">
+                    Additional properties for the Schema.org type (e.g.,
+                    address, phone, etc.)
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
