@@ -36,6 +36,9 @@ export interface SiteSettings {
   phoneNumber: string; // e.g., "4049057742"
   phoneDisplay: string; // e.g., "404-905-7742"
   phoneAvailability: string; // e.g., "Available 24/7"
+  phone2Number: string;
+  phone2Display: string;
+  phone2Availability: string;
   applyPhoneGlobally: boolean;
 
   // Header CTA
@@ -85,6 +88,9 @@ export interface SiteSettingsRow {
   phone_number: string | null;
   phone_display: string | null;
   phone_availability: string | null;
+  phone_2_number: string | null;
+  phone_2_display: string | null;
+  phone_2_availability: string | null;
   apply_phone_globally: boolean;
   header_cta_text: string | null;
   header_cta_url: string | null;
@@ -117,6 +123,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   phoneNumber: "018520640",
   phoneDisplay: "018 520 640",
   phoneAvailability: "Available 24/7",
+  phone2Number: "",
+  phone2Display: "",
+  phone2Availability: "",
   applyPhoneGlobally: true,
   headerCtaText: "",
   headerCtaUrl: "",
@@ -155,6 +164,9 @@ export function rowToSiteSettings(row: SiteSettingsRow): SiteSettings {
     phoneDisplay: row.phone_display || DEFAULT_SITE_SETTINGS.phoneDisplay,
     phoneAvailability:
       row.phone_availability || DEFAULT_SITE_SETTINGS.phoneAvailability,
+    phone2Number: row.phone_2_number || DEFAULT_SITE_SETTINGS.phone2Number,
+    phone2Display: row.phone_2_display || DEFAULT_SITE_SETTINGS.phone2Display,
+    phone2Availability: row.phone_2_availability || DEFAULT_SITE_SETTINGS.phone2Availability,
     applyPhoneGlobally:
       row.apply_phone_globally ?? DEFAULT_SITE_SETTINGS.applyPhoneGlobally,
     headerCtaText: row.header_cta_text || DEFAULT_SITE_SETTINGS.headerCtaText,
@@ -195,6 +207,9 @@ export function siteSettingsToRow(
     phone_number: settings.phoneNumber,
     phone_display: settings.phoneDisplay,
     phone_availability: settings.phoneAvailability,
+    phone_2_number: settings.phone2Number,
+    phone_2_display: settings.phone2Display,
+    phone_2_availability: settings.phone2Availability,
     apply_phone_globally: settings.applyPhoneGlobally,
     header_cta_text: settings.headerCtaText,
     header_cta_url: settings.headerCtaUrl,
