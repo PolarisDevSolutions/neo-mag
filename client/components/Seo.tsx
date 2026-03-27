@@ -63,7 +63,6 @@ export default function Seo({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={fullDescription} />
-      <link rel="icon" type="image/png" href="https://cdn.builder.io/api/v1/image/assets%2F63b17c17cd28402ebbde4e53779092d0%2F43b0f4ae64634c898a35ff8085d25a38?format=webp&width=32&height=32" />
 
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
