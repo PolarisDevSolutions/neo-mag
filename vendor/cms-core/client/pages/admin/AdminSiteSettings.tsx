@@ -707,6 +707,48 @@ export default function AdminSiteSettings() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Secondary Phone Number</CardTitle>
+              <CardDescription>Second phone number displayed in header and footer</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="phone2Number">Phone Number (digits only)</Label>
+                <Input
+                  id="phone2Number"
+                  value={settings.phone2Number}
+                  onChange={(e) =>
+                    updateSettings({ phone2Number: e.target.value })
+                  }
+                  placeholder="0653520640"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone2Display">Display Format</Label>
+                <Input
+                  id="phone2Display"
+                  value={settings.phone2Display}
+                  onChange={(e) =>
+                    updateSettings({ phone2Display: e.target.value })
+                  }
+                  placeholder="065/3520-640"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone2Availability">Availability Text</Label>
+                <Input
+                  id="phone2Availability"
+                  value={settings.phone2Availability}
+                  onChange={(e) =>
+                    updateSettings({ phone2Availability: e.target.value })
+                  }
+                  placeholder=""
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Address</CardTitle>
               <CardDescription>
                 Physical address displayed in the footer
