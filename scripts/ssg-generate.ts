@@ -196,7 +196,7 @@ function buildPageSchemaTag(page: Page): string {
 
 function generatePageHTML(template: string, page: Page, siteSettings: SiteSettings): string {
   const title = page.meta_title || page.title;
-  const description = page.meta_description || '';
+  const description = (page.meta_description || page.og_description || page.title || '').trim();
   const canonical = page.canonical_url || `${siteUrl}${page.url_path}`;
   const ogTitle = page.og_title || title;
   const ogDescription = page.og_description || description;
