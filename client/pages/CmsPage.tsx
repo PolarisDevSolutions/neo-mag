@@ -88,8 +88,11 @@ export default function CmsPage() {
     );
   }
 
-  // ── Not found / error ────────────────────────────────────────────────────
-  if ((error || !page) && redirectChecked) {
+  const isNotFound = !page && redirectChecked && (!error || error.message.startsWith("Page not found"));
+  const hasLoadError = !page && redirectChecked && !!error && !error.message.startsWith("Page not found");
+
+  // ── Not found (confirmed) ────────────────────────────────────────────────
+  if (isNotFound) {
     return (
       <Layout>
         <Seo title="Stranica nije pronađena" description="" noindex={true} />
@@ -101,6 +104,30 @@ export default function CmsPage() {
             </h1>
             <p className="font-outfit text-gray-500 mb-8">
               Stranica koju tražite ne postoji ili još nije objavljena.
+            </p>
+            <Link
+              to="/"
+              className="inline-block bg-neo-blue text-white font-outfit px-8 py-3 rounded-lg hover:bg-neo-blue-dark transition-colors"
+            >
+              Povratak na početnu
+            </Link>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // ── Load error (do not emit noindex/404 SEO) ────────────────────────────
+  if (hasLoadError) {
+    return (
+      <Layout>
+        <div className="min-h-[60vh] flex items-center justify-center bg-gray-50">
+          <div className="text-center max-w-lg mx-auto px-6">
+            <h1 className="font-playfair text-3xl text-gray-900 font-light mb-3">
+              Stranica trenutno nije dostupna
+            </h1>
+            <p className="font-outfit text-gray-500 mb-8">
+              Došlo je do privremene greške pri učitavanju sadržaja. Pokušajte ponovo.
             </p>
             <Link
               to="/"

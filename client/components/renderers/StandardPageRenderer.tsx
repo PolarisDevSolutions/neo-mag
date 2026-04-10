@@ -38,7 +38,7 @@ export default function StandardPageRenderer({ page }: Props) {
         <Layout>
           <Seo
             title={page.meta_title || page.title}
-            description={page.meta_description || ""}
+            description={page.meta_description || page.og_description || page.title}
             canonical={page.canonical_url || undefined}
             image={page.og_image || undefined}
             noindex={page.noindex}
@@ -90,7 +90,7 @@ export default function StandardPageRenderer({ page }: Props) {
       <Layout>
         <Seo
         title={page.meta_title || page.title}
-        description={page.meta_description || ""}
+        description={page.meta_description || page.og_description || page.title}
         canonical={page.canonical_url || undefined}
         image={page.og_image || undefined}
         noindex={page.noindex}
@@ -115,7 +115,7 @@ export default function StandardPageRenderer({ page }: Props) {
     <Layout>
       <Seo
         title={page.meta_title || page.title}
-        description={page.meta_description || ""}
+        description={page.meta_description || page.og_description || page.title}
         canonical={page.canonical_url || undefined}
         image={page.og_image || undefined}
         noindex={page.noindex}

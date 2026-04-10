@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { buildPageSchemas } from '@site/lib/schemaHelpers';
@@ -43,6 +43,13 @@ export default function Seo({
 }: SeoProps) {
   const { pathname } = useLocation();
   const siteUrl = import.meta.env.VITE_SITE_URL || 'https://neo-mag.rs';
+  const initialPathRef = useRef(pathname);
+
+  const shouldSkipRuntimeSeo = useMemo(() => {
+    if (typeof document === 'undefined') return false;
+    if (pathname !== initialPathRef.current) return false;
+    return document.head.querySelector('[data-react-helmet]') !== null;
+  }, [pathname]);
 
   // Build full canonical URL
   const fullCanonical = canonical || (siteUrl ? `${siteUrl}${pathname}` : undefined);
@@ -51,7 +58,7 @@ export default function Seo({
   const fullTitle = title || '';
 
   // Default description
-  const fullDescription = description || '';
+  const fullDescription = (description || '').trim();
 
   // Build full image
   const fullImage = image;
@@ -59,10 +66,14 @@ export default function Seo({
   // Render JSON-LD schemas
   const schemas = page ? buildPageSchemas(page) : [];
 
+  if (shouldSkipRuntimeSeo) {
+    return null;
+  }
+
   return (
     <Helmet>
       <title>{fullTitle}</title>
-      <meta name="description" content={fullDescription} />
+      {fullDescription && <meta name="description" content={fullDescription} />}
 
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
@@ -70,7 +81,7 @@ export default function Seo({
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={fullDescription} />
+      <meta property="og:description" content={fullDescription || fullTitle} />
       <meta property="og:type" content="website" />
       {fullCanonical && <meta property="og:url" content={fullCanonical} />}
       {fullImage && <meta property="og:image" content={fullImage} />}
@@ -78,7 +89,7 @@ export default function Seo({
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={fullDescription} />
+      <meta name="twitter:description" content={fullDescription || fullTitle} />
       {fullImage && <meta name="twitter:image" content={fullImage} />}
 
       {/* JSON-LD Schemas */}
