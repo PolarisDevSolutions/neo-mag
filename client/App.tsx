@@ -1,45 +1,73 @@
-import "./global.css";
 import { Toaster } from "@/components/ui/toaster";
-import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
+import { BrowserRouter, MemoryRouter, Route, Routes } from "react-router-dom";
+import * as ReactHelmetAsync from "react-helmet-async";
+import { lazy, Suspense, useState, type ReactNode } from "react";
 import { SiteSettingsProvider } from "./contexts/SiteSettingsContext";
-import { lazy, Suspense } from "react";
+import type { SiteSettings } from "./lib/siteSettingsData";
 import CmsPage from "./pages/CmsPage";
 import ScrollToTop from "./components/ScrollToTop";
 import GlobalScripts from "./components/GlobalScripts";
 
+const { HelmetProvider } = (ReactHelmetAsync as { default?: typeof ReactHelmetAsync } & { HelmetProvider?: typeof ReactHelmetAsync }).default || ReactHelmetAsync;
+
 const AdminRoutes = lazy(() => import("./pages/AdminRoutes"));
 
-const queryClient = new QueryClient();
+type RouterMode = "browser" | "memory";
 
-const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <SiteSettingsProvider>
-        <GlobalScripts />
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <Suspense fallback={null}>
-              <Routes>
-                {/* ── Admin (CMS back-office) ────────────────────────────── */}
-                <Route path="/admin/*" element={<AdminRoutes />} />
+interface AppProps {
+  router?: RouterMode;
+  initialEntries?: string[];
+  initialSiteSettings?: SiteSettings | null;
+  helmetContext?: Record<string, unknown>;
+}
 
-                {/* ── All other paths go through CmsPage (handles 404 internally) ── */}
-                <Route path="*" element={<CmsPage />} />
-              </Routes>
-          </Suspense>
-        </BrowserRouter>
-        </TooltipProvider>
-      </SiteSettingsProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
-);
+function AppRouter({
+  mode,
+  initialEntries,
+  children,
+}: {
+  mode: RouterMode;
+  initialEntries?: string[];
+  children: ReactNode;
+}) {
+  if (mode === "memory") {
+    return <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>;
+  }
 
-createRoot(document.getElementById("root")!).render(<App />);
+  return <BrowserRouter>{children}</BrowserRouter>;
+}
+
+export default function App({
+  router = "browser",
+  initialEntries,
+  initialSiteSettings = null,
+  helmetContext,
+}: AppProps) {
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <HelmetProvider context={helmetContext}>
+      <QueryClientProvider client={queryClient}>
+        <SiteSettingsProvider initialSettings={initialSiteSettings}>
+          <GlobalScripts />
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <AppRouter mode={router} initialEntries={initialEntries}>
+              <ScrollToTop />
+              <Suspense fallback={null}>
+                <Routes>
+                  <Route path="/admin/*" element={<AdminRoutes />} />
+                  <Route path="*" element={<CmsPage />} />
+                </Routes>
+              </Suspense>
+            </AppRouter>
+          </TooltipProvider>
+        </SiteSettingsProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+}

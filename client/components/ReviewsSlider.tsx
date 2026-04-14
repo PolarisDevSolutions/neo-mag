@@ -8,8 +8,16 @@
 import { useState, useEffect, useRef } from "react";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+function getClientEnv(name: string): string {
+  if (typeof import.meta !== "undefined" && (import.meta as ImportMeta & { env?: Record<string, string> }).env) {
+    return (import.meta as ImportMeta & { env?: Record<string, string> }).env?.[name] || "";
+  }
+
+  return "";
+}
+
+const SUPABASE_URL = getClientEnv("VITE_SUPABASE_URL");
+const SUPABASE_ANON_KEY = getClientEnv("VITE_SUPABASE_ANON_KEY");
 
 interface Review {
   id: string;
@@ -28,7 +36,6 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // ── Fetch from DB ────────────────────────────────────────────────────────
   useEffect(() => {
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
 
@@ -46,14 +53,12 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
       .catch(() => {/* silently degrade */});
   }, []);
 
-  // Group reviews into slides of CARDS_PER_SLIDE
   const slides: Review[][] = [];
   for (let i = 0; i < reviews.length; i += CARDS_PER_SLIDE) {
     slides.push(reviews.slice(i, i + CARDS_PER_SLIDE));
   }
   const totalSlides = slides.length;
 
-  // ── Auto-advance ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (totalSlides <= 1 || paused) return;
 
@@ -82,7 +87,6 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
             {heading}
           </h2>
         )}
-        {/* Controls row */}
         {totalSlides > 1 && (
           <div className="flex justify-end mb-4 gap-2">
             <button
@@ -102,7 +106,6 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
           </div>
         )}
 
-        {/* Slider track */}
         <div
           className="overflow-hidden"
           onMouseEnter={() => setPaused(true)}
@@ -122,7 +125,6 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
                       itemScope
                       itemType="https://schema.org/Review"
                     >
-                      {/* Stars */}
                       <div className="flex gap-1 mb-3" aria-label={`Ocena: ${review.rating} od 5`}>
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
@@ -136,7 +138,6 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
                         ))}
                       </div>
 
-                      {/* Review text */}
                       <p
                         className="font-outfit text-gray-700 text-sm leading-relaxed mb-3 italic line-clamp-4"
                         itemProp="reviewBody"
@@ -144,7 +145,6 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
                         "{review.text}"
                       </p>
 
-                      {/* Author */}
                       <p className="font-outfit font-semibold text-gray-900 text-sm" itemProp="author">
                         — {review.name}
                         {review.location && (
@@ -159,7 +159,6 @@ export default function ReviewsSlider({ heading }: { heading?: string }) {
           </div>
         </div>
 
-        {/* Dot indicators */}
         {totalSlides > 1 && (
           <div className="flex justify-center gap-2 mt-5" role="tablist" aria-label="Slajdovi recenzija">
             {slides.map((_, i) => (

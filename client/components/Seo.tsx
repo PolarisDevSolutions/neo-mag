@@ -1,7 +1,9 @@
 import { Fragment, useMemo, useRef } from 'react';
-import { Helmet } from 'react-helmet-async';
+import * as ReactHelmetAsync from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { buildPageSchemas } from '@site/lib/schemaHelpers';
+
+const { Helmet } = (ReactHelmetAsync as { default?: typeof ReactHelmetAsync } & { Helmet?: typeof ReactHelmetAsync }).default || ReactHelmetAsync;
 
 interface SeoProps {
   title?: string;
@@ -15,6 +17,14 @@ interface SeoProps {
 /**
  * Helper to render JSON-LD safely
  */
+function getSiteUrl() {
+  if (typeof import.meta !== 'undefined' && (import.meta as ImportMeta & { env?: Record<string, string> }).env) {
+    return (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_SITE_URL || 'https://neo-mag.rs';
+  }
+
+  return 'https://neo-mag.rs';
+}
+
 function renderJsonLd(schema: any) {
   if (!schema) return null;
   try {
@@ -42,13 +52,13 @@ export default function Seo({
   page
 }: SeoProps) {
   const { pathname } = useLocation();
-  const siteUrl = import.meta.env.VITE_SITE_URL || 'https://neo-mag.rs';
+  const siteUrl = getSiteUrl();
   const initialPathRef = useRef(pathname);
 
   const shouldSkipRuntimeSeo = useMemo(() => {
     if (typeof document === 'undefined') return false;
     if (pathname !== initialPathRef.current) return false;
-    return document.head.querySelector('[data-react-helmet]') !== null;
+    return document.head.querySelector('[data-rh], [data-react-helmet]') !== null;
   }, [pathname]);
 
   // Build full canonical URL

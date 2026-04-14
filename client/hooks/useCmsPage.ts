@@ -1,24 +1,11 @@
-import { useState, useEffect } from "react";
-import type { ContentBlock } from "@site/lib/blocks";
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-
-export interface CmsPageData {
-  id: string;
-  title: string;
-  url_path: string;
-  page_type: "standard" | "practice" | "landing";
-  content: ContentBlock[];
-  meta_title: string | null;
-  meta_description: string | null;
-  canonical_url: string | null;
-  og_title: string | null;
-  og_description: string | null;
-  og_image: string | null;
-  noindex: boolean;
-  status: "draft" | "published";
-}
+import { useEffect, useState } from "react";
+import {
+  clearCmsPageCache as clearSharedCmsPageCache,
+  fetchCmsPageByPath,
+  getCachedCmsPage,
+  normalizeCmsPath,
+  type CmsPageData,
+} from "@site/lib/cmsPageData";
 
 interface UseCmsPageResult {
   page: CmsPageData | null;
@@ -26,20 +13,22 @@ interface UseCmsPageResult {
   error: Error | null;
 }
 
-const pageCache = new Map<string, CmsPageData>();
+export type { CmsPageData } from "@site/lib/cmsPageData";
 
 export function useCmsPage(urlPath: string): UseCmsPageResult {
+  const normalizedPath = normalizeCmsPath(urlPath);
   const [page, setPage] = useState<CmsPageData | null>(
-    pageCache.get(urlPath) ?? null,
+    getCachedCmsPage(normalizedPath),
   );
-  const [isLoading, setIsLoading] = useState(!pageCache.has(urlPath));
+  const [isLoading, setIsLoading] = useState(!getCachedCmsPage(normalizedPath));
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let isMounted = true;
+    const cachedPage = getCachedCmsPage(normalizedPath);
 
-    if (pageCache.has(urlPath)) {
-      setPage(pageCache.get(urlPath)!);
+    if (cachedPage) {
+      setPage(cachedPage);
       setIsLoading(false);
       return;
     }
@@ -49,36 +38,15 @@ export function useCmsPage(urlPath: string): UseCmsPageResult {
 
     async function fetchPage() {
       try {
-        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-          throw new Error("Supabase env vars not configured");
-        }
+        const pageData = await fetchCmsPageByPath(normalizedPath);
 
-        const response = await fetch(
-          `${SUPABASE_URL}/rest/v1/pages?url_path=eq.${encodeURIComponent(urlPath)}&select=*&limit=1`,
-          {
-            headers: {
-              apikey: SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-            },
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
+        if (!pageData) {
           if (isMounted) {
             setPage(null);
-            setError(new Error(`Page not found: ${urlPath}`));
+            setError(new Error(`Page not found: ${normalizedPath}`));
           }
           return;
         }
-
-        const pageData = data[0] as CmsPageData;
-        pageCache.set(urlPath, pageData);
 
         if (isMounted) {
           setPage(pageData);
@@ -89,7 +57,9 @@ export function useCmsPage(urlPath: string): UseCmsPageResult {
           setError(err instanceof Error ? err : new Error("Unknown error"));
         }
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
 
@@ -98,15 +68,11 @@ export function useCmsPage(urlPath: string): UseCmsPageResult {
     return () => {
       isMounted = false;
     };
-  }, [urlPath]);
+  }, [normalizedPath]);
 
   return { page, isLoading, error };
 }
 
 export function clearCmsPageCache(urlPath?: string) {
-  if (urlPath) {
-    pageCache.delete(urlPath);
-  } else {
-    pageCache.clear();
-  }
+  clearSharedCmsPageCache(urlPath);
 }

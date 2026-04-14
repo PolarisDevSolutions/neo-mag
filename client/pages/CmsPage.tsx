@@ -6,9 +6,18 @@ import StandardPageRenderer from "@site/components/renderers/StandardPageRendere
 import Layout from "@site/components/layout/Layout";
 import Seo from "@site/components/Seo";
 import { useEffect, useState } from "react";
+import { normalizeCmsPath } from "@site/lib/cmsPageData";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+function getClientEnv(name: string): string {
+  if (typeof import.meta !== "undefined" && (import.meta as ImportMeta & { env?: Record<string, string> }).env) {
+    return (import.meta as ImportMeta & { env?: Record<string, string> }).env?.[name] || "";
+  }
+
+  return "";
+}
+
+const SUPABASE_URL = getClientEnv("VITE_SUPABASE_URL");
+const SUPABASE_ANON_KEY = getClientEnv("VITE_SUPABASE_ANON_KEY");
 
 /**
  * Generic CMS-driven page component.
@@ -22,8 +31,7 @@ export default function CmsPage() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  // Normalize: ensure trailing slash matches how pages are stored
-  const urlPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
+  const urlPath = normalizeCmsPath(pathname);
 
   const { page, isLoading, error } = useCmsPage(urlPath);
 

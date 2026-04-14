@@ -1,36 +1,43 @@
-import { createClient } from '@supabase/supabase-js';
-import fs from 'fs';
-import path from 'path';
-import type { Database } from '../client/lib/database.types';
+import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import React from "react";
+import { renderToString } from "react-dom/server";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "../client/lib/database.types";
+import App from "../client/App";
+import {
+  clearCmsPageCache,
+  mapCmsPageData,
+  normalizeCmsPath,
+  primeCmsPageCacheEntries,
+  type CmsPageData,
+} from "../client/lib/cmsPageData";
+import {
+  clearSiteSettingsCache,
+  mapSiteSettingsRow,
+  primeSiteSettingsCache,
+  type SiteSettings,
+} from "../client/lib/siteSettingsData";
+import {
+  PRERENDER_PAYLOAD_SCRIPT_ID,
+  serializePrerenderPayload,
+  type PrerenderPayload,
+} from "../client/lib/prerenderState";
 
-// Load environment variables
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const siteUrl = process.env.VITE_SITE_URL || 'https://neo-mag.rs';
+const siteUrl = process.env.VITE_SITE_URL || "https://neo-mag.rs";
 
 if (!supabaseUrl || !supabaseServiceRoleKey) {
-  console.log('Supabase credentials not configured. Skipping SSG generation.');
-  console.log('To enable SSG, set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.');
+  console.log("Supabase credentials not configured. Skipping SSG generation.");
+  console.log(
+    "To enable SSG, set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+  );
   process.exit(0);
 }
 
 const supabase = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
-
-interface Page {
-  id: string;
-  title: string;
-  url_path: string;
-  meta_title: string | null;
-  meta_description: string | null;
-  canonical_url: string | null;
-  og_title: string | null;
-  og_description: string | null;
-  og_image: string | null;
-  noindex: boolean;
-  updated_at: string;
-  schema_type: string | null;
-  schema_data: Record<string, unknown> | null;
-}
 
 interface Redirect {
   from_path: string;
@@ -38,338 +45,392 @@ interface Redirect {
   status_code: number;
 }
 
-interface SiteSettings {
-  site_noindex: boolean;
-  ga4_measurement_id: string | null;
-  google_ads_id: string | null;
-  google_ads_conversion_label: string | null;
-  head_scripts: string | null;
-  footer_scripts: string | null;
-}
-
-async function generateSSG() {
-  console.log('Starting SSG generation...');
-
-  // 0. Fetch site settings for analytics and scripts
-  const { data: siteSettingsData } = await supabase
-    .from('site_settings')
-    .select('site_noindex, ga4_measurement_id, google_ads_id, google_ads_conversion_label, head_scripts, footer_scripts')
-    .eq('settings_key', 'global')
-    .single();
-
-  const siteSettings: SiteSettings = siteSettingsData || {
-    site_noindex: false,
-    ga4_measurement_id: null,
-    google_ads_id: null,
-    google_ads_conversion_label: null,
-    head_scripts: null,
-    footer_scripts: null,
-  };
-
-  console.log('Site settings loaded:', {
-    siteNoindex: siteSettings.site_noindex,
-    hasGA4: !!siteSettings.ga4_measurement_id,
-    hasGoogleAds: !!siteSettings.google_ads_id,
-    hasHeadScripts: !!siteSettings.head_scripts,
-    hasFooterScripts: !!siteSettings.footer_scripts,
-  });
-
-  // 1. Fetch all published pages
-  const { data: pages, error: pagesError } = await supabase
-    .from('pages')
-    .select('id, title, url_path, meta_title, meta_description, canonical_url, og_title, og_description, og_image, noindex, updated_at, schema_type, schema_data')
-    .eq('status', 'published');
-
-  if (pagesError) {
-    console.error('Error fetching pages:', pagesError);
-    process.exit(1);
-  }
-
-  console.log(`Found ${pages?.length || 0} published pages`);
-
-  // 2. Read the SPA index.html as template
-  const templatePath = path.join(process.cwd(), 'dist/spa/index.html');
-  if (!fs.existsSync(templatePath)) {
-    console.error('Template not found at dist/spa/index.html. Run build:client first.');
-    process.exit(1);
-  }
-
-  const template = fs.readFileSync(templatePath, 'utf-8');
-
-  // 3. For each page, generate static HTML with SEO meta tags
-  for (const page of pages || []) {
-    const html = generatePageHTML(template, page, siteSettings);
-    
-    let outputPath: string;
-    if (page.url_path === '/') {
-      outputPath = path.join(process.cwd(), 'dist/spa/index.html');
-    } else {
-      const pagePath = page.url_path.startsWith('/') ? page.url_path.slice(1) : page.url_path;
-      outputPath = path.join(process.cwd(), 'dist/spa', pagePath, 'index.html');
-    }
-    
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, html);
-    console.log(`Generated: ${page.url_path}`);
-  }
-
-  // 4. Fetch and generate _redirects
-  const { data: redirects, error: redirectsError } = await supabase
-    .from('redirects')
-    .select('from_path, to_path, status_code')
-    .eq('enabled', true);
-
-  if (redirectsError) {
-    console.error('Error fetching redirects:', redirectsError);
-  } else if (redirects && redirects.length > 0) {
-    const redirectsContent = redirects
-      .map((r: Redirect) => `${r.from_path} ${r.to_path} ${r.status_code}`)
-      .join('\n');
-    
-    // Append SPA fallback to redirects
-    const fullRedirectsContent = redirectsContent + '\n/* /index.html 200';
-    fs.writeFileSync(path.join(process.cwd(), 'dist/spa/_redirects'), fullRedirectsContent);
-    console.log(`Generated _redirects with ${redirects.length} redirects`);
-  } else {
-    // Just create SPA fallback
-    fs.writeFileSync(path.join(process.cwd(), 'dist/spa/_redirects'), '/* /index.html 200');
-    console.log('Generated _redirects with SPA fallback');
-  }
-
-  // 5. Generate sitemap.xml (only if site is indexable)
-  if (!siteSettings.site_noindex) {
-    const sitemap = generateSitemap(pages || [], siteUrl);
-    fs.writeFileSync(path.join(process.cwd(), 'dist/spa/sitemap.xml'), sitemap);
-    console.log('Generated sitemap.xml');
-  } else {
-    // Remove sitemap if it exists when site is noindex
-    const sitemapPath = path.join(process.cwd(), 'dist/spa/sitemap.xml');
-    if (fs.existsSync(sitemapPath)) {
-      fs.unlinkSync(sitemapPath);
-    }
-    console.log('Skipped sitemap.xml (site is noindex)');
-  }
-
-  // 6. Generate robots.txt (conditional based on site_noindex)
-  let robotsTxt: string;
-  if (siteSettings.site_noindex) {
-    // Block all crawlers when site is noindex
-    robotsTxt = `User-agent: *
-Disallow: /`;
-    console.log('Generated robots.txt with Disallow (site is noindex)');
-  } else {
-    // Allow crawlers and reference sitemap
-    robotsTxt = `User-agent: *
-Allow: /
-
-Sitemap: ${siteUrl}/sitemap.xml`;
-    console.log('Generated robots.txt with Allow');
-  }
-  fs.writeFileSync(path.join(process.cwd(), 'dist/spa/robots.txt'), robotsTxt);
-
-  console.log('SSG generation complete!');
-}
-
-/**
- * Builds a <script type="application/ld+json"> tag for per-page schema.
- * Supports:
- *  - @graph format (multiple schemas in one block)
- *  - single schema with @context + @type at root
- * Does NOT use data-react-helmet so React Helmet never removes it.
- */
-function buildPageSchemaTag(page: Page): string {
-  const data = page.schema_data;
-  if (!data || typeof data !== 'object') return '';
-
-  // @graph format — full JSON-LD wrapper with multiple schemas inside
-  if (data['@graph'] && Array.isArray(data['@graph'])) {
-    return `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n</script>`;
-  }
-
-  // Single schema — must have @context and @type at root
-  if (data['@context'] && data['@type']) {
-    return `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n</script>`;
-  }
-
-  return '';
-}
-
-function generatePageHTML(template: string, page: Page, siteSettings: SiteSettings): string {
-  const title = page.meta_title || page.title;
-  const description = (page.meta_description || page.og_description || page.title || '').trim();
-  const canonical = page.canonical_url || `${siteUrl}${page.url_path}`;
-  const ogTitle = page.og_title || title;
-  const ogDescription = page.og_description || description;
-  
-  const metaTags = `
-    <title data-react-helmet="true">${escapeHtml(title)}</title>
-    <meta data-react-helmet="true" name="description" content="${escapeHtml(description)}">
-    <link data-react-helmet="true" rel="canonical" href="${escapeHtml(canonical)}">
-    <meta data-react-helmet="true" property="og:title" content="${escapeHtml(ogTitle)}">
-    <meta data-react-helmet="true" property="og:description" content="${escapeHtml(ogDescription)}">
-    <meta data-react-helmet="true" property="og:url" content="${escapeHtml(canonical)}">
-    <meta data-react-helmet="true" property="og:type" content="website">
-    ${page.og_image ? `<meta data-react-helmet="true" property="og:image" content="${escapeHtml(page.og_image)}">` : ''}
-    ${page.noindex || siteSettings.site_noindex ? '<meta data-react-helmet="true" name="robots" content="noindex, nofollow">' : ''}
-    <meta data-react-helmet="true" name="twitter:card" content="summary_large_image">
-    <meta data-react-helmet="true" name="twitter:title" content="${escapeHtml(ogTitle)}">
-    <meta data-react-helmet="true" name="twitter:description" content="${escapeHtml(ogDescription)}">
-    ${page.og_image ? `<meta data-react-helmet="true" name="twitter:image" content="${escapeHtml(page.og_image)}">` : ''}
-  `;
-
-  // Generate analytics scripts
-  let analyticsScripts = '';
-
-  // GA4 Script
-  if (siteSettings.ga4_measurement_id) {
-    analyticsScripts += `
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=${escapeHtml(siteSettings.ga4_measurement_id)}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '${escapeHtml(siteSettings.ga4_measurement_id)}');
-    </script>`;
-  }
-
-  // Google Ads Script
-  if (siteSettings.google_ads_id) {
-    // Only add gtag.js if not already added by GA4
-    if (!siteSettings.ga4_measurement_id) {
-      analyticsScripts += `
-    <!-- Google Ads -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=${escapeHtml(siteSettings.google_ads_id)}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    </script>`;
-    }
-    analyticsScripts += `
-    <script>
-      gtag('config', '${escapeHtml(siteSettings.google_ads_id)}');
-    </script>`;
-  }
-
-  // Custom head scripts
-  const customHeadScripts = siteSettings.head_scripts || '';
-
-  // Custom footer scripts
-  const customFooterScripts = siteSettings.footer_scripts || '';
-
-  // MedicalClinic JSON-LD schema — injected into every page without data-react-helmet so it is never removed
-  const medicalClinicSchema = `<script type="application/ld+json">
-${JSON.stringify({
+const MEDICAL_CLINIC_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "MedicalClinic",
   "@id": "https://neo-mag.rs/#medicalclinic",
-  "name": "Neo Mag Dijagnostički Centar",
-  "url": "https://neo-mag.rs",
-  "logo": "https://jphaxpojinhibagvsdmq.supabase.co/storage/v1/object/public/media/library/1771690586774-3gxybq.webp",
-  "image": "https://jphaxpojinhibagvsdmq.supabase.co/storage/v1/object/public/media/library/1771690586774-3gxybq.webp",
-  "telephone": "+38118520640",
-  "email": "neomagnis@gmail.com",
-  "address": {
+  name: "Neo Mag Dijagnostički Centar",
+  url: "https://neo-mag.rs",
+  logo: "https://jphaxpojinhibagvsdmq.supabase.co/storage/v1/object/public/media/library/1771690586774-3gxybq.webp",
+  image:
+    "https://jphaxpojinhibagvsdmq.supabase.co/storage/v1/object/public/media/library/1771690586774-3gxybq.webp",
+  telephone: "+38118520640",
+  email: "neomagnis@gmail.com",
+  address: {
     "@type": "PostalAddress",
-    "streetAddress": "9. Brigade 1",
-    "addressLocality": "Niš",
-    "postalCode": "18000",
-    "addressCountry": "RS"
+    streetAddress: "9. Brigade 1",
+    addressLocality: "Niš",
+    postalCode: "18000",
+    addressCountry: "RS",
   },
-  "geo": {
+  geo: {
     "@type": "GeoCoordinates",
-    "latitude": 43.3171717,
-    "longitude": 21.9035082
+    latitude: 43.3171717,
+    longitude: 21.9035082,
   },
-  "sameAs": [
-    "https://www.google.com/maps/place/Neo+Mag/@43.3171717,21.9035082,17z"
+  sameAs: [
+    "https://www.google.com/maps/place/Neo+Mag/@43.3171717,21.9035082,17z",
   ],
-  "areaServed": {
+  areaServed: {
     "@type": "AdministrativeArea",
-    "name": "Niš"
+    name: "Niš",
   },
-  "medicalSpecialty": [
+  medicalSpecialty: [
     "Radiology",
     "DiagnosticImaging",
     "Neurology",
     "Neurosurgery",
     "Orthopedics",
-    "Cardiology"
+    "Cardiology",
   ],
-  "availableService": [
-    { "@type": "MedicalProcedure", "name": "Magnetna rezonanca" },
-    { "@type": "MedicalProcedure", "name": "Rendgen dijagnostika" },
-    { "@type": "MedicalProcedure", "name": "Ultrazvučna dijagnostika" },
-    { "@type": "MedicalProcedure", "name": "Multislajsni CT skener" },
-    { "@type": "MedicalProcedure", "name": "Specijalistički pregledi" }
+  availableService: [
+    { "@type": "MedicalProcedure", name: "Magnetna rezonanca" },
+    { "@type": "MedicalProcedure", name: "Rendgen dijagnostika" },
+    { "@type": "MedicalProcedure", name: "Ultrazvučna dijagnostika" },
+    { "@type": "MedicalProcedure", name: "Multislajsni CT skener" },
+    { "@type": "MedicalProcedure", name: "Specijalistički pregledi" },
   ],
-  "openingHoursSpecification": [
+  openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      "opens": "08:00",
-      "closes": "21:00"
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "08:00",
+      closes: "21:00",
     },
     {
       "@type": "OpeningHoursSpecification",
-      "dayOfWeek": "Saturday",
-      "opens": "09:00",
-      "closes": "15:00"
-    }
+      dayOfWeek: "Saturday",
+      opens: "09:00",
+      closes: "15:00",
+    },
   ],
-  "founder": [
-    { "@type": "Physician", "name": "Prof Dr Vesna Nikolov", "medicalSpecialty": "Neurosurgery" },
-    { "@type": "Physician", "name": "Dr Luka Berilažić", "medicalSpecialty": "Neurosurgery" }
+  founder: [
+    {
+      "@type": "Physician",
+      name: "Prof Dr Vesna Nikolov",
+      medicalSpecialty: "Neurosurgery",
+    },
+    {
+      "@type": "Physician",
+      name: "Dr Luka Berilažić",
+      medicalSpecialty: "Neurosurgery",
+    },
+  ],
+};
+
+async function generateSSG() {
+  console.log("Starting SSG generation...");
+
+  const siteSettings = await fetchSiteSettings();
+  const pages = await fetchPublishedPages();
+  const pageMap = new Map<string, CmsPageData>(
+    pages.map((page) => [normalizeCmsPath(page.url_path), page]),
+  );
+  const homepage = pageMap.get("/") || null;
+
+  console.log("Site settings loaded:", {
+    siteNoindex: siteSettings.siteNoindex,
+    hasGA4: !!siteSettings.ga4MeasurementId,
+    hasGoogleAds: !!siteSettings.googleAdsId,
+    hasHeadScripts: !!siteSettings.headScripts,
+    hasFooterScripts: !!siteSettings.footerScripts,
+  });
+  console.log(`Found ${pages.length} published pages`);
+
+  const templatePath = path.join(process.cwd(), "dist/spa/index.html");
+  if (!fs.existsSync(templatePath)) {
+    console.error(
+      "Template not found at dist/spa/index.html. Run build:client first.",
+    );
+    process.exit(1);
+  }
+
+  const template = fs.readFileSync(templatePath, "utf-8");
+
+  for (const page of pages) {
+    const normalizedPath = normalizeCmsPath(page.url_path);
+    const prerenderPages = buildPrerenderPages(page, homepage);
+    const html = renderPageHtml({
+      template,
+      normalizedPath,
+      prerenderPages,
+      siteSettings,
+    });
+
+    const outputPath = getOutputPath(normalizedPath);
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, html);
+    console.log(`Generated: ${normalizedPath}`);
+  }
+
+  await generateRedirects();
+  generateSitemap(pages, siteSettings.siteNoindex);
+  generateRobots(siteSettings.siteNoindex);
+
+  console.log("SSG generation complete!");
+}
+
+async function fetchSiteSettings(): Promise<SiteSettings> {
+  const { data } = await supabase
+    .from("site_settings")
+    .select(
+      "site_name, logo_url, logo_alt, phone_number, phone_display, phone_availability, phone_2_number, phone_2_display, phone_2_availability, apply_phone_globally, header_cta_text, header_cta_url, navigation_items, footer_about_links, footer_practice_links, footer_tagline_html, address_line1, address_line2, map_embed_url, social_links, copyright_text, site_noindex, ga4_measurement_id, google_ads_id, google_ads_conversion_label, head_scripts, footer_scripts",
+    )
+    .eq("settings_key", "global")
+    .single();
+
+  return mapSiteSettingsRow(data || {});
+}
+
+async function fetchPublishedPages(): Promise<CmsPageData[]> {
+  const { data, error } = await supabase
+    .from("pages")
+    .select(
+      "id, title, url_path, page_type, content, meta_title, meta_description, canonical_url, og_title, og_description, og_image, noindex, status, updated_at, schema_type, schema_data",
+    )
+    .eq("status", "published");
+
+  if (error) {
+    console.error("Error fetching pages:", error);
+    process.exit(1);
+  }
+
+  return (data || []).map((row) => mapCmsPageData(row));
+}
+
+function buildPrerenderPages(
+  currentPage: CmsPageData,
+  homepage: CmsPageData | null,
+): Record<string, CmsPageData> {
+  const pages: Record<string, CmsPageData> = {
+    [normalizeCmsPath(currentPage.url_path)]: currentPage,
+  };
+
+  if (homepage) {
+    pages["/"] = homepage;
+  }
+
+  return pages;
+}
+
+function renderPageHtml({
+  template,
+  normalizedPath,
+  prerenderPages,
+  siteSettings,
+}: {
+  template: string;
+  normalizedPath: string;
+  prerenderPages: Record<string, CmsPageData>;
+  siteSettings: SiteSettings;
+}) {
+  clearCmsPageCache();
+  clearSiteSettingsCache();
+  primeCmsPageCacheEntries(prerenderPages);
+  primeSiteSettingsCache(siteSettings);
+
+  const helmetContext: { helmet?: any } = {};
+  const bodyHtml = renderToString(
+    React.createElement(App, {
+      router: "memory",
+      initialEntries: [normalizedPath],
+      initialSiteSettings: siteSettings,
+      helmetContext,
+    }),
+  );
+
+  const helmet = helmetContext.helmet;
+  const helmetTags = [
+    helmet?.title?.toString?.() || "",
+    helmet?.priority?.toString?.() || "",
+    helmet?.meta?.toString?.() || "",
+    helmet?.link?.toString?.() || "",
+    helmet?.script?.toString?.() || "",
+    helmet?.style?.toString?.() || "",
+    helmet?.noscript?.toString?.() || "",
   ]
-}, null, 2)}
-</script>`;
+    .filter(Boolean)
+    .join("\n");
 
-  // Per-page schema (injected before MedicalClinic site-wide schema)
-  const pageSchemaTag = buildPageSchemaTag(page);
+  const payload: PrerenderPayload = {
+    normalizedPath,
+    pages: prerenderPages,
+    siteSettings,
+  };
 
-  // Replace the existing <title> tag and inject our meta tags before </head>
-  let html = template.replace(/<title>.*?<\/title>/, '');
+  const payloadScript = `<script id="${PRERENDER_PAYLOAD_SCRIPT_ID}" type="application/json">${serializePrerenderPayload(
+    payload,
+  )}</script>`;
 
-  // Inject meta tags, per-page schema, site-wide schema, analytics, and custom head scripts before </head>
-  const headInjection = `${metaTags}\n${pageSchemaTag}\n${medicalClinicSchema}\n${analyticsScripts}\n${customHeadScripts}\n`;
-  html = html.replace('</head>', `${headInjection}</head>`);
+  let html = template.replace(/<title>.*?<\/title>/s, "");
+  html = html.replace(
+    /<div id="root"><\/div>/,
+    `<div id="root">${bodyHtml}</div>${payloadScript}`,
+  );
 
-  // Inject custom footer scripts before </body>
-  if (customFooterScripts) {
-    html = html.replace('</body>', `${customFooterScripts}\n</body>`);
+  const headInjection = [
+    helmetTags,
+    `<script type="application/ld+json">${JSON.stringify(MEDICAL_CLINIC_SCHEMA)}</script>`,
+    buildAnalyticsScripts(siteSettings),
+    siteSettings.headScripts || "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  html = html.replace("</head>", `${headInjection}</head>`);
+
+  if (siteSettings.footerScripts) {
+    html = html.replace("</body>", `${siteSettings.footerScripts}\n</body>`);
   }
 
   return html;
 }
 
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+function buildAnalyticsScripts(siteSettings: SiteSettings): string {
+  let analyticsScripts = "";
+
+  if (siteSettings.ga4MeasurementId) {
+    analyticsScripts += `
+<script async src="https://www.googletagmanager.com/gtag/js?id=${escapeHtml(
+      siteSettings.ga4MeasurementId,
+    )}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${escapeHtml(siteSettings.ga4MeasurementId)}');
+</script>`;
+  }
+
+  if (siteSettings.googleAdsId) {
+    if (!siteSettings.ga4MeasurementId) {
+      analyticsScripts += `
+<script async src="https://www.googletagmanager.com/gtag/js?id=${escapeHtml(
+        siteSettings.googleAdsId,
+      )}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>`;
+    }
+
+    analyticsScripts += `
+<script>
+  gtag('config', '${escapeHtml(siteSettings.googleAdsId)}');
+</script>`;
+  }
+
+  return analyticsScripts.trim();
 }
 
-function generateSitemap(pages: Page[], siteUrl: string): string {
-  const urls = pages
-    .filter(p => !p.noindex)
-    .map(p => `  <url>
-    <loc>${siteUrl}${p.url_path}</loc>
-    <lastmod>${new Date(p.updated_at).toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${p.url_path === '/' ? '1.0' : '0.8'}</priority>
-  </url>`)
-    .join('\n');
+function getOutputPath(normalizedPath: string): string {
+  if (normalizedPath === "/") {
+    return path.join(process.cwd(), "dist/spa/index.html");
+  }
 
-  return `<?xml version="1.0" encoding="UTF-8"?>
+  const relativePath = normalizedPath.replace(/^\//, "").replace(/\/$/, "");
+  return path.join(process.cwd(), "dist/spa", relativePath, "index.html");
+}
+
+async function generateRedirects() {
+  const { data: redirects, error } = await supabase
+    .from("redirects")
+    .select("from_path, to_path, status_code")
+    .eq("enabled", true);
+
+  if (error) {
+    console.error("Error fetching redirects:", error);
+    return;
+  }
+
+  if (redirects && redirects.length > 0) {
+    const redirectsContent = redirects
+      .map(
+        (redirect: Redirect) =>
+          `${normalizeRedirectPath(redirect.from_path)} ${normalizeRedirectPath(redirect.to_path)} ${redirect.status_code}`,
+      )
+      .join("\n");
+
+    fs.writeFileSync(
+      path.join(process.cwd(), "dist/spa/_redirects"),
+      `${redirectsContent}\n/* /index.html 200`,
+    );
+    console.log(`Generated _redirects with ${redirects.length} redirects`);
+    return;
+  }
+
+  fs.writeFileSync(path.join(process.cwd(), "dist/spa/_redirects"), "/* /index.html 200");
+  console.log("Generated _redirects with SPA fallback");
+}
+
+function normalizeRedirectPath(value: string): string {
+  return value.startsWith("/") ? normalizeCmsPath(value) : value;
+}
+
+function generateSitemap(pages: CmsPageData[], siteNoindex: boolean) {
+  if (siteNoindex) {
+    const sitemapPath = path.join(process.cwd(), "dist/spa/sitemap.xml");
+    if (fs.existsSync(sitemapPath)) {
+      fs.unlinkSync(sitemapPath);
+    }
+    console.log("Skipped sitemap.xml (site is noindex)");
+    return;
+  }
+
+  const urls = pages
+    .filter((page) => !page.noindex)
+    .map((page) => {
+      const normalizedPath = normalizeCmsPath(page.url_path);
+      const lastModified = page.updated_at
+        ? new Date(page.updated_at).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0];
+
+      return `  <url>
+    <loc>${siteUrl}${normalizedPath}</loc>
+    <lastmod>${lastModified}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${normalizedPath === "/" ? "1.0" : "0.8"}</priority>
+  </url>`;
+    })
+    .join("\n");
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>`;
+
+  fs.writeFileSync(path.join(process.cwd(), "dist/spa/sitemap.xml"), sitemap);
+  console.log("Generated sitemap.xml");
 }
 
-generateSSG().catch(err => {
-  console.error('SSG generation failed:', err);
+function generateRobots(siteNoindex: boolean) {
+  const robotsTxt = siteNoindex
+    ? `User-agent: *
+Disallow: /`
+    : `User-agent: *
+Allow: /
+
+Sitemap: ${siteUrl}/sitemap.xml`;
+
+  fs.writeFileSync(path.join(process.cwd(), "dist/spa/robots.txt"), robotsTxt);
+  console.log(
+    siteNoindex
+      ? "Generated robots.txt with Disallow (site is noindex)"
+      : "Generated robots.txt with Allow",
+  );
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+generateSSG().catch((err) => {
+  console.error("SSG generation failed:", err);
   process.exit(1);
 });
