@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Star, Phone, Activity, FileText, Waves, Layers,
@@ -708,8 +708,8 @@ function AttorneyBioBlock({ block, globalPhone }: { block: Extract<ContentBlock,
 // ── Tabs Section ──────────────────────────────────────────────────────────
 function TabsSectionBlock({ block }: { block: any }) {
   const [activeTab, setActiveTab] = useState(0);
+  const tabsSectionId = useId();
   const tabs = block.tabs || [];
-  const currentTab = tabs[activeTab];
 
   if (tabs.length === 0) return null;
 
@@ -723,73 +723,103 @@ function TabsSectionBlock({ block }: { block: any }) {
         )}
 
         {/* Tab Buttons */}
-        <div className="flex flex-wrap md:flex-nowrap pb-2 mb-8 border-b border-gray-100 gap-2 sm:gap-4 justify-center">
-          {tabs.map((tab: any, i: number) => (
-            <button
-              key={i}
-              onClick={() => setActiveTab(i)}
-              className={`px-4 sm:px-6 py-3 font-outfit font-bold text-sm md:text-base transition-all relative ${
-                activeTab === i
-                  ? "text-neo-blue"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              {tab.label}
-              {activeTab === i && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neo-blue" />
-              )}
-            </button>
-          ))}
+        <div
+          className="flex flex-wrap md:flex-nowrap pb-2 mb-8 border-b border-gray-100 gap-2 sm:gap-4 justify-center"
+          role="tablist"
+          aria-label={block.heading || "Tabs section"}
+        >
+          {tabs.map((tab: any, i: number) => {
+            const tabId = `${tabsSectionId}-tab-${i}`;
+            const panelId = `${tabsSectionId}-panel-${i}`;
+            const isActive = activeTab === i;
+
+            return (
+              <button
+                key={tab.label || i}
+                id={tabId}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={panelId}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => setActiveTab(i)}
+                className={`px-4 sm:px-6 py-3 font-outfit font-bold text-sm md:text-base transition-all relative ${
+                  isActive
+                    ? "text-neo-blue"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.label}
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neo-blue" />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Tab Content */}
-        {currentTab && (
-          <div className="bg-gray-50 rounded-2xl p-8 md:p-12 transition-all duration-300">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-              <div>
-                <h3 className="font-outfit font-bold text-xl md:text-2xl text-gray-900 mb-6">
-                  {currentTab.contentHeading}
-                </h3>
-                <div className="space-y-4">
-                  {typeof currentTab.paragraphs === 'string' ? (
-                    <div
-                      className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
-                      dangerouslySetInnerHTML={{ __html: currentTab.paragraphs }}
-                    />
-                  ) : (
-                    (currentTab.paragraphs || []).map((p: string, i: number) => (
-                      <p key={i} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
-                        {p}
-                      </p>
-                    ))
+        {tabs.map((tab: any, i: number) => {
+          const tabId = `${tabsSectionId}-tab-${i}`;
+          const panelId = `${tabsSectionId}-panel-${i}`;
+          const isActive = activeTab === i;
+
+          return (
+            <div
+              key={tab.label || `panel-${i}`}
+              id={panelId}
+              role="tabpanel"
+              aria-labelledby={tabId}
+              aria-hidden={!isActive}
+              hidden={!isActive}
+              className="bg-gray-50 rounded-2xl p-8 md:p-12 transition-all duration-300"
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+                <div>
+                  <h3 className="font-outfit font-bold text-xl md:text-2xl text-gray-900 mb-6">
+                    {tab.contentHeading}
+                  </h3>
+                  <div className="space-y-4">
+                    {typeof tab.paragraphs === "string" ? (
+                      <div
+                        className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed [&_p]:mb-4 last:[&_p]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1"
+                        dangerouslySetInnerHTML={{ __html: tab.paragraphs }}
+                      />
+                    ) : (
+                      (tab.paragraphs || []).map((p: string, paragraphIndex: number) => (
+                        <p key={paragraphIndex} className="font-outfit text-base md:text-lg text-gray-700 leading-relaxed">
+                          {p}
+                        </p>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  {(tab.bullets || []).length > 0 && (
+                    <ul className="space-y-4 mb-8">
+                      {tab.bullets.map((item: string, bulletIndex: number) => (
+                        <li key={bulletIndex} className="flex items-start gap-3 font-outfit text-base md:text-lg text-gray-700">
+                          <CheckCircle2 className="h-6 w-6 text-neo-blue flex-shrink-0 mt-0.5" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {tab.ctaText && tab.ctaUrl && (
+                    <Link
+                      to={tab.ctaUrl}
+                      className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-neo-blue-dark transition-colors"
+                    >
+                      {tab.ctaText}
+                    </Link>
                   )}
                 </div>
               </div>
-
-              <div>
-                {(currentTab.bullets || []).length > 0 && (
-                  <ul className="space-y-4 mb-8">
-                    {currentTab.bullets.map((item: string, i: number) => (
-                      <li key={i} className="flex items-start gap-3 font-outfit text-base md:text-lg text-gray-700">
-                        <CheckCircle2 className="h-6 w-6 text-neo-blue flex-shrink-0 mt-0.5" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {currentTab.ctaText && currentTab.ctaUrl && (
-                  <Link
-                    to={currentTab.ctaUrl}
-                    className="inline-flex items-center gap-2 bg-neo-blue text-white font-outfit font-bold px-8 py-3.5 rounded-lg hover:bg-neo-blue-dark transition-colors"
-                  >
-                    {currentTab.ctaText}
-                  </Link>
-                )}
-              </div>
             </div>
-          </div>
-        )}
+          );
+        })}
       </div>
     </section>
   );
